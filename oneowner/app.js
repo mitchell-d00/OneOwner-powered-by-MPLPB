@@ -38,10 +38,11 @@
   };
   let api, screen = 'home', corpus = '', corpora = [], busy = false;
   let question = '', latestAnswer = null, pageCache = null, pageError = '';
-  let chatController = null;
+  let chatController = null, chatDraft = '';
   const views = [
     ['home', 'Overview', 'layout-dashboard'],
     ['chat', 'Chat', 'messages-square'],
+    ['learn', 'Learn OneOwner', 'graduation-cap'],
     ['ask', 'Ask · cited answers', 'message-square-text'],
     ['library', 'Explore pages', 'files'],
     ['import', 'Add or revise', 'file-plus'],
@@ -113,6 +114,10 @@
     else if (!corpora.some(x => x.key === corpus)) corpus = corpora[0] ? corpora[0].key : '';
     navRender();
   }
+  function openChatWithPrompt(prompt) {
+    chatDraft = typeof prompt === 'string' ? prompt : '';
+    switchTo('chat');
+  }
   function switchTo(next) {
     screen = next;
     pageCache = null;
@@ -128,7 +133,12 @@
     if (screen === 'home') renderHome(parent);
     if (screen === 'chat') {
       if (!window.OneOwnerChat) throw Error('The OneOwner chat interface is missing; no fallback chat is permitted.');
-      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
+      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), draft:chatDraft, navigate:switchTo, refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
+      chatDraft = '';
+    }
+    if (screen === 'learn') {
+      if (!window.OneOwnerLearn) throw Error('The OneOwner learning guide is missing.');
+      window.OneOwnerLearn.mount(parent, {openChat:openChatWithPrompt, navigate:switchTo});
     }
     if (screen === 'ask') renderAsk(parent);
     if (screen === 'library') renderLibrary(parent);
@@ -145,6 +155,7 @@
     const actions = make('div', 'oo-actions');
     actions.append(button('Start chatting', () => switchTo('chat'), 'oo-btn oo-btn-light'));
     actions.append(button('Create a collection', () => switchTo('import'), 'oo-btn oo-btn-ghost-light'));
+    actions.append(button('How OneOwner works', () => switchTo('learn'), 'oo-btn oo-btn-ghost-light'));
     hero.appendChild(actions); parent.appendChild(hero);
     const g = make('div', 'oo-three');
     const items = [
@@ -181,7 +192,11 @@
     shelf.append(h, button('Explore this ledger', () => switchTo('library'), 'oo-btn oo-btn-secondary'));
   }
   function renderAsk(parent) {
-    top(parent, 'Strict reader', 'Ask the ledger', 'Every answer goes through Combined MPLPB’s deterministic supported-answer path. No AI guesses or outside facts.');
+    top(parent, 'Strict reader', 'Ask the ledger', 'Use this for a sourced answer from your saved pages. To introduce yourself, chat naturally, get a guided lesson, or ask “What are you?”, open Chat instead.');
+    const introActions = make('div', 'oo-actions oo-ask-help');
+    introActions.append(button('Try basic chat', () => openChatWithPrompt('What are you?'), 'oo-btn oo-btn-secondary', 'oo-ask-to-chat'));
+    introActions.append(button('Learn the difference', () => switchTo('learn'), 'oo-btn oo-btn-secondary'));
+    parent.appendChild(introActions);
     const grid = make('div', 'oo-split');
     const form = card(grid, '');
     const q = field('Your question', 'oo-question', 'textarea', 'What can this collection support?');
@@ -261,8 +276,21 @@
         const value = await api.continueFrom(p.path, selected());
         const section = $('oo-page-inspector');
         clear(section); section.hidden = false;
-        top(section, 'Inspection only · not an answer', p.title || p.path, value.notice);
-        raw(section, value.source, 'Sealed page text, fields and hash');
+        top(section, 'Saved page · inspection only', p.title || p.path, value.notice);
+        if (value.source && typeof value.source.text === 'string') {
+          const reading = make('article', 'oo-page-reading');
+          paragraph(reading, 'READABLE SAVED SOURCE', 'oo-eyebrow');
+          paragraph(reading, value.source.text, 'oo-source-text');
+          paragraph(reading, 'This is the page as retained locally. It is not a new answer or a verification of the source’s truth.', 'oo-footnote');
+          if (typeof value.source.hash === 'string') {
+            reading.appendChild(make('code', 'oo-mono', 'Sealed page hash: ' + value.source.hash));
+          }
+          const sourceActions = make('div', 'oo-actions');
+          sourceActions.appendChild(button('Chat about this page', () => openChatWithPrompt('topic ' + (value.source.title || p.title || p.path)), 'oo-btn oo-btn-primary', 'oo-inspector-chat'));
+          reading.appendChild(sourceActions);
+          section.appendChild(reading);
+        }
+        raw(section, value.source, 'Inspect original page fields and hash');
         raw(section, value.history, 'Retained lineage and capture history');
         section.scrollIntoView({behavior:'smooth',block:'start'});
       }), 'oo-btn oo-btn-secondary'));
@@ -270,7 +298,7 @@
     }
   }
   function renderLibrary(parent) {
-    top(parent, 'Your source ledger', 'Explore pages', 'Inspect current pages, retired records, eligibility, and history without upgrading retrieved text into an answer.');
+    top(parent, 'Your source ledger', 'Explore pages', 'Read saved eligible pages locally, chat about a selected topic, and inspect history. Page inspection is not the same as a strict supported answer.');
     const toolbar = make('div', 'oo-toolbar');
     toolbar.append(make('span', 'oo-muted', 'Collection: ' + currentLabel()), button('Refresh pages', () => action(loadPages), 'oo-btn oo-btn-secondary'));
     parent.appendChild(toolbar);
@@ -451,6 +479,8 @@
     line(c);
     paragraph(c, 'Pages carry integrity hashes and lineage pins. A hash does not establish authorship, accuracy, or factual truth.');
     paragraph(c, 'All source decisions and revisions are made by the unchanged Combined MPLPB Python engine via its page-local API. The interface does not rank, merge, or synthesize source answers.');
+    const learn = button('Learn basic and advanced chat', () => switchTo('learn'), 'oo-btn oo-btn-secondary');
+    c.appendChild(learn);
     const link = make('a', 'oo-text-link', 'View Combined MPLPB research');
     link.href = 'https://github.com/mitchell-d00/Combined-MPLPB-A-closed-local-ledger-of-pages-that-answers-only-from-those-pages';
     link.rel = 'noopener noreferrer'; link.target = '_blank'; c.appendChild(link);

@@ -205,3 +205,32 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
 #oneowner-app .oo-link-capture .oo-import-result{margin-top:18px}
 #oneowner-app .oo-link-capture .oo-import-result .oo-pill{margin:0 0 10px}
 @media(max-width:680px){#oneowner-app .oo-link-search{flex-direction:column;align-items:stretch;gap:4px}#oneowner-app .oo-link-search>.oo-btn{margin:0 0 20px}#oneowner-app .oo-link-fields{grid-template-columns:1fr}#oneowner-app .oo-link-capture{padding:18px}}
+
+/* Guided learning and chat modes; original MPLPB language engine unchanged. */
+#oneowner-app .oo-learn-intro{background:linear-gradient(140deg,#f0f9fa,#fff);margin-bottom:24px;border-color:#d1e6eb}
+#oneowner-app .oo-learn-section{margin:24px 0}
+#oneowner-app .oo-learn-section > h2{margin-bottom:6px;font-size:22px}
+#oneowner-app .oo-learn-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:19px 0 25px}
+#oneowner-app .oo-learn-step{display:flex;flex-direction:column;gap:8px}
+#oneowner-app .oo-learn-step h3{font-size:18px}
+#oneowner-app .oo-learn-step .oo-btn{align-self:start;margin-top:auto}
+#oneowner-app .oo-learn-columns{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+#oneowner-app .oo-learn-levels,#oneowner-app .oo-learn-offline{margin-bottom:22px}
+#oneowner-app .oo-learn-columns > div{background:#f8fafc;border:1px solid #e2e9ef;border-radius:12px;padding:18px}
+#oneowner-app .oo-learn-trust{padding:4px 6px 20px;max-width:900px}
+#oneowner-app .oo-chat-guidance{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid #d4e5eb;border-radius:14px;background:#f4fbfc;padding:14px 18px;margin-bottom:19px}
+#oneowner-app .oo-chat-guidance .oo-muted{font-size:13px;margin:0}
+#oneowner-app .oo-chat-guidance .oo-btn{flex-shrink:0}
+#oneowner-app .oo-chat-level-tabs{display:flex;align-items:center;border-radius:11px;background:#ecf2f8;padding:4px;gap:4px;margin:17px 0}
+#oneowner-app .oo-chat-level-btn{background:transparent;color:#49647a;border:1px solid transparent;border-radius:8px;padding:10px 12px;min-height:40px;flex:1;cursor:pointer;font-weight:760}
+#oneowner-app .oo-chat-level-btn[aria-pressed="true"]{background:#fff;color:#1c5381;border-color:#d9e5ef;box-shadow:0 2px 7px #28425b16}
+#oneowner-app .oo-chat-basic[hidden],#oneowner-app .oo-chat-advanced[hidden]{display:none !important}
+#oneowner-app .oo-chat-help h3{margin-top:10px}
+#oneowner-app .oo-chat-offline{background:#f7fbfa;border-color:#dcece6}
+#oneowner-app .oo-chat-offline p{font-size:13px}
+#oneowner-app .oo-ask-help{margin:-12px 0 20px}
+@media(max-width:760px){#oneowner-app .oo-learn-grid,#oneowner-app .oo-learn-columns{grid-template-columns:1fr}#oneowner-app .oo-chat-guidance{flex-direction:column;align-items:flex-start}#oneowner-app .oo-chat-guidance .oo-btn{width:100%}}
+
+#oneowner-app .oo-page-reading{background:#f8fbfc;border:1px solid #dce8ee;border-radius:14px;padding:23px;margin:18px 0}
+#oneowner-app .oo-page-reading .oo-source-text{white-space:pre-wrap;line-height:1.8;color:#264157;max-height:480px;overflow:auto;font-size:14px}
+#oneowner-app .oo-page-reading .oo-mono{display:block;padding:11px 0;color:#47677f}

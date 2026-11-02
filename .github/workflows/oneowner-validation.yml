@@ -26,9 +26,10 @@ jobs:
         run: |
           node --check oneowner/adapter.js
           node --check oneowner/chat.js
+          node --check oneowner/learn.js
           node --check oneowner/source-capture.js
           node --check oneowner/app.js
-          node --test tests/adapter.test.cjs
+          node --test tests/adapter.test.cjs tests/learn.test.cjs
           python -m unittest discover -s tests -p 'test_*.py' -v
 
   archive-first:
@@ -135,6 +136,13 @@ jobs:
           --browser-executable "$(command -v google-chrome)"
           --output "$RUNNER_TEMP/oneowner-chat/report.json"
           --screenshots "$RUNNER_TEMP/oneowner-chat/screenshots"
+      - name: Beginner and advanced learning journey with offline native MPLPB chat
+        run: >-
+          python product/tests/browser_learn_oneowner.py
+          --html extracted/OneOwner.html
+          --browser-executable "$(command -v google-chrome)"
+          --output "$RUNNER_TEMP/oneowner-learn/report.json"
+          --screenshots "$RUNNER_TEMP/oneowner-learn/screenshots"
       - name: Chromium link snapshot with original CORS capture and seal pipeline
         run: >-
           python product/tests/browser_link_capture.py
@@ -154,5 +162,6 @@ jobs:
             ${{ runner.temp }}/oneowner-synthetic/
             ${{ runner.temp }}/oneowner-chat/
             ${{ runner.temp }}/oneowner-link/
+            ${{ runner.temp }}/oneowner-learn/
           if-no-files-found: warn
           retention-days: 30
