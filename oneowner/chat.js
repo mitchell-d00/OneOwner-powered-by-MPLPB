@@ -236,11 +236,13 @@
       catch (error) { status('Not completed: '+(error?.message || String(error))); }
       finally {busyState(false);}
     }
-    function rememberSession(id, first) {
+    function rememberSession(id, first, actualCollection) {
       if (!id || id.startsWith('free:')) return true;
-      index[collection]=pool().filter(x=>x && x.id!==id);
-      index[collection].unshift({id, label:(first || 'Conversation').slice(0, 56)});
-      if (index[collection].length>32) index[collection]=index[collection].slice(0,32);
+      const target = actualCollection || collection;
+      if (target !== collection) index[collection] = pool().filter(x => x && x.id !== id);
+      const saved = Array.isArray(index[target]) ? index[target] : [];
+      index[target] = [{id, label:(first || 'Conversation').slice(0, 56)},
+        ...saved.filter(x => x && x.id !== id)].slice(0, 32);
       return persistIndex(index);
     }
     async function send(value) {
@@ -262,7 +264,7 @@
           session=response.session;
           notes=Array.isArray(response.mind?.notes)?response.mind.notes.slice():[];
           messages.push({role:'assistant',response:response.response,pin:response.turn_sha256});
-          const saved=rememberSession(session,previous.find(x=>x.role==='user')?.text || text);
+          const saved=rememberSession(session,previous.find(x=>x.role==='user')?.text || text,response.corpus || collection);
           input.value=''; draw();
           if (response.corpus && response.corpus!==collection) {
             status('MPLPB changed the active source collection to '+response.corpus+'. Select that collection above to continue.');
