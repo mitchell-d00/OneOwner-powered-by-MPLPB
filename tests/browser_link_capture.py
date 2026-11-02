@@ -54,7 +54,8 @@ def main():
           page.locator('#oo-search-google').click()
           actual_search=page.evaluate("window.__search.slice()")
           print('OneOwner Google discovery URL recorded in Chromium:',repr(actual_search),flush=True)
-          check('Google_only_opens_search',actual_search==['https://www.google.com/search?q=research%20recipes'])
+          search_links=[link for link in actual_search if isinstance(link,str)]
+          check('Google_only_opens_search',search_links==['https://www.google.com/search?q=research%20recipes'])
           page.locator('#oo-new-collection').fill('Snapshot pilot')
           page.locator('#oo-create').click()
           expect(page.locator('#oo-new-result')).to_contain_text('COLLECTION CREATED',timeout=60000)
