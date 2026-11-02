@@ -90,7 +90,15 @@ def main():
                     page.locator('#oo-chat-send').click()
                     expect(page.locator('.oo-chat-assistant')).to_have_count(2,timeout=60000)
                     check('followup_keeps_same_native_session',page.locator('#oo-chat-sessions').input_value()==sid)
-                    check('chat_response_includes_saved_note','dinosaurs' in page.locator('.oo-chat-assistant').last.inner_text().lower())
+                    check('chat_notes_retained_after_followup',
+                          'dinosaurs' in page.locator('#oo-chat-notes').inner_text().lower())
+                    followup=page.evaluate("async sid => await window.MPLPB.resumeChat(sid)",sid)
+                    check('followup_recorded_in_intact_native_hash_chain',
+                          followup['ok'] and followup['data']['chain_intact'] is True and
+                          len(followup['data']['turns'])==2)
+                    check('native_refusal_never_promoted_to_cited_answer',
+                          'SOURCE SUPPORTED' not in page.locator('.oo-chat-assistant').last.inner_text() and
+                          'Engine kind:' in page.locator('.oo-chat-assistant').last.inner_text())
                     # Network permission must be opt-in on each individual turn.
                     page.locator('#oo-chat-network').check()
                     page.locator('#oo-chat-input').fill('hello')

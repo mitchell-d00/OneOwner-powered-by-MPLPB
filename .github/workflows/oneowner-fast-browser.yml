@@ -1,0 +1,71 @@
+name: Fast OneOwner packaged-browser regression
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - tests/browser_chat_oneowner.py
+      - tests/browser_learn_oneowner.py
+      - tests/browser_link_capture.py
+      - .github/workflows/oneowner-fast-browser.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  packaged-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download the real compiled pinned-engine application from the last main CI
+        uses: actions/download-artifact@v4
+        with:
+          name: oneowner-candidate-41535821635
+          run-id: 41535821635
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: compiled
+      - name: Locate real, original packaged OneOwner HTML
+        id: artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          html="$(find compiled -type f -name 'OneOwner.html' -print -quit)"
+          test -s "$html"
+          grep -q 'OneOwner dedicated page: original engine unchanged' "$html"
+          echo "html=$html" >> "$GITHUB_OUTPUT"
+          sha256sum "$html"
+      - name: Install browser test runner
+        run: python -m pip install 'playwright==1.58.0'
+      - name: Verify original native-chat session handling and local refusal
+        run: >-
+          python tests/browser_chat_oneowner.py
+          --html "${{ steps.artifact.outputs.html }}"
+          --browser-executable "$(command -v google-chrome)"
+          --output "$RUNNER_TEMP/oneowner-fast/chat.json"
+          --screenshots "$RUNNER_TEMP/oneowner-fast/screenshots"
+      - name: Verify beginner, advanced, and offline tutorial
+        run: >-
+          python tests/browser_learn_oneowner.py
+          --html "${{ steps.artifact.outputs.html }}"
+          --browser-executable "$(command -v google-chrome)"
+          --output "$RUNNER_TEMP/oneowner-fast/learn.json"
+          --screenshots "$RUNNER_TEMP/oneowner-fast/screenshots"
+      - name: Verify original native source snapshot and successor
+        run: >-
+          python tests/browser_link_capture.py
+          --html "${{ steps.artifact.outputs.html }}"
+          --browser-executable "$(command -v google-chrome)"
+          --output "$RUNNER_TEMP/oneowner-fast/link.json"
+          --screenshots "$RUNNER_TEMP/oneowner-fast/screenshots"
+      - name: Preserve failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oneowner-fast-browser-${{ github.run_id }}
+          path: ${{ runner.temp }}/oneowner-fast/
+          if-no-files-found: warn
