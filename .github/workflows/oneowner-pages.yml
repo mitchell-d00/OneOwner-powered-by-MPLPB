@@ -6,7 +6,7 @@ on:
     types: [completed]
 
 permissions:
-  contents: read
+  contents: write
   actions: read
   pages: write
   id-token: write
@@ -44,6 +44,30 @@ jobs:
           printf '%s\n' 'OneOwner - Powered by Combined MPLPB' > site/README.txt
           touch site/.nojekyll
           sha256sum site/index.html
+      - name: Checkout OneOwner main for branch-based Pages compatibility
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: source
+          persist-credentials: true
+      - name: Keep main/index.html synchronized with the validated application
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Existing branch-based Pages must NEVER build the README instead of OneOwner.
+          # Store the exact tested application bytes in the repo root as MPLPB does.
+          cp site/index.html source/index.html
+          grep -q 'OneOwner dedicated page: original engine unchanged' source/index.html
+          touch source/.nojekyll
+          git -C source config user.name 'github-actions[bot]'
+          git -C source config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C source add index.html .nojekyll
+          if ! git -C source diff --cached --quiet; then
+            git -C source commit -m 'Publish validated OneOwner standalone index.html'
+            git -C source push origin HEAD:main
+          else
+            echo 'Root app already matches validated artifact.'
+          fi
       - name: Configure independent OneOwner Pages deployment
         uses: actions/configure-pages@v5
       - name: Upload the exact validated OneOwner page
