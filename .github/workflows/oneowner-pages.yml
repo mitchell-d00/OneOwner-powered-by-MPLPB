@@ -37,9 +37,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -s candidate/OneOwner.html
+          html="$(find candidate -type f -name OneOwner.html -print -quit)"
+          test -n "$html" && test -s "$html"
           mkdir -p site
-          cp candidate/OneOwner.html site/index.html
+          cp "$html" site/index.html
           printf '%s\n' 'OneOwner - Powered by Combined MPLPB' > site/README.txt
           touch site/.nojekyll
           sha256sum site/index.html
@@ -52,3 +53,13 @@ jobs:
       - id: deployment
         name: Publish to OneOwner repository website only
         uses: actions/deploy-pages@v4
+      - name: Verify published OneOwner page responds with dedicated product identity
+        shell: bash
+        env:
+          ONEOWNER_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 6 --retry-delay 5 "$ONEOWNER_URL" -o deployed.html
+          grep -q 'OneOwner dedicated page: original engine unchanged' deployed.html
+          grep -q '<title>OneOwner' deployed.html
+          echo "The separately deployed OneOwner HTML has the product marker and title."
