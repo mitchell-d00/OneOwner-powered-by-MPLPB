@@ -81,7 +81,7 @@ def main():
             raise AssertionError(method + ' postcondition rejected: ' + json.dumps(outcome)[:200])
         return outcome['data']
     def ask(page, question):
-        nav(page, 'Ask')
+        nav(page, 'Ask · cited answers')
         q = page.locator('#oo-question')
         expect(q).to_be_visible()
         q.fill(question)
@@ -120,7 +120,7 @@ def main():
                           page.locator('#oo-nav').count()==1)
                     check('novice_can_identify_primary_tasks',
                           all(page.locator('#oo-nav').get_by_role('button', name=name, exact=True).count()==1
-                              for name in ['Overview','Ask','Explore pages','Add or revise','History','About']))
+                              for name in ['Overview','Chat','Ask · cited answers','Explore pages','Add or revise','History','About']))
                     check('plain_language_first_screen',
                           'Know what your pages can prove.' in page.locator('#oo-screen').inner_text() and
                           'No eligible owner' in page.locator('#oo-screen').inner_text())
