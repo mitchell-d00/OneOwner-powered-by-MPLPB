@@ -41,9 +41,10 @@ def overlay(html):
         raise ValueError('Unexpected upstream HTML shape; review integration')
     css = (ROOT / 'oneowner/app.css').read_text(encoding='utf-8')
     adapter = (ROOT / 'oneowner/adapter.js').read_text(encoding='utf-8')
+    capture = (ROOT / 'oneowner/source-capture.js').read_text(encoding='utf-8')
     chat = (ROOT / 'oneowner/chat.js').read_text(encoding='utf-8')
     app = (ROOT / 'oneowner/app.js').read_text(encoding='utf-8')
-    if any('</script' in x.lower() for x in (adapter, chat, app)) or '</style' in css.lower():
+    if any('</script' in x.lower() for x in (adapter, capture, chat, app)) or '</style' in css.lower():
         raise ValueError('Overlay source contains an unsafe inline-tag terminator')
     output = html.replace('</head>', TAG + '\n<style id="oneowner-style">\n' + css + '\n</style>\n</head>')
     # The upstream desktop HTTP/UI tests and CSP expect exactly one inline
@@ -55,6 +56,7 @@ def overlay(html):
     if close < output.rfind('<script>'):
         raise ValueError('The original engine script is not closed')
     extension = ('\n/* oneowner-adapter: CSP compatible */\n' + adapter +
+                 '\n/* oneowner-capture: CSP compatible */\n' + capture +
                  '\n/* oneowner-chat: CSP compatible */\n' + chat +
                  '\n/* oneowner-app: CSP compatible */\n' + app + '\n')
     output = output[:close] + extension + output[close:]

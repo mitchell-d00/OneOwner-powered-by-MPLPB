@@ -119,3 +119,41 @@ test('chat rejects implicit network permission, invalid arguments and damaged tr
   await assert.rejects(a.resumeChat('sid'),/hash chain failed/);
   await assert.rejects(a.exportChat('sid'),/integrity failed/);
 });
+
+
+test('direct URL snapshots use only the original native source transport and retain provenance',async()=>{
+  const received=[];
+  const captureTransport={capture:async source=>{
+    received.push(source);
+    return {
+      title:source.title,
+      capture:{transport:'browser-cors-fetch-v1',authorship:'unknown',source_sha256:'recorded-by-engine'},
+      collection_build:{source_origin:source.url,engine_changed:false}
+    };
+  }};
+  const api={query:async()=>({ok:true,data:{reader:{kind:'not_in_corpus'}}}),listCorpora:async()=>({ok:true,data:[]})};
+  const a=create(api,captureTransport);
+  const snapshot=await a.captureLink({corpus:'mind-123',title:'Bread recipe',url:' https://example.org/recipes/bread '});
+  assert.equal(snapshot.capture.transport,'browser-cors-fetch-v1');
+  assert.equal(received.length,1);
+  assert.deepEqual(received[0],{corpus:'mind-123',title:'Bread recipe',url:'https://example.org/recipes/bread'});
+  for(const url of ['http://example.org/recipe','https://user:pass@example.org/recipe',
+    'https://example.org/recipe#section','https://localhost/recipe','garbage']){
+    await assert.rejects(a.captureLink({corpus:'mind-123',title:'Bread',url}));
+  }
+  await assert.rejects(a.captureLink({corpus:'logic',title:'Bread',url:'https://example.org/recipe'}));
+  await assert.rejects(a.captureLink({corpus:'mind-123',title:'',url:'https://example.org/recipe'}));
+  assert.equal(received.length,1,'rejected links never reach original source transport');
+});
+
+test('source fetch fails closed and never upgrades incomplete native metadata',async()=>{
+  const api={query:async()=>({ok:true,data:{reader:{kind:'not_in_corpus'}}}),listCorpora:async()=>({ok:true,data:[]})};
+  await assert.rejects(create(api).captureLink({corpus:'mind-1',title:'Fact',url:'https://example.org/'}),
+    /native.*browser URL capture|does not expose.*URL capture/i);
+  const incomplete=create(api,{capture:async()=>({title:'Fact'})});
+  await assert.rejects(incomplete.captureLink({corpus:'mind-1',title:'Fact',url:'https://example.org/'}),
+    /complete source capture/);
+  const rejected=create(api,{capture:async()=>{throw Error('Browser CORS denied');}});
+  await assert.rejects(rejected.captureLink({corpus:'mind-1',title:'Fact',url:'https://example.org/'}),
+    /Browser CORS denied/);
+});

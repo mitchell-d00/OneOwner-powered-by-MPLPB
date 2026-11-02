@@ -47,7 +47,7 @@
     };
   }
 
-  function create(api) {
+  function create(api, sourceCapture) {
     if (!api || typeof api.query !== 'function' || typeof api.listCorpora !== 'function') {
       throw new Error('OneOwner requires the original window.MPLPB engine API.');
     }
@@ -98,6 +98,29 @@
         if (typeof api.resetChat !== 'function') throw new Error('Chat reset unavailable.');
         if (typeof session !== 'string' || !session.trim()) throw new Error('Enter a session ID.');
         return unwrap(await api.resetChat(session), 'Delete chat');
+      },
+      async captureLink({corpus,title,url} = {}) {
+        if (typeof corpus !== 'string' || !corpus.startsWith('mind-')) throw Error('Create or select your collection to save snapshots.');
+        if (typeof url !== 'string') throw Error('Paste a public HTTPS address.');
+        let parsed;
+        try { parsed = new URL(url.trim()); } catch (_) { throw Error('Paste a valid public HTTPS address.'); }
+        if (parsed.protocol !== 'https:' || parsed.username || parsed.password ||
+            parsed.hash || !parsed.hostname || parsed.hostname === 'localhost') {
+          throw Error('Use a public HTTPS address without credentials or fragments.');
+        }
+        if (typeof title !== 'string' || !title.trim() || title.trim().length > 200)
+          throw Error('Provide a short page name.');
+        if (!sourceCapture || typeof sourceCapture.capture !== 'function') {
+          throw Error('This runtime does not expose original MPLPB browser URL capture. Paste source text instead.');
+        }
+        // Native MPLPB /api/source/fetch validates the URL, fetches with CORS,
+        // retains raw bytes, extracts source text, seals and supersedes.
+        // No OneOwner HTML parser, hash maker, or ledger writer exists.
+        const saved = await sourceCapture.capture({corpus, title:title.trim(), url:parsed.href});
+        if (!saved || typeof saved !== 'object' || !saved.capture || !saved.collection_build) {
+          throw Error('The native engine did not return a complete source capture record; do not claim a saved page.');
+        }
+        return saved;
       },
       async createCollection(name) { return unwrap(await api.createCollection(name), 'Create collection'); },
       async importSource({ corpus, title, url, text }) {

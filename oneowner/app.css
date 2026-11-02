@@ -193,3 +193,15 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
 #oneowner-app .oo-use-card p{font-size:13px}
 @media(max-width:1060px){#oneowner-app .oo-chat-grid{grid-template-columns:1fr}#oneowner-app .oo-chat-aside{display:grid;grid-template-columns:1fr 1fr}}
 @media(max-width:680px){#oneowner-app .oo-chat-panel{min-height:540px}#oneowner-app .oo-chat-log{max-height:55vh;padding:13px}#oneowner-app .oo-chat-bubble{max-width:98%;padding:13px}#oneowner-app .oo-chat-controls{padding:12px}#oneowner-app .oo-chat-controls .oo-btn{font-size:11px;padding:7px 9px;min-height:35px}#oneowner-app .oo-chat-picker{flex-basis:100%;max-width:100%;}#oneowner-app .oo-chat-aside{display:flex}#oneowner-app .oo-use-grid{grid-template-columns:1fr}#oneowner-app .oo-chat-composer{padding:12px}#oneowner-app .oo-chat-network{padding:9px 12px}#oneowner-app .oo-chat-composer .oo-btn{padding:10px 13px}}
+
+/* Link-first source capture. Native MPLPB performs fetching and sealing. */
+#oneowner-app .oo-link-capture{margin-bottom:22px;border-color:#cddce8;background:linear-gradient(150deg,#fff,#f8fcff);padding:27px}
+#oneowner-app .oo-link-capture>h2{font-size:22px}
+#oneowner-app .oo-link-capture>p{max-width:880px}
+#oneowner-app .oo-link-search{display:flex;align-items:end;gap:13px;max-width:875px}
+#oneowner-app .oo-link-search>.oo-field{flex:1;min-width:0}
+#oneowner-app .oo-link-search>.oo-btn{margin-bottom:19px;white-space:nowrap}
+#oneowner-app .oo-link-fields{display:grid;grid-template-columns:1.35fr 1fr;gap:13px}
+#oneowner-app .oo-link-capture .oo-import-result{margin-top:18px}
+#oneowner-app .oo-link-capture .oo-import-result .oo-pill{margin:0 0 10px}
+@media(max-width:680px){#oneowner-app .oo-link-search{flex-direction:column;align-items:stretch;gap:4px}#oneowner-app .oo-link-search>.oo-btn{margin:0 0 20px}#oneowner-app .oo-link-fields{grid-template-columns:1fr}#oneowner-app .oo-link-capture{padding:18px}}

@@ -26,6 +26,16 @@ Optional Wikipedia lookup in Chat uses native MPLPB commands such as `search Cat
 All chat and collection data uses the original local persistence. OneOwner indexes recently used session IDs per collection locally; it never silently replaces source pages or confuses conversation history with ledger lineage. Exports back up **chat transcripts only**, not entire source collections. Deleting a conversation does not delete source pages. No language model is required.
 
 
+## Search, link, and save snapshots
+
+Open **Add or revise**, create or select your own collection, and use **Search Google** to discover a source. Google opens in a separate tab; OneOwner does **not** scrape Google result pages or treat search snippets as evidence. Copy the selected source webpage's real public HTTPS address, paste it into **Webpage address**, and choose **Read and save snapshot**. The product suggests a page name from the URL path; you can edit it.
+
+The actual capture is performed by the **original Combined MPLPB `/api/source/fetch` browser bridge**, not by a OneOwner crawler or a separate ledger. That bridge performs an HTTPS browser CORS fetch, accepts HTML or plain text within the engine's limits, extracts visible text, retains the response bytes and capture metadata, and runs the original sealed source import and successor workflow. The saved snapshot contains source URL, capture/provenance metadata, pinned source bytes, and the resulting generated collection page. The engine remains responsible for eligibility and answer support.
+
+**Important:** Browser capture does not work with every website. Google search, logins, PDFs, websites blocking cross-origin fetches, and browser policies can prevent direct capture. OneOwner must show a failed capture rather than pretend the page was read. In that case, users can paste the page's text manually and it is labeled **user-supplied**, not a verified fetch. A page hash proves integrity of what was recorded, not factual accuracy, original authorship or long-term page availability.
+
+The optional native MPLPB Wikipedia `search` and `import` commands remain in Chat with explicit per-call network permission. The optional hosted general-web crawler in MPLPB needs a separately configured backend and access token; that hosted service has not been bundled into or claimed for OneOwner. This link-first workflow is a smaller, transparent convenience layer on MPLPB's already implemented source fetch.
+
 ## Importing a document like your research notes
 
 Choose **Add or revise**, create or select a collection, supply a title and the genuine public HTTPS origin URL, and paste its text or choose a local `.txt`, `.md`, or `.html` file. Import uses `window.MPLPB.importSource` and does **not fetch the URL**. Original source authorship is marked **unknown**; the hash certifies the retained bytes, not their truth. Reimporting the same title and URL creates an engine-managed successor and retains the previous record.
