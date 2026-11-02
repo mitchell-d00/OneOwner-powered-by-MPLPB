@@ -1,4 +1,5 @@
 import importlib.util
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -20,10 +21,23 @@ class BuildTests(unittest.TestCase):
         self.assertIn('oo-nav', result)
         self.assertIn('oneowner-app: CSP compatible', result)
         self.assertIn('window.MPLPB={}', result)
+        self.assertEqual(len(re.findall(r'<script>(.*?)</script>', result, flags=re.S)), 1)
+        self.assertEqual(result.count('</script>'), 1)
         self.assertNotIn('oneowner-launch', result)
         self.assertEqual(module.overlay(html), result)
         with self.assertRaises(ValueError):
             module.overlay(result)
+
+    def test_wasm_bundle_and_original_script_shape_are_preserved(self):
+        sample = ('<html><head></head><body>'
+                  '<script id="mplpb-runtime-bundle" type="application/json">{}</script>'
+                  '<script>\nwindow.MPLPB={};\n</script></body></html>')
+        adapted = module.overlay(sample)
+        self.assertEqual(adapted.count('<script>'), 1)
+        self.assertEqual(adapted.count('<script id="mplpb-runtime-bundle"'), 1)
+        self.assertEqual(len(re.findall(r'<script>(.*?)</script>', adapted, flags=re.S)), 1)
+        self.assertLess(adapted.index('window.MPLPB={}'), adapted.index('oneowner-adapter'))
+        self.assertLess(adapted.index('oneowner-adapter'), adapted.index('oneowner-app'))
 
     def test_source_shape_and_hash_fail_closed(self):
         for doc in ('<html></html>', '<head></head><body></body></body>'):

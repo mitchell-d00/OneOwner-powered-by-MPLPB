@@ -45,8 +45,17 @@ def overlay(html):
     if any('</script' in x.lower() for x in (adapter, app)) or '</style' in css.lower():
         raise ValueError('Overlay source contains an unsafe inline-tag terminator')
     output = html.replace('</head>', TAG + '\n<style id="oneowner-style">\n' + css + '\n</style>\n</head>')
-    output = output.replace('</body>', '<script>\n/* oneowner-adapter: CSP compatible */\n' + adapter +
-                            '\n</script>\n<script>\n/* oneowner-app: CSP compatible */\n' + app + '\n</script>\n</body>')
+    # The upstream desktop HTTP/UI tests and CSP expect exactly one inline
+    # engine script. Keep that structure; add product controls inside the
+    # existing script instead of introducing a second or third script.
+    if output.count('<script>') != 1 or output.count('</script>') < 1:
+        raise ValueError('Expected one original inline MPLPB engine script')
+    close = output.rfind('</script>')
+    if close < output.rfind('<script>'):
+        raise ValueError('The original engine script is not closed')
+    extension = ('\n/* oneowner-adapter: CSP compatible */\n' + adapter +
+                 '\n/* oneowner-app: CSP compatible */\n' + app + '\n')
+    output = output[:close] + extension + output[close:]
     output = output.replace('<title>MPLPB · The Local Ledger</title>',
                             '<title>OneOwner · Powered by Combined MPLPB</title>')
     return output
