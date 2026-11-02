@@ -20,6 +20,12 @@ class BuildTests(unittest.TestCase):
         self.assertIn('oo-sidebar', result)
         self.assertIn('oo-nav', result)
         self.assertIn('oneowner-app: CSP compatible', result)
+        self.assertIn('oneowner-chat: CSP compatible', result)
+        self.assertIn('oneowner-capture: CSP compatible', result)
+        self.assertIn('OneOwnerSourceCapture', result)
+        self.assertIn('Read and save snapshot', result)
+        self.assertIn('window.OneOwnerChat', result)
+        self.assertIn('Chat with your information', result)
         self.assertIn('window.MPLPB={}', result)
         self.assertEqual(len(re.findall(r'<script>(.*?)</script>', result, flags=re.S)), 1)
         self.assertEqual(result.count('</script>'), 1)
@@ -37,7 +43,9 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(adapted.count('<script id="mplpb-runtime-bundle"'), 1)
         self.assertEqual(len(re.findall(r'<script>(.*?)</script>', adapted, flags=re.S)), 1)
         self.assertLess(adapted.index('window.MPLPB={}'), adapted.index('oneowner-adapter'))
-        self.assertLess(adapted.index('/* oneowner-adapter: CSP compatible */'), adapted.index('/* oneowner-app: CSP compatible */'))
+        self.assertLess(adapted.index('/* oneowner-adapter: CSP compatible */'), adapted.index('/* oneowner-capture: CSP compatible */'))
+        self.assertLess(adapted.index('/* oneowner-capture: CSP compatible */'), adapted.index('/* oneowner-chat: CSP compatible */'))
+        self.assertLess(adapted.index('/* oneowner-chat: CSP compatible */'), adapted.index('/* oneowner-app: CSP compatible */'))
 
     def test_source_shape_and_hash_fail_closed(self):
         for doc in ('<html></html>', '<head></head><body></body></body>'):

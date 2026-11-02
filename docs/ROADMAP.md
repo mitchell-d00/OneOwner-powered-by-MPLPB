@@ -2,7 +2,12 @@
 
 ## Implemented in OneOwner repository
 
-- [x] Independent full-page OneOwner visual design, responsive masthead, navigation, Ask, Explore, Add/Revise, History, and About.
+- [x] Independent full-page OneOwner visual design, responsive masthead, navigation, Chat, Ask, Explore, Add/Revise, History, and About.
+- [x] Original MPLPB native Chat API adapter plus responsive chat, saved conversations, notes, export, delete, support labels and per-turn Wikipedia opt-in.
+- [x] Search Google opens discovery results; paste actual source HTTPS link, get an editable suggested title, and invoke original MPLPB browser URL fetch/capture and sealing with no separate OneOwner crawler.
+- [x] Direct-CORS snapshot Chromium fixture checks captured provenance, native source support, successor revisions, CORS/URL refusal and reload persistence. Fixture results must not be represented as live website coverage.
+- [x] Research, recipes, memories and factual collections workflows shown in the product, with clear distinction between conversational notes and sealed evidence.
+- [x] Native-chat Chromium usability journey configured against extracted OneOwner HTML and exact research engine; result is not claimed before the workflow passes.
 - [x] Separate OneOwner GitHub Pages workflow; **the research website and repository remain untouched**.
 - [x] Existing adapter / original `window.MPLPB` calls only. No independent ownership rule or answer generator.
 - [x] Full raw decision, refusal, ambiguity, candidates and fail-closed result labels.

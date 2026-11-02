@@ -38,9 +38,11 @@
   };
   let api, screen = 'home', corpus = '', corpora = [], busy = false;
   let question = '', latestAnswer = null, pageCache = null, pageError = '';
+  let chatController = null;
   const views = [
     ['home', 'Overview', 'layout-dashboard'],
-    ['ask', 'Ask', 'message-square-text'],
+    ['chat', 'Chat', 'messages-square'],
+    ['ask', 'Ask · cited answers', 'message-square-text'],
     ['library', 'Explore pages', 'files'],
     ['import', 'Add or revise', 'file-plus'],
     ['history', 'History', 'history'],
@@ -121,8 +123,13 @@
   }
   function render() {
     const parent = $('oo-screen');
+    if (chatController) {chatController.destroy(); chatController=null;}
     clear(parent);
     if (screen === 'home') renderHome(parent);
+    if (screen === 'chat') {
+      if (!window.OneOwnerChat) throw Error('The OneOwner chat interface is missing; no fallback chat is permitted.');
+      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
+    }
     if (screen === 'ask') renderAsk(parent);
     if (screen === 'library') renderLibrary(parent);
     if (screen === 'import') renderImport(parent);
@@ -134,10 +141,10 @@
     hero.appendChild(make('div', 'oo-glow'));
     paragraph(hero, 'THE LOCAL EVIDENCE WORKSPACE', 'oo-eyebrow');
     hero.appendChild(make('h1', 'oo-hero-title', 'Know what your pages can prove.'));
-    paragraph(hero, 'OneOwner answers from your sealed ledger, shows the source, and refuses when the evidence is not there.', 'oo-hero-copy');
+    paragraph(hero, 'Chat, keep notes, explore recipes and research, or build factual collections. Your saved pages remain the authority for evidence-based answers.', 'oo-hero-copy');
     const actions = make('div', 'oo-actions');
-    actions.append(button('Ask your ledger', () => switchTo('ask'), 'oo-btn oo-btn-light'));
-    actions.append(button('Add a page', () => switchTo('import'), 'oo-btn oo-btn-ghost-light'));
+    actions.append(button('Start chatting', () => switchTo('chat'), 'oo-btn oo-btn-light'));
+    actions.append(button('Create a collection', () => switchTo('import'), 'oo-btn oo-btn-ghost-light'));
     hero.appendChild(actions); parent.appendChild(hero);
     const g = make('div', 'oo-three');
     const items = [
@@ -151,6 +158,21 @@
       paragraph(c, item[2]);
     }
     parent.appendChild(g);
+    const uses = card(parent, 'oo-uses');
+    uses.appendChild(make('h2', '', 'Make OneOwner your own'));
+    paragraph(uses, 'The same MPLPB engine works behind each workflow. You choose what to save and what counts as evidence.');
+    const useGrid=make('div', 'oo-use-grid');
+    for (const [name,description,view] of [
+      ['Research', 'Organize references and ask questions with citations.', 'import'],
+      ['Recipes', 'Keep cooking instructions and revise them without losing older versions.', 'import'],
+      ['Memories & notes', 'Chat and save personal notes; decide separately what should become source material.', 'chat'],
+      ['Fact libraries', 'Create collections of sourced information you can inspect and update.', 'import']]) {
+      const use=make('div', 'oo-use-card');
+      use.append(make('h3', '', name)); paragraph(use, description, 'oo-muted');
+      use.appendChild(button(view==='chat'?'Open chat':'Build a collection', () => switchTo(view), 'oo-btn oo-btn-secondary'));
+      useGrid.appendChild(use);
+    }
+    uses.appendChild(useGrid);
     const shelf = card(parent, 'oo-next');
     const h = make('div');
     paragraph(h, 'CURRENT WORKSPACE', 'oo-eyebrow');
@@ -256,10 +278,81 @@
     const inspect = card(parent, 'oo-inspector'); inspect.id = 'oo-page-inspector'; inspect.hidden = true;
   }
   function renderImport(parent) {
-    top(parent, 'Source creation', 'Add or revise a page', 'Paste a document or choose a local text file. OneOwner passes the bytes to the existing sealed import and successor pipeline.');
+    top(parent, 'Source library', 'Build pages from sources', 'Find a source, paste its address, then save a snapshot through the original MPLPB engine. You can also paste your own text or revise an existing page.');
+    const capture = card(parent, 'oo-link-capture');
+    capture.appendChild(make('h2', '', 'Search, read, and save a source snapshot'));
+    paragraph(capture, 'Search Google in a new tab, choose the actual webpage, and copy its address here. OneOwner asks the existing MPLPB browser engine to fetch the page, record its capture metadata, and seal the new page.');
+    const searchRow=make('div', 'oo-link-search');
+    const searchField=field('Find something', 'oo-google-search', 'input', 'e.g. sourdough bread recipes, ocean research');
+    searchRow.appendChild(searchField.holder);
+    const google=button('Search Google', () => {
+      const query=searchField.input.value.trim();
+      if (!query) {setNotice('Enter a topic to search.', 'error');return;}
+      window.open('https://www.google.com/search?q='+encodeURIComponent(query), '_blank', 'noopener,noreferrer');
+      setNotice('Choose a trustworthy result, copy its page URL, then return to save a snapshot.');
+    }, 'oo-btn oo-btn-secondary', 'oo-search-google');
+    searchRow.appendChild(google);
+    capture.appendChild(searchRow);
+    const snapshotFields=make('div', 'oo-link-fields');
+    const linkField=field('Webpage address (HTTPS)', 'oo-capture-url', 'input', 'https://example.org/research/page');
+    linkField.input.type='url';
+    const nameField=field('Name for this saved page', 'oo-capture-title', 'input', 'Suggested from the link; edit if needed');
+    let suggestion='';
+    const suggest=rawUrl => {
+      try {
+        const url=new URL(rawUrl);
+        if (url.protocol!=='https:')return '';
+        const part=decodeURIComponent(url.pathname.split('/').filter(Boolean).pop()||'');
+        const title=(part || url.hostname).replace(/\.[a-z0-9]{1,5}$/i,'').replace(/[-_]+/g,' ').replace(/\s+/g,' ').trim();
+        return title.slice(0,190)||url.hostname;
+      } catch (_) {return '';}
+    };
+    linkField.input.addEventListener('input',()=>{
+      const next=suggest(linkField.input.value.trim());
+      if (!nameField.input.value.trim() || nameField.input.value===suggestion) nameField.input.value=next;
+      suggestion=next;
+    });
+    snapshotFields.append(linkField.holder, nameField.holder);
+    capture.appendChild(snapshotFields);
+    const snapshotResult=make('div', 'oo-import-result');
+    snapshotResult.id='oo-capture-result';
+    const captureActions=make('div','oo-actions');
+    captureActions.appendChild(button('Read and save snapshot', () => action(async()=>{
+      clear(snapshotResult);
+      try {
+        const saved=await api.captureLink({
+          corpus:selected(), title:nameField.input.value, url:linkField.input.value
+        });
+        pill(snapshotResult, 'SNAPSHOT SAVED BY MPLPB', 'success');
+        paragraph(snapshotResult, 'MPLPB fetched the selected URL through browser CORS, recorded the source bytes, and ran its existing seal and successor pipeline. This does not certify source truth or authorship.');
+        if (saved.capture) {
+          paragraph(snapshotResult, 'Capture method: '+String(saved.capture.transport||'not reported')+
+            ' · Authorship: '+String(saved.capture.authorship||'not verified'), 'oo-footnote');
+        }
+        if (saved.collection_build && typeof saved.collection_build.source_origin==='string') {
+          paragraph(snapshotResult, 'Origin recorded: '+saved.collection_build.source_origin,'oo-footnote');
+        }
+        raw(snapshotResult,saved,'Inspect full original capture, date, source pin, and build record');
+        snapshotResult.appendChild(button('Explore saved pages',()=>switchTo('library'),'oo-btn oo-btn-secondary'));
+        setNotice('Snapshot saved. The original engine retains revisions and source pins.', 'ok');
+      } catch(error) {
+        pill(snapshotResult,'SNAPSHOT NOT SAVED','warning');
+        paragraph(snapshotResult, 'That website could not be captured through the native browser transport. Some sites block cross-origin requests. You can paste its text below, clearly labeled as supplied text.');
+        paragraph(snapshotResult, String(error&&error.message||error),'oo-footnote');
+        throw error;
+      }
+    }), 'oo-btn oo-btn-primary', 'oo-capture-link'));
+    captureActions.appendChild(button('Paste text instead',()=>{
+      document.getElementById('oo-text-input')?.focus();
+      document.getElementById('oo-title-input').value=nameField.input.value;
+      document.getElementById('oo-url-input').value=linkField.input.value;
+    },'oo-btn oo-btn-secondary','oo-capture-fallback'));
+    capture.appendChild(captureActions);
+    capture.appendChild(snapshotResult);
+    paragraph(capture, 'Google is only used to find a link; OneOwner does not scrape Google search results. Direct capture works for public HTTPS HTML or text pages that allow browser CORS. A failed fetch does not create a snapshot.', 'oo-footnote');
     const layout = make('div', 'oo-split');
     const main = card(layout, '');
-    main.appendChild(make('h2', '', 'Import a source'));
+    main.appendChild(make('h2', '', 'Paste text or revise a page'));
     const t = field('Page title', 'oo-title-input', 'input', 'e.g. Research notes — November');
     const u = field('Actual public HTTPS source URL', 'oo-url-input', 'input', 'https://example.org/original-page');
     u.input.type = 'url';
@@ -405,7 +498,7 @@
     (async () => {
       try {
         if (!window.OneOwnerAdapter || !window.MPLPB) throw Error('The embedded MPLPB engine is unavailable. No fallback reader exists.');
-        api = window.OneOwnerAdapter.create(window.MPLPB);
+        api = window.OneOwnerAdapter.create(window.MPLPB, window.OneOwnerSourceCapture);
         await api.ready();
         await refreshCollections();
         render();

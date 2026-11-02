@@ -47,7 +47,7 @@
     };
   }
 
-  function create(api) {
+  function create(api, sourceCapture) {
     if (!api || typeof api.query !== 'function' || typeof api.listCorpora !== 'function') {
       throw new Error('OneOwner requires the original window.MPLPB engine API.');
     }
@@ -68,6 +68,60 @@
         return unwrap(await api.readPage(path, { corpus, profile }), 'Read page');
       },
       async history(corpus) { return unwrap(await api.getHistory({ corpus }), 'Source history'); },
+      async chat(message, {corpus, profile = 'internal', session, allowNetwork = false, wiki = 'simple'} = {}) {
+        if (typeof api.chat !== 'function') throw new Error('Native MPLPB chat is unavailable.');
+        if (typeof message !== 'string' || !message.trim() || message.length > 4000) throw new Error('Chat message must be 1 to 4000 characters.');
+        if (typeof corpus !== 'string' || !corpus.trim()) throw new Error('Choose a collection for this chat.');
+        if (typeof allowNetwork !== 'boolean') throw new Error('Network permission must be an explicit boolean.');
+        if (!['simple', 'english'].includes(wiki)) throw new Error('Choose Simple or English Wikipedia.');
+        if (session !== undefined && (typeof session !== 'string' || !session.trim())) throw new Error('Invalid session ID.');
+        const options = {corpus, profile, allowNetwork, wiki};
+        if (session !== undefined) options.session = session;
+        return unwrap(await api.chat(message.trim(), options), 'Native chat');
+      },
+      async resumeChat(session) {
+        if (typeof api.resumeChat !== 'function') throw new Error('Chat resume unavailable.');
+        if (typeof session !== 'string' || !session.trim()) throw new Error('Enter a session ID.');
+        const data = unwrap(await api.resumeChat(session), 'Resume chat');
+        if (data.chain_intact !== true) throw new Error('Chat history hash chain failed; refusing to display the transcript.');
+        if (!Array.isArray(data.turns) || data.session !== session) throw new Error('Invalid saved chat transcript.');
+        return data;
+      },
+      async exportChat(session) {
+        if (typeof api.exportChat !== 'function') throw new Error('Chat export unavailable.');
+        if (typeof session !== 'string' || !session.trim()) throw new Error('Enter a session ID.');
+        const data = unwrap(await api.exportChat(session), 'Export chat');
+        if (data.chain_intact !== true || !Array.isArray(data.turns)) throw new Error('Chat export integrity failed; refusing export.');
+        return data;
+      },
+      async resetChat(session) {
+        if (typeof api.resetChat !== 'function') throw new Error('Chat reset unavailable.');
+        if (typeof session !== 'string' || !session.trim()) throw new Error('Enter a session ID.');
+        return unwrap(await api.resetChat(session), 'Delete chat');
+      },
+      async captureLink({corpus,title,url} = {}) {
+        if (typeof corpus !== 'string' || !corpus.startsWith('mind-')) throw Error('Create or select your collection to save snapshots.');
+        if (typeof url !== 'string') throw Error('Paste a public HTTPS address.');
+        let parsed;
+        try { parsed = new URL(url.trim()); } catch (_) { throw Error('Paste a valid public HTTPS address.'); }
+        if (parsed.protocol !== 'https:' || parsed.username || parsed.password ||
+            parsed.hash || !parsed.hostname || parsed.hostname === 'localhost') {
+          throw Error('Use a public HTTPS address without credentials or fragments.');
+        }
+        if (typeof title !== 'string' || !title.trim() || title.trim().length > 200)
+          throw Error('Provide a short page name.');
+        if (!sourceCapture || typeof sourceCapture.capture !== 'function') {
+          throw Error('This runtime does not expose original MPLPB browser URL capture. Paste source text instead.');
+        }
+        // Native MPLPB /api/source/fetch validates the URL, fetches with CORS,
+        // retains raw bytes, extracts source text, seals and supersedes.
+        // No OneOwner HTML parser, hash maker, or ledger writer exists.
+        const saved = await sourceCapture.capture({corpus, title:title.trim(), url:parsed.href});
+        if (!saved || typeof saved !== 'object' || !saved.capture || !saved.collection_build) {
+          throw Error('The native engine did not return a complete source capture record; do not claim a saved page.');
+        }
+        return saved;
+      },
       async createCollection(name) { return unwrap(await api.createCollection(name), 'Create collection'); },
       async importSource({ corpus, title, url, text }) {
         if (!corpus || !String(corpus).startsWith('mind-')) throw new Error('Select a user-created collection.');

@@ -142,3 +142,66 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
 #oneowner-app .oo-capture-row .oo-pill { margin:0 0 10px; }
 #oneowner-app .oo-capture-row .oo-footnote { margin:2px 0 8px; }
 #oneowner-app .oo-capture-row code { display:block; margin-top:8px; overflow-wrap:anywhere; }
+
+/* OneOwner native chat: friendly surface above unchanged MPLPB engine */
+#oneowner-app .oo-chat-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(255px,.85fr);gap:19px;align-items:start}
+#oneowner-app .oo-chat-panel{display:flex;flex-direction:column;min-height:650px;padding:0;overflow:hidden}
+#oneowner-app .oo-chat-intro .oo-intro{max-width:800px}
+#oneowner-app .oo-chat-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:15px 17px;border-bottom:1px solid #e2eaf0}
+#oneowner-app .oo-chat-picker{flex:1;min-width:140px;max-width:330px;font-size:12px}
+#oneowner-app .oo-btn-danger{background:#fff4f0;color:#9b402e;border:1px solid #f4d8cb}
+#oneowner-app .oo-btn-danger:hover{background:#fce6dd}
+#oneowner-app .oo-chat-log{flex:1;min-height:310px;max-height:60vh;overflow:auto;padding:22px 21px;background:linear-gradient(#fafcfe,#f7fafc)}
+#oneowner-app .oo-chat-welcome{padding:38px 22px;background:#fff;border:1px dashed #c8d7e4;border-radius:14px;max-width:590px;margin:22px auto;text-align:center}
+#oneowner-app .oo-chat-welcome h2{font-size:22px}
+#oneowner-app .oo-chat-bubble{margin:12px 0;max-width:min(92%,660px);padding:17px 19px;border:1px solid #e1e9f0;border-radius:16px;background:#fff;box-shadow:0 4px 14px #102c480a;overflow-wrap:anywhere}
+#oneowner-app .oo-chat-user{margin-left:auto;background:#eaf2ff;border-color:#cadef8;border-bottom-right-radius:5px}
+#oneowner-app .oo-chat-assistant{margin-right:auto;border-bottom-left-radius:5px}
+#oneowner-app .oo-chat-speaker{display:block;margin-bottom:7px;font-size:11px;letter-spacing:.04em;color:#47657f}
+#oneowner-app .oo-chat-text{white-space:pre-wrap;line-height:1.75;margin-bottom:5px;color:#223e55}
+#oneowner-app .oo-chat-authority{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
+#oneowner-app .oo-chat-authority .oo-pill{font-size:9px;margin:0;max-width:100%;overflow-wrap:anywhere}
+#oneowner-app .oo-chat-source-list{margin-top:15px;padding:12px;background:#edf6f9;border-radius:9px;font-size:12px}
+#oneowner-app .oo-chat-source-list strong{display:block;margin-bottom:6px}
+#oneowner-app .oo-chat-source-list .oo-mono{display:block;margin:4px 0;font-size:11px}
+#oneowner-app .oo-chat-suggestions{padding:11px 18px;display:flex;gap:7px;flex-wrap:wrap}
+#oneowner-app .oo-chat-suggestions:not(:has(button)){display:none}
+#oneowner-app .oo-chat-suggestions strong{width:100%;font-size:11px;color:#62798b}
+#oneowner-app .oo-chat-suggestion{padding:7px 11px;background:#f0f7f8;color:#245965;border:1px solid #d4e4e9;border-radius:20px;font-size:11px;text-align:left;cursor:pointer}
+#oneowner-app .oo-chat-composer{display:flex;gap:10px;align-items:end;padding:15px 18px;border-top:1px solid #e1e9f0;background:#fff}
+#oneowner-app .oo-chat-composer label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#oneowner-app .oo-chat-composer textarea{flex:1;min-height:63px;max-height:200px;resize:vertical}
+#oneowner-app .oo-chat-composer .oo-btn{margin-bottom:1px}
+#oneowner-app .oo-chat-network{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:7px 18px}
+#oneowner-app .oo-chat-network .oo-control{width:185px;min-height:36px;padding:8px}
+#oneowner-app .oo-chat-check{display:flex;gap:8px;align-items:center;font-size:12px;color:#3f5972}
+#oneowner-app .oo-chat-check input{width:16px;height:16px;accent-color:#285bc8}
+#oneowner-app .oo-chat-panel>.oo-footnote{padding:0 18px;margin:0 0 6px}
+#oneowner-app .oo-chat-status{font-size:12px;min-height:34px;padding:6px 18px 16px;color:#62798b}
+#oneowner-app .oo-chat-aside{display:flex;flex-direction:column;gap:17px}
+#oneowner-app .oo-chat-help h2{font-size:18px}
+#oneowner-app .oo-chat-idea{background:none;border:0;color:#2b628d;font-weight:750;padding:0;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:#8ab3d3;text-underline-offset:3px}
+#oneowner-app .oo-chat-scenario{padding:12px 0;border-top:1px solid #e4ebf2}
+#oneowner-app .oo-chat-scenario .oo-footnote{margin:4px 0 0}
+#oneowner-app .oo-chat-mode{display:flex;flex-wrap:wrap;gap:6px}
+#oneowner-app .oo-chat-mode .oo-btn{font-size:11px;min-height:33px;padding:6px 9px}
+#oneowner-app .oo-chat-notes{background:#f2f8f7}
+#oneowner-app .oo-chat-note{border-bottom:1px solid #dce8e4;padding:5px 0;font-size:13px}
+#oneowner-app .oo-uses{margin:0 0 22px}
+#oneowner-app .oo-use-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#oneowner-app .oo-use-card{border:1px solid #e0eaf1;border-radius:12px;padding:18px;background:#f8fafc}
+#oneowner-app .oo-use-card p{font-size:13px}
+@media(max-width:1060px){#oneowner-app .oo-chat-grid{grid-template-columns:1fr}#oneowner-app .oo-chat-aside{display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:680px){#oneowner-app .oo-chat-panel{min-height:540px}#oneowner-app .oo-chat-log{max-height:55vh;padding:13px}#oneowner-app .oo-chat-bubble{max-width:98%;padding:13px}#oneowner-app .oo-chat-controls{padding:12px}#oneowner-app .oo-chat-controls .oo-btn{font-size:11px;padding:7px 9px;min-height:35px}#oneowner-app .oo-chat-picker{flex-basis:100%;max-width:100%;}#oneowner-app .oo-chat-aside{display:flex}#oneowner-app .oo-use-grid{grid-template-columns:1fr}#oneowner-app .oo-chat-composer{padding:12px}#oneowner-app .oo-chat-network{padding:9px 12px}#oneowner-app .oo-chat-composer .oo-btn{padding:10px 13px}}
+
+/* Link-first source capture. Native MPLPB performs fetching and sealing. */
+#oneowner-app .oo-link-capture{margin-bottom:22px;border-color:#cddce8;background:linear-gradient(150deg,#fff,#f8fcff);padding:27px}
+#oneowner-app .oo-link-capture>h2{font-size:22px}
+#oneowner-app .oo-link-capture>p{max-width:880px}
+#oneowner-app .oo-link-search{display:flex;align-items:end;gap:13px;max-width:875px}
+#oneowner-app .oo-link-search>.oo-field{flex:1;min-width:0}
+#oneowner-app .oo-link-search>.oo-btn{margin-bottom:19px;white-space:nowrap}
+#oneowner-app .oo-link-fields{display:grid;grid-template-columns:1.35fr 1fr;gap:13px}
+#oneowner-app .oo-link-capture .oo-import-result{margin-top:18px}
+#oneowner-app .oo-link-capture .oo-import-result .oo-pill{margin:0 0 10px}
+@media(max-width:680px){#oneowner-app .oo-link-search{flex-direction:column;align-items:stretch;gap:4px}#oneowner-app .oo-link-search>.oo-btn{margin:0 0 20px}#oneowner-app .oo-link-fields{grid-template-columns:1fr}#oneowner-app .oo-link-capture{padding:18px}}

@@ -13,16 +13,28 @@ The two websites do not redirect to each other and use separate GitHub Pages dep
 
 ## Your OneOwner workspace
 
-OneOwner opens as a dedicated **full-page product**, not a popup on top of the research UI. Its own navigation offers:
+OneOwner is the **user-friendly, offline-first product built from Combined MPLPB research**, not a new ledger. People can chat, manage notes and memories, build recipe collections, organize research, and maintain factual libraries without needing to learn hash or lineage terminology.
 
-1. **Overview:** accessible introduction and the single-owner guarantee.
-2. **Ask:** strict deterministic reader, explicit citation and sealed hash for supported responses, transparent refusal and ambiguity, full raw trace when needed.
-3. **Explore pages:** source inventory, eligibility labels, and inspection-only lineage context.
-4. **Add or revise:** paste source text or choose a text/Markdown/HTML file, create a collection, seal imported content, create a successor for the same source identity.
-5. **History:** original retained capture and revision history.
-6. **About:** clear explanation of support, hashes, provenance, and offline storage.
+The product now has an independent **Chat** workspace powered directly by the pinned native `window.MPLPB.chat` API. Its purpose is comfortable everyday interaction. The native engine still decides all chat replies, saved context, support labels, topic handling, and source eligibility. OneOwner adds readable conversations, discoverable examples, follow-ups, native session resume, visible notes, explicit deletion, and verified transcript export.
 
-No independent owner-ranking or answer-generating path exists in OneOwner. The local page calls the original `window.MPLPB` JavaScript API, which runs the unchanged Python engine in the embedded WASM worker. The original UI remains part of the bundled engine but is **not shown as the OneOwner product page**.
+Chat can help with daily tasks, help commands, remembered notes, and exploration; **a casual chat reply or saved memory is not automatically an evidence-supported answer or a sealed page**. Use **Ask · cited answers** for a deterministic answer requiring one eligible current owner and a valid citation/hash. Full native support labels and source references remain visible in chat, and raw evidence metadata is inspectable without replacing the engine's authority.
+
+The other product views remain **Explore pages**, **Add or revise**, **History**, and **About**. Collections can hold source documents for research, recipes and reference topics. A factual database here means a searchable and revisable collection of sealed source pages, **not** an unbounded AI-generated database or a guarantee that imported information is true.
+
+Optional Wikipedia lookup in Chat uses native MPLPB commands such as `search Cat`. The **Allow Wikipedia lookup** switch is off by default and resets after each message. Permission applies only to that one chat call. The browser API does not expose the optional general-web crawler. Unhosted local documents still require a real HTTPS source URL in the current browser import API; original CLI authoring is available in the packaged desktop tree.
+
+All chat and collection data uses the original local persistence. OneOwner indexes recently used session IDs per collection locally; it never silently replaces source pages or confuses conversation history with ledger lineage. Exports back up **chat transcripts only**, not entire source collections. Deleting a conversation does not delete source pages. No language model is required.
+
+
+## Search, link, and save snapshots
+
+Open **Add or revise**, create or select your own collection, and use **Search Google** to discover a source. Google opens in a separate tab; OneOwner does **not** scrape Google result pages or treat search snippets as evidence. Copy the selected source webpage's real public HTTPS address, paste it into **Webpage address**, and choose **Read and save snapshot**. The product suggests a page name from the URL path; you can edit it.
+
+The actual capture is performed by the **original Combined MPLPB `/api/source/fetch` browser bridge**, not by a OneOwner crawler or a separate ledger. That bridge performs an HTTPS browser CORS fetch, accepts HTML or plain text within the engine's limits, extracts visible text, retains the response bytes and capture metadata, and runs the original sealed source import and successor workflow. The saved snapshot contains source URL, capture/provenance metadata, pinned source bytes, and the resulting generated collection page. The engine remains responsible for eligibility and answer support.
+
+**Important:** Browser capture does not work with every website. Google search, logins, PDFs, websites blocking cross-origin fetches, and browser policies can prevent direct capture. OneOwner must show a failed capture rather than pretend the page was read. In that case, users can paste the page's text manually and it is labeled **user-supplied**, not a verified fetch. A page hash proves integrity of what was recorded, not factual accuracy, original authorship or long-term page availability.
+
+The optional native MPLPB Wikipedia `search` and `import` commands remain in Chat with explicit per-call network permission. The optional hosted general-web crawler in MPLPB needs a separately configured backend and access token; that hosted service has not been bundled into or claimed for OneOwner. This link-first workflow is a smaller, transparent convenience layer on MPLPB's already implemented source fetch.
 
 ## Importing a document like your research notes
 

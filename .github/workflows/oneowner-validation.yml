@@ -25,6 +25,8 @@ jobs:
       - name: Fail-closed OneOwner adapter / build tests
         run: |
           node --check oneowner/adapter.js
+          node --check oneowner/chat.js
+          node --check oneowner/source-capture.js
           node --check oneowner/app.js
           node --test tests/adapter.test.cjs
           python -m unittest discover -s tests -p 'test_*.py' -v
@@ -126,6 +128,20 @@ jobs:
           --browser-executable "$(command -v google-chrome)"
           --output "$RUNNER_TEMP/oneowner-synthetic/report.json"
           --screenshots "$RUNNER_TEMP/oneowner-synthetic/screenshots"
+      - name: Synthetic novice chat journey with real persisted MPLPB engine
+        run: >-
+          python product/tests/browser_chat_oneowner.py
+          --html extracted/OneOwner.html
+          --browser-executable "$(command -v google-chrome)"
+          --output "$RUNNER_TEMP/oneowner-chat/report.json"
+          --screenshots "$RUNNER_TEMP/oneowner-chat/screenshots"
+      - name: Chromium link snapshot with original CORS capture and seal pipeline
+        run: >-
+          python product/tests/browser_link_capture.py
+          --html extracted/OneOwner.html
+          --browser-executable "$(command -v google-chrome)"
+          --output "$RUNNER_TEMP/oneowner-link/report.json"
+          --screenshots "$RUNNER_TEMP/oneowner-link/screenshots"
       - name: Preserve ZIP and candidate evidence (not deployed-site evidence)
         if: always()
         uses: actions/upload-artifact@v4
@@ -136,5 +152,7 @@ jobs:
             product/dist/OneOwner.html
             ${{ runner.temp }}/oneowner-browser/
             ${{ runner.temp }}/oneowner-synthetic/
+            ${{ runner.temp }}/oneowner-chat/
+            ${{ runner.temp }}/oneowner-link/
           if-no-files-found: warn
           retention-days: 30
