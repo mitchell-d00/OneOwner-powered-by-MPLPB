@@ -38,9 +38,11 @@
   };
   let api, screen = 'home', corpus = '', corpora = [], busy = false;
   let question = '', latestAnswer = null, pageCache = null, pageError = '';
+  let chatController = null;
   const views = [
     ['home', 'Overview', 'layout-dashboard'],
-    ['ask', 'Ask', 'message-square-text'],
+    ['chat', 'Chat', 'messages-square'],
+    ['ask', 'Ask · cited answers', 'message-square-text'],
     ['library', 'Explore pages', 'files'],
     ['import', 'Add or revise', 'file-plus'],
     ['history', 'History', 'history'],
@@ -121,8 +123,13 @@
   }
   function render() {
     const parent = $('oo-screen');
+    if (chatController) {chatController.destroy(); chatController=null;}
     clear(parent);
     if (screen === 'home') renderHome(parent);
+    if (screen === 'chat') {
+      if (!window.OneOwnerChat) throw Error('The OneOwner chat interface is missing; no fallback chat is permitted.');
+      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
+    }
     if (screen === 'ask') renderAsk(parent);
     if (screen === 'library') renderLibrary(parent);
     if (screen === 'import') renderImport(parent);
@@ -134,10 +141,10 @@
     hero.appendChild(make('div', 'oo-glow'));
     paragraph(hero, 'THE LOCAL EVIDENCE WORKSPACE', 'oo-eyebrow');
     hero.appendChild(make('h1', 'oo-hero-title', 'Know what your pages can prove.'));
-    paragraph(hero, 'OneOwner answers from your sealed ledger, shows the source, and refuses when the evidence is not there.', 'oo-hero-copy');
+    paragraph(hero, 'Chat, keep notes, explore recipes and research, or build factual collections. Your saved pages remain the authority for evidence-based answers.', 'oo-hero-copy');
     const actions = make('div', 'oo-actions');
-    actions.append(button('Ask your ledger', () => switchTo('ask'), 'oo-btn oo-btn-light'));
-    actions.append(button('Add a page', () => switchTo('import'), 'oo-btn oo-btn-ghost-light'));
+    actions.append(button('Start chatting', () => switchTo('chat'), 'oo-btn oo-btn-light'));
+    actions.append(button('Create a collection', () => switchTo('import'), 'oo-btn oo-btn-ghost-light'));
     hero.appendChild(actions); parent.appendChild(hero);
     const g = make('div', 'oo-three');
     const items = [
@@ -151,6 +158,21 @@
       paragraph(c, item[2]);
     }
     parent.appendChild(g);
+    const uses = card(parent, 'oo-uses');
+    uses.appendChild(make('h2', '', 'Make OneOwner your own'));
+    paragraph(uses, 'The same MPLPB engine works behind each workflow. You choose what to save and what counts as evidence.');
+    const useGrid=make('div', 'oo-use-grid');
+    for (const [name,description,view] of [
+      ['Research', 'Organize references and ask questions with citations.', 'import'],
+      ['Recipes', 'Keep cooking instructions and revise them without losing older versions.', 'import'],
+      ['Memories & notes', 'Chat and save personal notes; decide separately what should become source material.', 'chat'],
+      ['Fact libraries', 'Create collections of sourced information you can inspect and update.', 'import']]) {
+      const use=make('div', 'oo-use-card');
+      use.append(make('h3', '', name)); paragraph(use, description, 'oo-muted');
+      use.appendChild(button(view==='chat'?'Open chat':'Build a collection', () => switchTo(view), 'oo-btn oo-btn-secondary'));
+      useGrid.appendChild(use);
+    }
+    uses.appendChild(useGrid);
     const shelf = card(parent, 'oo-next');
     const h = make('div');
     paragraph(h, 'CURRENT WORKSPACE', 'oo-eyebrow');

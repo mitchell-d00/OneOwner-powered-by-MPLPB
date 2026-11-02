@@ -71,3 +71,51 @@ test('errors fail rather than manufacturing answers',async()=>{
   const bad=create({query:async()=>({ok:false,error:'Seal corrupted'}),listCorpora:async()=>({ok:true,data:[]})});
   await assert.rejects(bad.ask('q','local'),/Seal corrupted/);
 });
+
+
+test('chat invokes original MPLPB API with no network by default and retains returned authority labels',async()=>{
+  const calls=[];
+  const api={
+    query: async()=>({ok:true,data:{reader:{kind:'not_in_corpus'}}}),
+    listCorpora:async()=>({ok:true,data:[]}),
+    chat:async(message,opts)=>{calls.push({method:'chat',message,opts});return {ok:true,data:{session:'sid1',corpus:'logic',response:{kind:'casual',support_label:'not_source_supported',message:'Hello.'},mind:{notes:[]}}};},
+    resumeChat:async session=>{calls.push({method:'resume',session});return {ok:true,data:{session,chain_intact:true,turns:[],notes:[]}};},
+    exportChat:async session=>{calls.push({method:'export',session});return {ok:true,data:{chain_intact:true,turns:[]}};},
+    resetChat:async session=>{calls.push({method:'reset',session});return {ok:true,data:{reset:true}};}
+  };
+  const a=create(api);
+  const result=await a.chat(' hello ',{corpus:'logic'});
+  assert.equal(result.response.support_label,'not_source_supported');
+  assert.equal(result.response.kind,'casual');
+  assert.deepEqual(calls[0],{method:'chat',message:'hello',opts:{corpus:'logic',profile:'internal',allowNetwork:false,wiki:'simple'}});
+  await a.chat('search Cat',{corpus:'logic',session:'sid1',allowNetwork:true,wiki:'english'});
+  assert.deepEqual(calls[1],{method:'chat',message:'search Cat',opts:{corpus:'logic',profile:'internal',allowNetwork:true,wiki:'english',session:'sid1'}});
+  assert.equal((await a.resumeChat('sid1')).chain_intact,true);
+  assert.equal((await a.exportChat('sid1')).turns.length,0);
+  assert.equal((await a.resetChat('sid1')).reset,true);
+  assert.deepEqual(calls.slice(2),[{method:'resume',session:'sid1'},{method:'export',session:'sid1'},{method:'reset',session:'sid1'}]);
+});
+
+test('chat rejects implicit network permission, invalid arguments and damaged transcripts',async()=>{
+  const calls=[];
+  const api={
+    query:async()=>({ok:true,data:{reader:{kind:'not_in_corpus'}}}),
+    listCorpora:async()=>({ok:true,data:[]}),
+    chat:async()=>{calls.push('chat');return {ok:false,code:'NETWORK_DISABLED',error:'Network permission required'};},
+    resumeChat:async session=>({ok:true,data:{session,chain_intact:false,turns:[]}}),
+    exportChat:async()=>({ok:true,data:{chain_intact:false,turns:[]}}),
+    resetChat:async()=>({ok:true,data:{reset:true}})
+  };
+  const a=create(api);
+  for(const opts of [
+    {corpus:'logic',allowNetwork:'true'},
+    {corpus:'logic',wiki:'web'},
+    {corpus:''},
+    {corpus:'logic',session:null}
+  ]) await assert.rejects(a.chat('hello',opts));
+  await assert.rejects(a.chat('',{corpus:'logic'}));
+  assert.equal(calls.length,0,'no rejected chat should reach original engine');
+  await assert.rejects(a.chat('search Cat',{corpus:'logic'}),/Network permission required/);
+  await assert.rejects(a.resumeChat('sid'),/hash chain failed/);
+  await assert.rejects(a.exportChat('sid'),/integrity failed/);
+});
