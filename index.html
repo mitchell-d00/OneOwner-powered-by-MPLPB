@@ -167,6 +167,98 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
 #oneowner-app .oo-capture-row .oo-footnote { margin:2px 0 8px; }
 #oneowner-app .oo-capture-row code { display:block; margin-top:8px; overflow-wrap:anywhere; }
 
+/* OneOwner native chat: friendly surface above unchanged MPLPB engine */
+#oneowner-app .oo-chat-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(255px,.85fr);gap:19px;align-items:start}
+#oneowner-app .oo-chat-panel{display:flex;flex-direction:column;min-height:650px;padding:0;overflow:hidden}
+#oneowner-app .oo-chat-intro .oo-intro{max-width:800px}
+#oneowner-app .oo-chat-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:15px 17px;border-bottom:1px solid #e2eaf0}
+#oneowner-app .oo-chat-picker{flex:1;min-width:140px;max-width:330px;font-size:12px}
+#oneowner-app .oo-btn-danger{background:#fff4f0;color:#9b402e;border:1px solid #f4d8cb}
+#oneowner-app .oo-btn-danger:hover{background:#fce6dd}
+#oneowner-app .oo-chat-log{flex:1;min-height:310px;max-height:60vh;overflow:auto;padding:22px 21px;background:linear-gradient(#fafcfe,#f7fafc)}
+#oneowner-app .oo-chat-welcome{padding:38px 22px;background:#fff;border:1px dashed #c8d7e4;border-radius:14px;max-width:590px;margin:22px auto;text-align:center}
+#oneowner-app .oo-chat-welcome h2{font-size:22px}
+#oneowner-app .oo-chat-bubble{margin:12px 0;max-width:min(92%,660px);padding:17px 19px;border:1px solid #e1e9f0;border-radius:16px;background:#fff;box-shadow:0 4px 14px #102c480a;overflow-wrap:anywhere}
+#oneowner-app .oo-chat-user{margin-left:auto;background:#eaf2ff;border-color:#cadef8;border-bottom-right-radius:5px}
+#oneowner-app .oo-chat-assistant{margin-right:auto;border-bottom-left-radius:5px}
+#oneowner-app .oo-chat-speaker{display:block;margin-bottom:7px;font-size:11px;letter-spacing:.04em;color:#47657f}
+#oneowner-app .oo-chat-text{white-space:pre-wrap;line-height:1.75;margin-bottom:5px;color:#223e55}
+#oneowner-app .oo-chat-authority{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
+#oneowner-app .oo-chat-authority .oo-pill{font-size:9px;margin:0;max-width:100%;overflow-wrap:anywhere}
+#oneowner-app .oo-chat-source-list{margin-top:15px;padding:12px;background:#edf6f9;border-radius:9px;font-size:12px}
+#oneowner-app .oo-chat-source-list strong{display:block;margin-bottom:6px}
+#oneowner-app .oo-chat-source-list .oo-mono{display:block;margin:4px 0;font-size:11px}
+#oneowner-app .oo-chat-suggestions{padding:11px 18px;display:flex;gap:7px;flex-wrap:wrap}
+#oneowner-app .oo-chat-suggestions:not(:has(button)){display:none}
+#oneowner-app .oo-chat-suggestions strong{width:100%;font-size:11px;color:#62798b}
+#oneowner-app .oo-chat-suggestion{padding:7px 11px;background:#f0f7f8;color:#245965;border:1px solid #d4e4e9;border-radius:20px;font-size:11px;text-align:left;cursor:pointer}
+#oneowner-app .oo-chat-composer{display:flex;gap:10px;align-items:end;padding:15px 18px;border-top:1px solid #e1e9f0;background:#fff}
+#oneowner-app .oo-chat-composer label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#oneowner-app .oo-chat-composer textarea{flex:1;min-height:63px;max-height:200px;resize:vertical}
+#oneowner-app .oo-chat-composer .oo-btn{margin-bottom:1px}
+#oneowner-app .oo-chat-network{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:7px 18px}
+#oneowner-app .oo-chat-network .oo-control{width:185px;min-height:36px;padding:8px}
+#oneowner-app .oo-chat-check{display:flex;gap:8px;align-items:center;font-size:12px;color:#3f5972}
+#oneowner-app .oo-chat-check input{width:16px;height:16px;accent-color:#285bc8}
+#oneowner-app .oo-chat-panel>.oo-footnote{padding:0 18px;margin:0 0 6px}
+#oneowner-app .oo-chat-status{font-size:12px;min-height:34px;padding:6px 18px 16px;color:#62798b}
+#oneowner-app .oo-chat-aside{display:flex;flex-direction:column;gap:17px}
+#oneowner-app .oo-chat-help h2{font-size:18px}
+#oneowner-app .oo-chat-idea{background:none;border:0;color:#2b628d;font-weight:750;padding:0;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:#8ab3d3;text-underline-offset:3px}
+#oneowner-app .oo-chat-scenario{padding:12px 0;border-top:1px solid #e4ebf2}
+#oneowner-app .oo-chat-scenario .oo-footnote{margin:4px 0 0}
+#oneowner-app .oo-chat-mode{display:flex;flex-wrap:wrap;gap:6px}
+#oneowner-app .oo-chat-mode .oo-btn{font-size:11px;min-height:33px;padding:6px 9px}
+#oneowner-app .oo-chat-notes{background:#f2f8f7}
+#oneowner-app .oo-chat-note{border-bottom:1px solid #dce8e4;padding:5px 0;font-size:13px}
+#oneowner-app .oo-uses{margin:0 0 22px}
+#oneowner-app .oo-use-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#oneowner-app .oo-use-card{border:1px solid #e0eaf1;border-radius:12px;padding:18px;background:#f8fafc}
+#oneowner-app .oo-use-card p{font-size:13px}
+@media(max-width:1060px){#oneowner-app .oo-chat-grid{grid-template-columns:1fr}#oneowner-app .oo-chat-aside{display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:680px){#oneowner-app .oo-chat-panel{min-height:540px}#oneowner-app .oo-chat-log{max-height:55vh;padding:13px}#oneowner-app .oo-chat-bubble{max-width:98%;padding:13px}#oneowner-app .oo-chat-controls{padding:12px}#oneowner-app .oo-chat-controls .oo-btn{font-size:11px;padding:7px 9px;min-height:35px}#oneowner-app .oo-chat-picker{flex-basis:100%;max-width:100%;}#oneowner-app .oo-chat-aside{display:flex}#oneowner-app .oo-use-grid{grid-template-columns:1fr}#oneowner-app .oo-chat-composer{padding:12px}#oneowner-app .oo-chat-network{padding:9px 12px}#oneowner-app .oo-chat-composer .oo-btn{padding:10px 13px}}
+
+/* Link-first source capture. Native MPLPB performs fetching and sealing. */
+#oneowner-app .oo-link-capture{margin-bottom:22px;border-color:#cddce8;background:linear-gradient(150deg,#fff,#f8fcff);padding:27px}
+#oneowner-app .oo-link-capture>h2{font-size:22px}
+#oneowner-app .oo-link-capture>p{max-width:880px}
+#oneowner-app .oo-link-search{display:flex;align-items:end;gap:13px;max-width:875px}
+#oneowner-app .oo-link-search>.oo-field{flex:1;min-width:0}
+#oneowner-app .oo-link-search>.oo-btn{margin-bottom:19px;white-space:nowrap}
+#oneowner-app .oo-link-fields{display:grid;grid-template-columns:1.35fr 1fr;gap:13px}
+#oneowner-app .oo-link-capture .oo-import-result{margin-top:18px}
+#oneowner-app .oo-link-capture .oo-import-result .oo-pill{margin:0 0 10px}
+@media(max-width:680px){#oneowner-app .oo-link-search{flex-direction:column;align-items:stretch;gap:4px}#oneowner-app .oo-link-search>.oo-btn{margin:0 0 20px}#oneowner-app .oo-link-fields{grid-template-columns:1fr}#oneowner-app .oo-link-capture{padding:18px}}
+
+/* Guided learning and chat modes; original MPLPB language engine unchanged. */
+#oneowner-app .oo-learn-intro{background:linear-gradient(140deg,#f0f9fa,#fff);margin-bottom:24px;border-color:#d1e6eb}
+#oneowner-app .oo-learn-section{margin:24px 0}
+#oneowner-app .oo-learn-section > h2{margin-bottom:6px;font-size:22px}
+#oneowner-app .oo-learn-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:19px 0 25px}
+#oneowner-app .oo-learn-step{display:flex;flex-direction:column;gap:8px}
+#oneowner-app .oo-learn-step h3{font-size:18px}
+#oneowner-app .oo-learn-step .oo-btn{align-self:start;margin-top:auto}
+#oneowner-app .oo-learn-columns{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+#oneowner-app .oo-learn-levels,#oneowner-app .oo-learn-offline{margin-bottom:22px}
+#oneowner-app .oo-learn-columns > div{background:#f8fafc;border:1px solid #e2e9ef;border-radius:12px;padding:18px}
+#oneowner-app .oo-learn-trust{padding:4px 6px 20px;max-width:900px}
+#oneowner-app .oo-chat-guidance{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid #d4e5eb;border-radius:14px;background:#f4fbfc;padding:14px 18px;margin-bottom:19px}
+#oneowner-app .oo-chat-guidance .oo-muted{font-size:13px;margin:0}
+#oneowner-app .oo-chat-guidance .oo-btn{flex-shrink:0}
+#oneowner-app .oo-chat-level-tabs{display:flex;align-items:center;border-radius:11px;background:#ecf2f8;padding:4px;gap:4px;margin:17px 0}
+#oneowner-app .oo-chat-level-btn{background:transparent;color:#49647a;border:1px solid transparent;border-radius:8px;padding:10px 12px;min-height:40px;flex:1;cursor:pointer;font-weight:760}
+#oneowner-app .oo-chat-level-btn[aria-pressed="true"]{background:#fff;color:#1c5381;border-color:#d9e5ef;box-shadow:0 2px 7px #28425b16}
+#oneowner-app .oo-chat-basic[hidden],#oneowner-app .oo-chat-advanced[hidden]{display:none !important}
+#oneowner-app .oo-chat-help h3{margin-top:10px}
+#oneowner-app .oo-chat-offline{background:#f7fbfa;border-color:#dcece6}
+#oneowner-app .oo-chat-offline p{font-size:13px}
+#oneowner-app .oo-ask-help{margin:-12px 0 20px}
+@media(max-width:760px){#oneowner-app .oo-learn-grid,#oneowner-app .oo-learn-columns{grid-template-columns:1fr}#oneowner-app .oo-chat-guidance{flex-direction:column;align-items:flex-start}#oneowner-app .oo-chat-guidance .oo-btn{width:100%}}
+
+#oneowner-app .oo-page-reading{background:#f8fbfc;border:1px solid #dce8ee;border-radius:14px;padding:23px;margin:18px 0}
+#oneowner-app .oo-page-reading .oo-source-text{white-space:pre-wrap;line-height:1.8;color:#264157;max-height:480px;overflow:auto;font-size:14px}
+#oneowner-app .oo-page-reading .oo-mono{display:block;padding:11px 0;color:#47677f}
+
 </style>
 </head>
 <body>
@@ -510,7 +602,7 @@ startBrowserRuntime();
     };
   }
 
-  function create(api) {
+  function create(api, sourceCapture) {
     if (!api || typeof api.query !== 'function' || typeof api.listCorpora !== 'function') {
       throw new Error('OneOwner requires the original window.MPLPB engine API.');
     }
@@ -531,6 +623,60 @@ startBrowserRuntime();
         return unwrap(await api.readPage(path, { corpus, profile }), 'Read page');
       },
       async history(corpus) { return unwrap(await api.getHistory({ corpus }), 'Source history'); },
+      async chat(message, {corpus, profile = 'internal', session, allowNetwork = false, wiki = 'simple'} = {}) {
+        if (typeof api.chat !== 'function') throw new Error('Native MPLPB chat is unavailable.');
+        if (typeof message !== 'string' || !message.trim() || message.length > 4000) throw new Error('Chat message must be 1 to 4000 characters.');
+        if (typeof corpus !== 'string' || !corpus.trim()) throw new Error('Choose a collection for this chat.');
+        if (typeof allowNetwork !== 'boolean') throw new Error('Network permission must be an explicit boolean.');
+        if (!['simple', 'english'].includes(wiki)) throw new Error('Choose Simple or English Wikipedia.');
+        if (session !== undefined && (typeof session !== 'string' || !session.trim())) throw new Error('Invalid session ID.');
+        const options = {corpus, profile, allowNetwork, wiki};
+        if (session !== undefined) options.session = session;
+        return unwrap(await api.chat(message.trim(), options), 'Native chat');
+      },
+      async resumeChat(session) {
+        if (typeof api.resumeChat !== 'function') throw new Error('Chat resume unavailable.');
+        if (typeof session !== 'string' || !session.trim()) throw new Error('Enter a session ID.');
+        const data = unwrap(await api.resumeChat(session), 'Resume chat');
+        if (data.chain_intact !== true) throw new Error('Chat history hash chain failed; refusing to display the transcript.');
+        if (!Array.isArray(data.turns) || data.session !== session) throw new Error('Invalid saved chat transcript.');
+        return data;
+      },
+      async exportChat(session) {
+        if (typeof api.exportChat !== 'function') throw new Error('Chat export unavailable.');
+        if (typeof session !== 'string' || !session.trim()) throw new Error('Enter a session ID.');
+        const data = unwrap(await api.exportChat(session), 'Export chat');
+        if (data.chain_intact !== true || !Array.isArray(data.turns)) throw new Error('Chat export integrity failed; refusing export.');
+        return data;
+      },
+      async resetChat(session) {
+        if (typeof api.resetChat !== 'function') throw new Error('Chat reset unavailable.');
+        if (typeof session !== 'string' || !session.trim()) throw new Error('Enter a session ID.');
+        return unwrap(await api.resetChat(session), 'Delete chat');
+      },
+      async captureLink({corpus,title,url} = {}) {
+        if (typeof corpus !== 'string' || !corpus.startsWith('mind-')) throw Error('Create or select your collection to save snapshots.');
+        if (typeof url !== 'string') throw Error('Paste a public HTTPS address.');
+        let parsed;
+        try { parsed = new URL(url.trim()); } catch (_) { throw Error('Paste a valid public HTTPS address.'); }
+        if (parsed.protocol !== 'https:' || parsed.username || parsed.password ||
+            parsed.hash || !parsed.hostname || parsed.hostname === 'localhost') {
+          throw Error('Use a public HTTPS address without credentials or fragments.');
+        }
+        if (typeof title !== 'string' || !title.trim() || title.trim().length > 200)
+          throw Error('Provide a short page name.');
+        if (!sourceCapture || typeof sourceCapture.capture !== 'function') {
+          throw Error('This runtime does not expose original MPLPB browser URL capture. Paste source text instead.');
+        }
+        // Native MPLPB /api/source/fetch validates the URL, fetches with CORS,
+        // retains raw bytes, extracts source text, seals and supersedes.
+        // No OneOwner HTML parser, hash maker, or ledger writer exists.
+        const saved = await sourceCapture.capture({corpus, title:title.trim(), url:parsed.href});
+        if (!saved || typeof saved !== 'object' || !saved.capture || !saved.collection_build) {
+          throw Error('The native engine did not return a complete source capture record; do not claim a saved page.');
+        }
+        return saved;
+      },
       async createCollection(name) { return unwrap(await api.createCollection(name), 'Create collection'); },
       async importSource({ corpus, title, url, text }) {
         if (!corpus || !String(corpus).startsWith('mind-')) throw new Error('Select a user-created collection.');
@@ -549,6 +695,470 @@ startBrowserRuntime();
     });
   }
   return Object.freeze({ create, interpret });
+});
+
+/* oneowner-capture: CSP compatible */
+/* OneOwner link snapshot bridge. Calls the original Combined MPLPB browser route.
+ * DO NOT replace this with a fetch + homemade sealing algorithm.
+ *
+ * The pinned MPLPB bridge /api/source/fetch performs CORS GET, MIME/size checks,
+ * source text extraction, original capture metadata, hashing and successor writes.
+ * A link that does not allow browser CORS fails closed. Nothing is saved by this
+ * overlay on fetch failure. This is not Google-results scraping.
+ */
+(function (root) {
+  'use strict';
+  const capture = async request => {
+    if (typeof api !== 'function') throw Error('The original MPLPB browser source transport is unavailable.');
+    if (!request || typeof request !== 'object') throw Error('Choose a source link.');
+    const {corpus,title,url} = request;
+    const payload={corpus,title,url};
+    return api('/api/source/fetch', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+  };
+  root.OneOwnerSourceCapture = Object.freeze({capture});
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+/* oneowner-chat: CSP compatible */
+/* OneOwner: human-friendly, full-capability local chat surface on the original MPLPB API.
+ * No independent reader, answer, owner selection, hashing, or page writes.
+ * Engine-provided response.kind and support_label are always shown as labels.
+ */
+(function (root, factory) {
+  'use strict';
+  const chat = factory();
+  if (typeof module === 'object' && module.exports) module.exports = chat;
+  else root.OneOwnerChat = chat;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const STORAGE = 'oneowner-chat-sessions-v1';
+  const make = (tag, cls, value) => {
+    const el = document.createElement(tag);
+    if (cls) el.className = cls;
+    if (value !== undefined && value !== null) el.textContent = String(value);
+    return el;
+  };
+  const clear = el => el.replaceChildren();
+  const paragraph = (parent, value, cls) => parent.appendChild(make('p', cls || 'oo-muted', value));
+  const button = (label, callback, cls, id) => {
+    const b = make('button', cls || 'oo-btn oo-btn-secondary', label);
+    b.type = 'button';
+    if (id) b.id = id;
+    b.addEventListener('click', callback);
+    return b;
+  };
+  const folded = (host, label, data) => {
+    const d = make('details', 'oo-details');
+    d.append(make('summary', '', label), make('pre', 'oo-raw', JSON.stringify(data, null, 2)));
+    host.appendChild(d); return d;
+  };
+  function readIndex() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(STORAGE) || '{}');
+      return raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+    } catch (_) { return {}; }
+  }
+  function persistIndex(index) {
+    try { localStorage.setItem(STORAGE, JSON.stringify(index)); return true; }
+    catch (_) { return false; }
+  }
+  // Authoritative chat labels are source data. Do not reclassify or promote a reply.
+  function displayLabel(response) {
+    const r = response && typeof response === 'object' ? response : {};
+    return {kind: typeof r.kind === 'string' ? r.kind : 'unclassified',
+      support: typeof r.support_label === 'string' ? r.support_label : 'not independently verified',
+      message: typeof r.message === 'string' ? r.message : 'No message returned by MPLPB.'};
+  }
+  function mount(host, opts) {
+    if (!host || !opts || !opts.api || typeof opts.api.chat !== 'function') {
+      throw Error('OneOwner requires the original MPLPB chat API.');
+    }
+    const api = opts.api, collection = opts.corpus;
+    if (!collection) throw Error('Select a collection for chat.');
+    const index = readIndex();
+    const pool = () => Array.isArray(index[collection]) ? index[collection] : [];
+    let session = null, messages = [], busy = false, generation = 0, notes = [];
+    clear(host);
+    const intro = make('section', 'oo-chat-intro');
+    paragraph(intro, 'YOUR LOCAL CONVERSATION', 'oo-eyebrow');
+    intro.appendChild(make('h1', 'oo-title', 'Chat with your information'));
+    paragraph(intro, 'Ask follow-up questions, keep notes, explore topics and work with your collections. MPLPB runs the conversation locally. Only the original ledger decides which source claims are supported.', 'oo-intro');
+    host.appendChild(intro);
+    const guideLine=make('div', 'oo-chat-guidance');
+    paragraph(guideLine, 'New? Chat uses MPLPB’s local language rules for conversation. Strict Ask is for citations. Saved pages can be explored offline; new website captures need a connection.', 'oo-muted');
+    if (typeof opts.navigate === 'function') {
+      guideLine.appendChild(button('Learn how it works', () => opts.navigate('learn'), 'oo-btn oo-btn-secondary', 'oo-chat-learn'));
+    }
+    host.appendChild(guideLine);
+    const layout = make('div', 'oo-chat-grid');
+    const panel = make('section', 'oo-card oo-chat-panel');
+    const top = make('div', 'oo-chat-controls');
+    const picker = make('select', 'oo-control oo-chat-picker');
+    picker.id = 'oo-chat-sessions'; picker.setAttribute('aria-label', 'Choose a saved conversation');
+    const newBtn = button('New chat', () => {
+      if (busy) return;
+      session = null; messages = []; notes = []; generation++;
+      updatePicker(); draw();
+      status('New chat. Your previous conversations have not been deleted.');
+    }, 'oo-btn oo-btn-secondary', 'oo-chat-new');
+    const exportBtn = button('Export', () => run(async () => {
+      if (!session || session.startsWith('free:')) throw Error('Only saved chats can be exported.');
+      const exportData = await api.exportChat(session);
+      const blob = new Blob([JSON.stringify({session, collection, ...exportData}, null, 2)+'\n'], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      try {
+        const link = make('a'); link.href = url; link.download = 'oneowner-chat-'+session.slice(0, 12)+'.json';
+        document.body.appendChild(link); link.click(); link.remove();
+      } finally { URL.revokeObjectURL(url); }
+      status('Chat exported. This does not back up your source collections.');
+    }), 'oo-btn oo-btn-secondary', 'oo-chat-export');
+    const deleteBtn = button('Delete chat', () => {
+      if (!session || busy || !window.confirm('Delete this conversation? Its source pages will stay in your collection.')) return;
+      run(async () => {
+        const previous = session;
+        await api.resetChat(previous);
+        index[collection] = pool().filter(x => x.id !== previous);
+        const saved = persistIndex(index);
+        session = null; messages = []; notes = []; generation++;
+        updatePicker(); draw(); status(saved ? 'Chat deleted. Source pages remain.' : 'Chat deleted, but local chat index could not be saved.');
+      });
+    }, 'oo-btn oo-btn-danger', 'oo-chat-delete');
+    top.append(picker, newBtn, exportBtn, deleteBtn);
+    panel.appendChild(top);
+    const log = make('div', 'oo-chat-log'); log.id = 'oo-chat-log';
+    log.setAttribute('role', 'log'); log.setAttribute('aria-label', 'Conversation messages');
+    panel.appendChild(log);
+    const suggestions = make('div', 'oo-chat-suggestions'); suggestions.id = 'oo-chat-suggestions';
+    panel.appendChild(suggestions);
+    const composer = make('form', 'oo-chat-composer'); composer.id = 'oo-chat-form';
+    const label = make('label', '', 'Your message'); label.htmlFor = 'oo-chat-input';
+    const input = make('textarea', 'oo-control'); input.id = 'oo-chat-input'; input.rows = 3; input.maxLength = 4000;
+    input.placeholder = 'Say hello, ask about a saved page, or try “remember ...”';
+    if (typeof opts.draft === 'string' && opts.draft.trim()) input.value = opts.draft.slice(0,4000);
+    const sendBtn = make('button', 'oo-btn oo-btn-primary', 'Send'); sendBtn.id = 'oo-chat-send'; sendBtn.type = 'submit';
+    composer.append(label, input, sendBtn);
+    input.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' && !ev.shiftKey && !ev.isComposing) {
+        ev.preventDefault(); if (input.value.trim()) send(input.value);
+      }
+    });
+    composer.addEventListener('submit', ev => { ev.preventDefault(); send(input.value); });
+    const networkRow = make('div', 'oo-chat-network');
+    const networkLabel = make('label', 'oo-chat-check');
+    const network = make('input'); network.type='checkbox'; network.id='oo-chat-network';
+    networkLabel.append(network, make('span', '', 'Allow Wikipedia lookup for this message only'));
+    const wiki = make('select', 'oo-control oo-chat-wiki'); wiki.id='oo-chat-wiki';
+    for (const value of ['simple', 'english']) {
+      const op = make('option', '', value === 'simple' ? 'Simple Wikipedia' : 'English Wikipedia');
+      op.value = value; wiki.appendChild(op);
+    }
+    wiki.setAttribute('aria-label', 'Wikipedia edition');
+    networkRow.append(networkLabel, wiki);
+    const networkHint = make('p', 'oo-footnote', 'Online access stays off by default and resets after each message. In the browser, MPLPB provides optional Wikipedia acquisition, not an unrestricted web crawler.');
+    // The composer must be mounted before the network controls; otherwise
+    // Chat appears but users have no message box or Send button.
+    panel.append(composer, networkRow, networkHint);
+    const messageStatus = make('div', 'oo-chat-status');
+    messageStatus.id = 'oo-chat-status'; messageStatus.setAttribute('role', 'status'); messageStatus.setAttribute('aria-live', 'polite');
+    panel.appendChild(messageStatus);
+    const side = make('aside', 'oo-chat-aside');
+    const quick = make('div', 'oo-card oo-chat-help');
+    quick.appendChild(make('h2', '', 'Choose your chat level'));
+    paragraph(quick, 'Beginner examples are plain-language. Advanced tools use the original MPLPB commands. Choosing an example only fills your message.');
+    const tabs=make('div','oo-chat-level-tabs');
+    tabs.setAttribute('role','group');
+    tabs.setAttribute('aria-label','Chat learning level');
+    const basic=make('div', 'oo-chat-basic');
+    const advanced=make('div', 'oo-chat-advanced');
+    const switchLevel=level=>{
+      const beginner=level==='basic';
+      basic.hidden=!beginner;
+      advanced.hidden=beginner;
+      basicTab.setAttribute('aria-pressed',String(beginner));
+      advancedTab.setAttribute('aria-pressed',String(!beginner));
+    };
+    const basicTab=button('Basic chat',()=>switchLevel('basic'),'oo-chat-level-btn','oo-chat-basic-tab');
+    const advancedTab=button('Advanced chat',()=>switchLevel('advanced'),'oo-chat-level-btn','oo-chat-advanced-tab');
+    tabs.append(basicTab,advancedTab);
+    quick.appendChild(tabs);
+    basic.appendChild(make('h3','','Try something familiar'));
+    paragraph(basic, 'You can chat, remember a note, or ask about a saved page. Choose an example below to fill the message box.', 'oo-footnote');
+    const scenarios = [
+      ['Research', 'topic Exact source title', 'Explore an existing page or start from your research collection.'],
+      ['Recipes', 'What does my saved recipe say about the ingredients?', 'Ask about a recipe you have added as a source page.'],
+      ['Personal notes', 'remember I want to make this recipe this weekend', 'Keep a conversational note. This does not turn the note into a sealed evidence page.'],
+      ['Factual collections', 'load all MPLPB', 'Load your existing collections into the chat environment.'],
+      ['Helpful commands', 'guide me', 'Ask MPLPB to explain the available local actions.']
+    ];
+    for (const [name, example, description] of scenarios) {
+      const item=make('div', 'oo-chat-scenario');
+      item.append(button(name, () => {input.value=example; input.focus();}, 'oo-chat-idea'));
+      paragraph(item, description, 'oo-footnote'); basic.appendChild(item);
+    }
+    const beginnerActions=make('div','oo-chat-mode');
+    basic.appendChild(make('h3','','Start with a guided lesson'));
+    paragraph(basic, 'MPLPB can teach itself in four native chat steps. Ask “guide me”, then reply “next” or “previous step”.','oo-footnote');
+    beginnerActions.appendChild(button('Start guided lesson',()=>{input.value='guide me';input.focus();},'oo-btn oo-btn-secondary','oo-chat-guide'));
+    basic.appendChild(beginnerActions);
+    const actions = make('div', 'oo-chat-mode');
+    advanced.appendChild(make('h3', '', 'Native MPLPB conversation modes'));
+    paragraph(advanced,'These commands go to the unchanged MPLPB language engine. They change chat context, not which page owns a strict answer.','oo-footnote');
+    for (const [label, command] of [
+      ['Just chat', 'chat mode'], ['Focus on evidence', 'serious mode'],
+      ['Use all collections', 'load all MPLPB'], ['Show remembered notes', 'what do you remember about me?'],
+      ['Off-the-record chat', 'off-the-record free chat']]) {
+      actions.appendChild(button(label, () => {input.value=command; input.focus();}, 'oo-btn oo-btn-secondary'));
+    }
+    advanced.appendChild(actions);
+    advanced.appendChild(make('h3','','Source-focused steps'));
+    for(const [label,command,explanation] of [
+      ['List saved page titles','show my MPLPB','Shows what the current collection can inspect.'],
+      ['Select an exact page','topic Exact title','Replace “Exact title” with a page title you have saved.'],
+      ['View source text','show source','Works after a supported topic is selected.'],
+      ['Find a remote topic','search dinosaurs','Needs one-time Wikipedia permission and a connection.']
+    ]) {
+      const item=make('div','oo-chat-scenario');
+      item.appendChild(button(label,()=>{input.value=command;input.focus();},'oo-chat-idea'));
+      paragraph(item,explanation,'oo-footnote');advanced.appendChild(item);
+    }
+    paragraph(advanced,'“Chat mode” is casual; “serious mode” consults loaded collections. A native conversation reply is not automatically source-supported.', 'oo-footnote');
+    quick.append(basic,advanced);
+    switchLevel('basic');
+    side.appendChild(quick);
+    const offlineCard=make('section','oo-card oo-chat-offline');
+    offlineCard.appendChild(make('h2','','Offline and source support'));
+    paragraph(offlineCard,'Local chat and previously captured pages use the embedded MPLPB runtime. Network lookup is optional, off by default, and requires a connection.');
+    paragraph(offlineCard,'A remembered note is conversational context, not a sealed evidence page. For a strict answer, use Ask · cited answers.');
+    if(typeof opts.navigate==='function') offlineCard.appendChild(button('Learn offline pages',()=>opts.navigate('learn'),'oo-btn oo-btn-secondary'));
+    side.appendChild(offlineCard);
+    const notePanel=make('section', 'oo-card oo-chat-notes');
+    notePanel.appendChild(make('h2', '', 'Conversation notes'));
+    const noteContents=make('div'); noteContents.id = 'oo-chat-notes';
+    notePanel.appendChild(noteContents);
+    paragraph(notePanel, 'Notes belong to a conversation. They are not automatically eligible evidence or a source database.', 'oo-footnote');
+    side.appendChild(notePanel);
+    layout.append(panel, side); host.appendChild(layout);
+    function status(text) { messageStatus.textContent = text || ''; }
+    function updatePicker() {
+      clear(picker);
+      const empty = make('option', '', 'New conversation'); empty.value=''; picker.appendChild(empty);
+      for (const slot of pool()) {
+        if (!slot || typeof slot.id !== 'string') continue;
+        const option=make('option', '', slot.label || 'Saved conversation');
+        option.value=slot.id; picker.appendChild(option);
+      }
+      picker.value = session && pool().some(s => s.id===session) ? session : '';
+      exportBtn.disabled = busy || !session || session.startsWith('free:');
+      deleteBtn.disabled = busy || !session;
+    }
+    function draw() {
+      clear(log);
+      if (!messages.length) {
+        const welcome = make('div', 'oo-chat-welcome');
+        welcome.appendChild(make('h2', '', 'Start with a question or a note'));
+        paragraph(welcome, 'Your chat can help you work through research, recipes, memories and factual collections. Ask about saved pages for evidence; use Ask when you need a strict, cited answer.');
+        log.appendChild(welcome);
+      }
+      for (const turn of messages) {
+        const bubble = make('article', 'oo-chat-bubble '+(turn.role==='user' ? 'oo-chat-user' : 'oo-chat-assistant'));
+        bubble.appendChild(make('strong', 'oo-chat-speaker', turn.role==='user' ? 'You' : 'OneOwner · MPLPB'));
+        if (turn.role === 'assistant') {
+          const r=displayLabel(turn.response);
+          const authority=make('div', 'oo-chat-authority');
+          authority.append(make('span', 'oo-pill oo-neutral', 'Engine kind: '+r.kind),
+                           make('span', 'oo-pill oo-neutral', 'Engine support: '+r.support));
+          bubble.appendChild(authority);
+          paragraph(bubble, r.message, 'oo-chat-text');
+          if (turn.response && Array.isArray(turn.response.sources) && turn.response.sources.length) {
+            const sources=make('div', 'oo-chat-source-list');
+            sources.appendChild(make('strong', '', 'Sources reported by MPLPB · inspect before relying on them'));
+            for (const s of turn.response.sources) {
+              paragraph(sources, [s.title||s.id||s.path||'Source',s.path||'',s.hash||''].filter(Boolean).join(' · '), 'oo-mono');
+            }
+            bubble.appendChild(sources);
+          }
+          if (turn.response) folded(bubble, 'Inspect original evidence, rules and reply metadata',
+            {response:turn.response, turn_sha256:turn.pin||null, authority:'unaltered_native_chat_reply'});
+        } else paragraph(bubble, turn.text, 'oo-chat-text');
+        log.appendChild(bubble);
+      }
+      log.scrollTop=log.scrollHeight;
+      clear(noteContents);
+      if (notes.length) for (const n of notes) paragraph(noteContents, '• '+n, 'oo-chat-note');
+      else paragraph(noteContents, 'No notes in this conversation yet. Try “remember ...”.', 'oo-footnote');
+      clear(suggestions);
+      const last=[...messages].reverse().find(t=>t.role==='assistant');
+      const r=last && last.response;
+      const list=Array.isArray(r?.guidance?.actions) ? r.guidance.actions.map(a=>({label:a.label,request:a.request})) :
+        Array.isArray(r?.suggestions) ? r.suggestions.map(s=>({label:s,request:s})) : [];
+      if (list.length) {
+        suggestions.appendChild(make('strong', '', 'Continue exploring'));
+        for (const a of list.slice(0,4)) if(typeof a.request==='string' && a.request.trim()) {
+          suggestions.appendChild(button(String(a.label||a.request).slice(0,130), () => {input.value=a.request; input.focus();}, 'oo-chat-suggestion'));
+        }
+      }
+      updatePicker();
+    }
+    function busyState(value) {
+      busy=value; sendBtn.disabled=value; newBtn.disabled=value; picker.disabled=value;
+      exportBtn.disabled=value || !session || session.startsWith('free:');
+      deleteBtn.disabled=value || !session;
+      input.disabled=value;
+    }
+    async function run(task) {
+      if (busy) return;
+      busyState(true);
+      try { await task(); }
+      catch (error) { status('Not completed: '+(error?.message || String(error))); }
+      finally {busyState(false);}
+    }
+    function rememberSession(id, first, actualCollection) {
+      if (!id || id.startsWith('free:')) return true;
+      const target = actualCollection || collection;
+      if (target !== collection) index[collection] = pool().filter(x => x && x.id !== id);
+      const saved = Array.isArray(index[target]) ? index[target] : [];
+      index[target] = [{id, label:(first || 'Conversation').slice(0, 56)},
+        ...saved.filter(x => x && x.id !== id)].slice(0, 32);
+      return persistIndex(index);
+    }
+    async function send(value) {
+      const text=String(value||'').trim();
+      if (!text || busy) return;
+      const seq=generation;
+      await run(async()=>{
+        const allowNetwork=network.checked;
+        const options={corpus:collection, profile:'internal', allowNetwork, wiki:wiki.value};
+        if (session) options.session=session;
+        const previous=messages.slice();
+        messages.push({role:'user',text}); draw();
+        status(allowNetwork ? 'Asking MPLPB with one-time Wikipedia permission…' : 'Asking the local MPLPB engine…');
+        network.checked=false;
+        try {
+          const response=await api.chat(text,options);
+          if (seq!==generation) return;
+          if (!response || typeof response.session!=='string' || !response.response) throw Error('Incomplete native chat result.');
+          session=response.session;
+          notes=Array.isArray(response.mind?.notes)?response.mind.notes.slice():[];
+          messages.push({role:'assistant',response:response.response,pin:response.turn_sha256});
+          const saved=rememberSession(session,previous.find(x=>x.role==='user')?.text || text,response.corpus || collection);
+          input.value=''; draw();
+          if (response.corpus && response.corpus!==collection) {
+            status('MPLPB changed the active source collection to '+response.corpus+'. Select that collection above to continue.');
+            if (typeof opts.refreshCollections==='function') await opts.refreshCollections(response.corpus);
+          } else status('MPLPB: '+(response.response.kind||'chat')+
+            ' · '+(response.response.support_label||'not a strict supported answer')+
+            (saved ? '' : ' · Local chat index could not be saved; export this session.'));
+        } catch(error) {
+          if(seq===generation) {messages=previous;draw(); }
+          throw error;
+        }
+      });
+    }
+    async function loadSession(id) {
+      if (!id || busy) return;
+      await run(async()=>{
+        const result=await api.resumeChat(id);
+        if (result.corpus!==collection) throw Error('Saved chat belongs to another collection. Choose that collection first.');
+        const turns=[];
+        for (const entry of result.turns) {
+          const payload=entry && entry.payload;
+          if (!payload || typeof payload.question!=='string' || !payload.response) throw Error('Saved chat contains an invalid turn.');
+          turns.push({role:'user',text:payload.question});
+          turns.push({role:'assistant',response:payload.response,pin:entry.sha256});
+        }
+        session=id; messages=turns; notes=Array.isArray(result.notes)?result.notes:[];
+        draw(); status('Chat resumed with an intact transcript chain. Earlier answers are historical, not newly verified.');
+      });
+    }
+    picker.addEventListener('change',()=>{const id=picker.value; if(id)loadSession(id);else {session=null;messages=[];notes=[];draw();}});
+    updatePicker();
+    const previous=pool()[0];
+    if (previous && previous.id) loadSession(previous.id);
+    else draw();
+    return Object.freeze({destroy() {generation++;}, send, getSession:()=>session});
+  }
+  return Object.freeze({mount, displayLabel});
+});
+
+/* oneowner-learn: CSP compatible */
+/* OneOwner user education. Static guidance only; commands are composed for
+ * the existing Combined MPLPB chat API. No reader, owner or language rules here.
+ */
+(function (root, factory) {
+  'use strict';
+  const learn=factory();
+  if (typeof module==='object' && module.exports) module.exports=learn;
+  else root.OneOwnerLearn=learn;
+})(typeof globalThis!=='undefined'?globalThis:this, function () {
+  'use strict';
+  const lessons=Object.freeze([
+    {title:'Begin with a conversation',body:'Use Chat for ordinary questions, follow-ups, planning and notes. You can ask “What are you?” here; in strict Ask, it may correctly refuse because there is no cited owner.',command:'guide me',label:'Start the MPLPB guide'},
+    {title:'Save information in a collection',body:'For a recipe, research paper or reference page, use Add or revise. Paste text with its real source URL or capture a public HTTPS page when that site permits browser fetching.',destination:'import',label:'Add a page'},
+    {title:'Explore what is saved',body:'Open Explore pages to inspect eligible current pages. In Chat, “show my MPLPB” lists available pages, and “topic Exact title” selects one to discuss.',command:'show my MPLPB',label:'Show available pages'},
+    {title:'Check an answer, not just a reply',body:'Use Ask · cited answers when evidence matters. A supported answer needs one eligible current owner, a citation and a sealed hash. Ambiguity or missing support means no answer.',destination:'ask',label:'Ask with citations'}
+  ]);
+  function mount(host,actions) {
+    if (!host || !actions || typeof actions.openChat!=='function') throw Error('OneOwner Learn requires product navigation.');
+    const element=(tag,cls,value)=>{
+      const e=document.createElement(tag);if(cls)e.className=cls;
+      if(value!==undefined)e.textContent=String(value);return e;
+    };
+    const p=(parent,text,cls)=>parent.appendChild(element('p',cls||'oo-muted',text));
+    const btn=(parent,label,click,cls='oo-btn oo-btn-secondary')=>{
+      const e=element('button',cls,label);e.type='button';e.addEventListener('click',click);parent.appendChild(e);return e;
+    };
+    host.replaceChildren();
+    p(host,'LEARN ONEOWNER','oo-eyebrow');
+    host.appendChild(element('h1','oo-title','A simple place to start'));
+    p(host,'Use OneOwner to chat with your own information, preserve source pages and understand when a claim is supported. It runs on the same deterministic MPLPB engine as the research application.','oo-intro');
+    const welcome=element('section','oo-card oo-learn-intro');
+    welcome.appendChild(element('h2','','Chat and Ask are different on purpose'));
+    p(welcome,'Chat is for conversation, personal notes, learning and exploring saved pages. Ask is the strict path for a sourced answer. Asking “What are you?” in Ask may refuse; that is correct behavior, not a broken chatbot.');
+    const jump=element('div','oo-actions');
+    btn(jump,'Open Chat',()=>actions.openChat(''), 'oo-btn oo-btn-primary');
+    btn(jump,'Try “What are you?” in Chat',()=>actions.openChat('What are you?'));
+    welcome.appendChild(jump);host.appendChild(welcome);
+    const section=element('section','oo-learn-section');
+    section.appendChild(element('h2','','Four steps to get comfortable'));
+    p(section,'Choose a step. Examples fill the Chat message box; nothing is sent without your action.');
+    const grid=element('div','oo-learn-grid');
+    lessons.forEach((step,i)=>{
+      const c=element('article','oo-card oo-learn-step');
+      c.appendChild(element('span','oo-number',String(i+1).padStart(2,'0')));
+      c.appendChild(element('h3','',step.title));p(c,step.body);
+      btn(c,step.label,()=>step.command?actions.openChat(step.command):actions.navigate(step.destination));
+      grid.appendChild(c);
+    });section.appendChild(grid);host.appendChild(section);
+    const levels=element('section','oo-card oo-learn-levels');
+    levels.appendChild(element('h2','','Basic chat and advanced chat'));
+    const columns=element('div','oo-learn-columns');
+    const basic=element('div');
+    basic.appendChild(element('h3','','Basic · talk naturally'));
+    p(basic,'Start with “hello”, “what are you?”, “remember I like cooking”, or “what do you remember about me?”. The native MPLPB engine uses its bounded conversation rules and keeps notes in your saved session.');
+    btn(basic,'Practice basic chat',()=>actions.openChat('hello'));
+    const advanced=element('div');
+    advanced.appendChild(element('h3','','Advanced · steer the MPLPB engine'));
+    p(advanced,'Use “chat mode” to keep conversation casual, “serious mode” to focus on evidence, “load all MPLPB” to load saved collections, “topic Exact title” to select a page, then “show source”.');
+    btn(advanced,'Try serious mode',()=>actions.openChat('serious mode'));
+    columns.append(basic,advanced);levels.appendChild(columns);host.appendChild(levels);
+    const offline=element('section','oo-card oo-learn-offline');offline.id='oo-learn-offline';
+    offline.appendChild(element('h2','','Using web pages offline'));
+    p(offline,'First, save the source while connected: use Add or revise, paste source text, or capture an HTTPS link that permits browser access. MPLPB keeps the successful capture and the page history locally.');
+    p(offline,'Later, chat about or query the saved pages without asking the web again. The live source website itself does not become an unrestricted offline browser. A remote search, a new link capture or Wikipedia lookup still needs a connection and explicit permission.');
+    p(offline,'Your saved collections are tied to the browser profile and website origin. Clearing website data or using another browser can lose local records. Exporting a chat transcript does not back up a whole source collection. For a fully self-contained offline runtime, use the downloadable OneOwner package.');
+    const controls=element('div','oo-actions');
+    btn(controls,'Build my first offline page',()=>actions.navigate('import'),'oo-btn oo-btn-primary');
+    btn(controls,'Explore saved pages',()=>actions.navigate('library'));
+    offline.appendChild(controls);host.appendChild(offline);
+    const trust=element('section','oo-learn-trust');
+    trust.appendChild(element('h2','','What OneOwner can and cannot promise'));
+    p(trust,'It can preserve the exact bytes and lineage of captured material, show what an eligible page says, explain refusals and support local conversations. A sealed hash does not establish factual truth or authenticated authorship. A casual answer or remembered note does not become cited evidence.');
+    host.appendChild(trust);
+  }
+  return Object.freeze({mount,lessons});
 });
 
 /* oneowner-app: CSP compatible */
@@ -592,9 +1202,12 @@ startBrowserRuntime();
   };
   let api, screen = 'home', corpus = '', corpora = [], busy = false;
   let question = '', latestAnswer = null, pageCache = null, pageError = '';
+  let chatController = null, chatDraft = '';
   const views = [
     ['home', 'Overview', 'layout-dashboard'],
-    ['ask', 'Ask', 'message-square-text'],
+    ['chat', 'Chat', 'messages-square'],
+    ['learn', 'Learn OneOwner', 'graduation-cap'],
+    ['ask', 'Ask · cited answers', 'message-square-text'],
     ['library', 'Explore pages', 'files'],
     ['import', 'Add or revise', 'file-plus'],
     ['history', 'History', 'history'],
@@ -665,6 +1278,10 @@ startBrowserRuntime();
     else if (!corpora.some(x => x.key === corpus)) corpus = corpora[0] ? corpora[0].key : '';
     navRender();
   }
+  function openChatWithPrompt(prompt) {
+    chatDraft = typeof prompt === 'string' ? prompt : '';
+    switchTo('chat');
+  }
   function switchTo(next) {
     screen = next;
     pageCache = null;
@@ -675,8 +1292,18 @@ startBrowserRuntime();
   }
   function render() {
     const parent = $('oo-screen');
+    if (chatController) {chatController.destroy(); chatController=null;}
     clear(parent);
     if (screen === 'home') renderHome(parent);
+    if (screen === 'chat') {
+      if (!window.OneOwnerChat) throw Error('The OneOwner chat interface is missing; no fallback chat is permitted.');
+      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), draft:chatDraft, navigate:switchTo, refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
+      chatDraft = '';
+    }
+    if (screen === 'learn') {
+      if (!window.OneOwnerLearn) throw Error('The OneOwner learning guide is missing.');
+      window.OneOwnerLearn.mount(parent, {openChat:openChatWithPrompt, navigate:switchTo});
+    }
     if (screen === 'ask') renderAsk(parent);
     if (screen === 'library') renderLibrary(parent);
     if (screen === 'import') renderImport(parent);
@@ -688,10 +1315,11 @@ startBrowserRuntime();
     hero.appendChild(make('div', 'oo-glow'));
     paragraph(hero, 'THE LOCAL EVIDENCE WORKSPACE', 'oo-eyebrow');
     hero.appendChild(make('h1', 'oo-hero-title', 'Know what your pages can prove.'));
-    paragraph(hero, 'OneOwner answers from your sealed ledger, shows the source, and refuses when the evidence is not there.', 'oo-hero-copy');
+    paragraph(hero, 'Chat, keep notes, explore recipes and research, or build factual collections. Your saved pages remain the authority for evidence-based answers.', 'oo-hero-copy');
     const actions = make('div', 'oo-actions');
-    actions.append(button('Ask your ledger', () => switchTo('ask'), 'oo-btn oo-btn-light'));
-    actions.append(button('Add a page', () => switchTo('import'), 'oo-btn oo-btn-ghost-light'));
+    actions.append(button('Start chatting', () => switchTo('chat'), 'oo-btn oo-btn-light'));
+    actions.append(button('Create a collection', () => switchTo('import'), 'oo-btn oo-btn-ghost-light'));
+    actions.append(button('How OneOwner works', () => switchTo('learn'), 'oo-btn oo-btn-ghost-light'));
     hero.appendChild(actions); parent.appendChild(hero);
     const g = make('div', 'oo-three');
     const items = [
@@ -705,6 +1333,21 @@ startBrowserRuntime();
       paragraph(c, item[2]);
     }
     parent.appendChild(g);
+    const uses = card(parent, 'oo-uses');
+    uses.appendChild(make('h2', '', 'Make OneOwner your own'));
+    paragraph(uses, 'The same MPLPB engine works behind each workflow. You choose what to save and what counts as evidence.');
+    const useGrid=make('div', 'oo-use-grid');
+    for (const [name,description,view] of [
+      ['Research', 'Organize references and ask questions with citations.', 'import'],
+      ['Recipes', 'Keep cooking instructions and revise them without losing older versions.', 'import'],
+      ['Memories & notes', 'Chat and save personal notes; decide separately what should become source material.', 'chat'],
+      ['Fact libraries', 'Create collections of sourced information you can inspect and update.', 'import']]) {
+      const use=make('div', 'oo-use-card');
+      use.append(make('h3', '', name)); paragraph(use, description, 'oo-muted');
+      use.appendChild(button(view==='chat'?'Open chat':'Build a collection', () => switchTo(view), 'oo-btn oo-btn-secondary'));
+      useGrid.appendChild(use);
+    }
+    uses.appendChild(useGrid);
     const shelf = card(parent, 'oo-next');
     const h = make('div');
     paragraph(h, 'CURRENT WORKSPACE', 'oo-eyebrow');
@@ -713,7 +1356,11 @@ startBrowserRuntime();
     shelf.append(h, button('Explore this ledger', () => switchTo('library'), 'oo-btn oo-btn-secondary'));
   }
   function renderAsk(parent) {
-    top(parent, 'Strict reader', 'Ask the ledger', 'Every answer goes through Combined MPLPB’s deterministic supported-answer path. No AI guesses or outside facts.');
+    top(parent, 'Strict reader', 'Ask the ledger', 'Use this for a sourced answer from your saved pages. To introduce yourself, chat naturally, get a guided lesson, or ask “What are you?”, open Chat instead.');
+    const introActions = make('div', 'oo-actions oo-ask-help');
+    introActions.append(button('Try basic chat', () => openChatWithPrompt('What are you?'), 'oo-btn oo-btn-secondary', 'oo-ask-to-chat'));
+    introActions.append(button('Learn the difference', () => switchTo('learn'), 'oo-btn oo-btn-secondary'));
+    parent.appendChild(introActions);
     const grid = make('div', 'oo-split');
     const form = card(grid, '');
     const q = field('Your question', 'oo-question', 'textarea', 'What can this collection support?');
@@ -793,8 +1440,21 @@ startBrowserRuntime();
         const value = await api.continueFrom(p.path, selected());
         const section = $('oo-page-inspector');
         clear(section); section.hidden = false;
-        top(section, 'Inspection only · not an answer', p.title || p.path, value.notice);
-        raw(section, value.source, 'Sealed page text, fields and hash');
+        top(section, 'Saved page · inspection only', p.title || p.path, value.notice);
+        if (value.source && typeof value.source.text === 'string') {
+          const reading = make('article', 'oo-page-reading');
+          paragraph(reading, 'READABLE SAVED SOURCE', 'oo-eyebrow');
+          paragraph(reading, value.source.text, 'oo-source-text');
+          paragraph(reading, 'This is the page as retained locally. It is not a new answer or a verification of the source’s truth.', 'oo-footnote');
+          if (typeof value.source.hash === 'string') {
+            reading.appendChild(make('code', 'oo-mono', 'Sealed page hash: ' + value.source.hash));
+          }
+          const sourceActions = make('div', 'oo-actions');
+          sourceActions.appendChild(button('Chat about this page', () => openChatWithPrompt('topic ' + (value.source.title || p.title || p.path)), 'oo-btn oo-btn-primary', 'oo-inspector-chat'));
+          reading.appendChild(sourceActions);
+          section.appendChild(reading);
+        }
+        raw(section, value.source, 'Inspect original page fields and hash');
         raw(section, value.history, 'Retained lineage and capture history');
         section.scrollIntoView({behavior:'smooth',block:'start'});
       }), 'oo-btn oo-btn-secondary'));
@@ -802,7 +1462,7 @@ startBrowserRuntime();
     }
   }
   function renderLibrary(parent) {
-    top(parent, 'Your source ledger', 'Explore pages', 'Inspect current pages, retired records, eligibility, and history without upgrading retrieved text into an answer.');
+    top(parent, 'Your source ledger', 'Explore pages', 'Read saved eligible pages locally, chat about a selected topic, and inspect history. Page inspection is not the same as a strict supported answer.');
     const toolbar = make('div', 'oo-toolbar');
     toolbar.append(make('span', 'oo-muted', 'Collection: ' + currentLabel()), button('Refresh pages', () => action(loadPages), 'oo-btn oo-btn-secondary'));
     parent.appendChild(toolbar);
@@ -810,10 +1470,81 @@ startBrowserRuntime();
     const inspect = card(parent, 'oo-inspector'); inspect.id = 'oo-page-inspector'; inspect.hidden = true;
   }
   function renderImport(parent) {
-    top(parent, 'Source creation', 'Add or revise a page', 'Paste a document or choose a local text file. OneOwner passes the bytes to the existing sealed import and successor pipeline.');
+    top(parent, 'Source library', 'Build pages from sources', 'Find a source, paste its address, then save a snapshot through the original MPLPB engine. You can also paste your own text or revise an existing page.');
+    const capture = card(parent, 'oo-link-capture');
+    capture.appendChild(make('h2', '', 'Search, read, and save a source snapshot'));
+    paragraph(capture, 'Search Google in a new tab, choose the actual webpage, and copy its address here. OneOwner asks the existing MPLPB browser engine to fetch the page, record its capture metadata, and seal the new page.');
+    const searchRow=make('div', 'oo-link-search');
+    const searchField=field('Find something', 'oo-google-search', 'input', 'e.g. sourdough bread recipes, ocean research');
+    searchRow.appendChild(searchField.holder);
+    const google=button('Search Google', () => {
+      const query=searchField.input.value.trim();
+      if (!query) {setNotice('Enter a topic to search.', 'error');return;}
+      window.open('https://www.google.com/search?q='+encodeURIComponent(query), '_blank', 'noopener,noreferrer');
+      setNotice('Choose a trustworthy result, copy its page URL, then return to save a snapshot.');
+    }, 'oo-btn oo-btn-secondary', 'oo-search-google');
+    searchRow.appendChild(google);
+    capture.appendChild(searchRow);
+    const snapshotFields=make('div', 'oo-link-fields');
+    const linkField=field('Webpage address (HTTPS)', 'oo-capture-url', 'input', 'https://example.org/research/page');
+    linkField.input.type='url';
+    const nameField=field('Name for this saved page', 'oo-capture-title', 'input', 'Suggested from the link; edit if needed');
+    let suggestion='';
+    const suggest=rawUrl => {
+      try {
+        const url=new URL(rawUrl);
+        if (url.protocol!=='https:')return '';
+        const part=decodeURIComponent(url.pathname.split('/').filter(Boolean).pop()||'');
+        const title=(part || url.hostname).replace(/\.[a-z0-9]{1,5}$/i,'').replace(/[-_]+/g,' ').replace(/\s+/g,' ').trim();
+        return title.slice(0,190)||url.hostname;
+      } catch (_) {return '';}
+    };
+    linkField.input.addEventListener('input',()=>{
+      const next=suggest(linkField.input.value.trim());
+      if (!nameField.input.value.trim() || nameField.input.value===suggestion) nameField.input.value=next;
+      suggestion=next;
+    });
+    snapshotFields.append(linkField.holder, nameField.holder);
+    capture.appendChild(snapshotFields);
+    const snapshotResult=make('div', 'oo-import-result');
+    snapshotResult.id='oo-capture-result';
+    const captureActions=make('div','oo-actions');
+    captureActions.appendChild(button('Read and save snapshot', () => action(async()=>{
+      clear(snapshotResult);
+      try {
+        const saved=await api.captureLink({
+          corpus:selected(), title:nameField.input.value, url:linkField.input.value
+        });
+        pill(snapshotResult, 'SNAPSHOT SAVED BY MPLPB', 'success');
+        paragraph(snapshotResult, 'MPLPB fetched the selected URL through browser CORS, recorded the source bytes, and ran its existing seal and successor pipeline. This does not certify source truth or authorship.');
+        if (saved.capture) {
+          paragraph(snapshotResult, 'Capture method: '+String(saved.capture.transport||'not reported')+
+            ' · Authorship: '+String(saved.capture.authorship||'not verified'), 'oo-footnote');
+        }
+        if (saved.collection_build && typeof saved.collection_build.source_origin==='string') {
+          paragraph(snapshotResult, 'Origin recorded: '+saved.collection_build.source_origin,'oo-footnote');
+        }
+        raw(snapshotResult,saved,'Inspect full original capture, date, source pin, and build record');
+        snapshotResult.appendChild(button('Explore saved pages',()=>switchTo('library'),'oo-btn oo-btn-secondary'));
+        setNotice('Snapshot saved. The original engine retains revisions and source pins.', 'ok');
+      } catch(error) {
+        pill(snapshotResult,'SNAPSHOT NOT SAVED','warning');
+        paragraph(snapshotResult, 'That website could not be captured through the native browser transport. Some sites block cross-origin requests. You can paste its text below, clearly labeled as supplied text.');
+        paragraph(snapshotResult, String(error&&error.message||error),'oo-footnote');
+        throw error;
+      }
+    }), 'oo-btn oo-btn-primary', 'oo-capture-link'));
+    captureActions.appendChild(button('Paste text instead',()=>{
+      document.getElementById('oo-text-input')?.focus();
+      document.getElementById('oo-title-input').value=nameField.input.value;
+      document.getElementById('oo-url-input').value=linkField.input.value;
+    },'oo-btn oo-btn-secondary','oo-capture-fallback'));
+    capture.appendChild(captureActions);
+    capture.appendChild(snapshotResult);
+    paragraph(capture, 'Google is only used to find a link; OneOwner does not scrape Google search results. Direct capture works for public HTTPS HTML or text pages that allow browser CORS. A failed fetch does not create a snapshot.', 'oo-footnote');
     const layout = make('div', 'oo-split');
     const main = card(layout, '');
-    main.appendChild(make('h2', '', 'Import a source'));
+    main.appendChild(make('h2', '', 'Paste text or revise a page'));
     const t = field('Page title', 'oo-title-input', 'input', 'e.g. Research notes — November');
     const u = field('Actual public HTTPS source URL', 'oo-url-input', 'input', 'https://example.org/original-page');
     u.input.type = 'url';
@@ -912,6 +1643,8 @@ startBrowserRuntime();
     line(c);
     paragraph(c, 'Pages carry integrity hashes and lineage pins. A hash does not establish authorship, accuracy, or factual truth.');
     paragraph(c, 'All source decisions and revisions are made by the unchanged Combined MPLPB Python engine via its page-local API. The interface does not rank, merge, or synthesize source answers.');
+    const learn = button('Learn basic and advanced chat', () => switchTo('learn'), 'oo-btn oo-btn-secondary');
+    c.appendChild(learn);
     const link = make('a', 'oo-text-link', 'View Combined MPLPB research');
     link.href = 'https://github.com/mitchell-d00/Combined-MPLPB-A-closed-local-ledger-of-pages-that-answers-only-from-those-pages';
     link.rel = 'noopener noreferrer'; link.target = '_blank'; c.appendChild(link);
@@ -959,7 +1692,7 @@ startBrowserRuntime();
     (async () => {
       try {
         if (!window.OneOwnerAdapter || !window.MPLPB) throw Error('The embedded MPLPB engine is unavailable. No fallback reader exists.');
-        api = window.OneOwnerAdapter.create(window.MPLPB);
+        api = window.OneOwnerAdapter.create(window.MPLPB, window.OneOwnerSourceCapture);
         await api.ready();
         await refreshCollections();
         render();
