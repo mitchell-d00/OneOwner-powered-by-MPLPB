@@ -133,7 +133,9 @@
     wiki.setAttribute('aria-label', 'Wikipedia edition');
     networkRow.append(networkLabel, wiki);
     const networkHint = make('p', 'oo-footnote', 'Online access stays off by default and resets after each message. In the browser, MPLPB provides optional Wikipedia acquisition, not an unrestricted web crawler.');
-    panel.append(networkRow, networkHint);
+    // The composer must be mounted before the network controls; otherwise
+    // Chat appears but users have no message box or Send button.
+    panel.append(composer, networkRow, networkHint);
     const messageStatus = make('div', 'oo-chat-status');
     messageStatus.id = 'oo-chat-status'; messageStatus.setAttribute('role', 'status'); messageStatus.setAttribute('aria-live', 'polite');
     panel.appendChild(messageStatus);
