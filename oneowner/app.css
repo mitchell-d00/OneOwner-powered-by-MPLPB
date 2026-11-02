@@ -136,3 +136,9 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
 @media(prefers-reduced-motion:reduce) {
   #oneowner-app * { scroll-behavior:auto !important; transition:none !important; }
 }
+
+#oneowner-app .oo-capture-row { background:#f6f9fc; border:1px solid #e3ebf2; border-radius:12px; margin:13px 0; padding:18px; }
+#oneowner-app .oo-capture-row h3 { margin:0 0 9px; }
+#oneowner-app .oo-capture-row .oo-pill { margin:0 0 10px; }
+#oneowner-app .oo-capture-row .oo-footnote { margin:2px 0 8px; }
+#oneowner-app .oo-capture-row code { display:block; margin-top:8px; overflow-wrap:anywhere; }

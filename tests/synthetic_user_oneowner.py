@@ -214,6 +214,10 @@ def main():
                     check('history_understandable_and_inspectable',
                           'lineage' in page.locator('#oo-history-content').inner_text().lower() and
                           page.locator('#oo-history-content summary').count()>=1)
+                    check('retained_revisions_visible_without_raw_json',
+                          page.locator('#oo-history-content .oo-capture-row').count() >= 2 and
+                          page.locator('#oo-history-content .oo-capture-row').first.get_by_text('Study registration').count()==1 and
+                          'Authorship: unknown' in page.locator('#oo-history-content').inner_text())
                     shot(page, '05-revised-history')
                     report['scenarios'].append({
                         'persona': 'policy_editor',

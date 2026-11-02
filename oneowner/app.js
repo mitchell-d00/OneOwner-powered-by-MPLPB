@@ -315,10 +315,33 @@
     if (!target) return;
     clear(target);
     const data = await api.history(selected());
+    const collection = data && data.collection_history;
     const cardEl = card(target, '');
     cardEl.appendChild(make('h2', '', 'Retained source and revision history'));
-    paragraph(cardEl, 'Presented unchanged from the original MPLPB engine. History is not a new supported answer.');
-    raw(cardEl, data, 'View full capture, lineage, and revision record').open = true;
+    paragraph(cardEl, 'This is a local audit of captured sources, not an answer or a truth certification.');
+    if (collection && Array.isArray(collection.captures)) {
+      const captures = collection.captures.slice().sort((a,b) =>
+        String(b.observed_at || '').localeCompare(String(a.observed_at || '')));
+      paragraph(cardEl, captures.length + ' retained capture(s) in ' + String(collection.name || currentLabel()) + '. New submissions are saved separately.');
+      if (!captures.length) paragraph(cardEl, 'No saved sources yet. Use Add or revise to import the first page.');
+      for (const capture of captures) {
+        const row = make('div', 'oo-capture-row');
+        row.appendChild(make('h3', '', capture.title || 'Untitled retained capture'));
+        pill(row, 'RETAINED CAPTURE', 'neutral');
+        paragraph(row, 'Recorded ' + String(capture.observed_at || 'at an unspecified time'), 'oo-footnote');
+        paragraph(row, 'Authorship: ' + String(capture.authorship || 'not recorded') +
+          ' · Capture method: ' + String(capture.transport || 'not recorded'), 'oo-footnote');
+        if (capture.source_sha256) {
+          const code = make('code', 'oo-mono', 'Source bytes SHA-256: ' + capture.source_sha256);
+          row.appendChild(code);
+        }
+        cardEl.appendChild(row);
+      }
+      paragraph(cardEl, 'A capture is not necessarily the current eligible owner. Use Explore pages for engine eligibility and Ask for a supported answer.');
+    } else {
+      paragraph(cardEl, 'This collection has no separate user capture list. The original engine history is available below.');
+    }
+    raw(cardEl, data, 'Inspect complete engine capture, lineage, and revision record');
   }
   function renderHistory(parent) {
     top(parent, 'Audit trail', 'History & lineage', 'Each successor is a new sealed page. Old pages remain inspectable in history and do not silently regain ownership.');
