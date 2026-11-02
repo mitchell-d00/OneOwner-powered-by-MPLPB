@@ -1,0 +1,54 @@
+name: Publish validated OneOwner website
+
+on:
+  workflow_run:
+    workflows: ["OneOwner product and pinned-engine validation"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: oneowner-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Retrieve validated OneOwner candidate from successful main run
+        uses: actions/download-artifact@v4
+        with:
+          name: oneowner-candidate-${{ github.event.workflow_run.id }}
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: candidate
+      - name: Build OneOwner-only site root from tested bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s candidate/OneOwner.html
+          mkdir -p site
+          cp candidate/OneOwner.html site/index.html
+          printf '%s\n' 'OneOwner - Powered by Combined MPLPB' > site/README.txt
+          touch site/.nojekyll
+          sha256sum site/index.html
+      - name: Configure independent OneOwner Pages deployment
+        uses: actions/configure-pages@v5
+      - name: Upload the exact validated OneOwner page
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        name: Publish to OneOwner repository website only
+        uses: actions/deploy-pages@v4

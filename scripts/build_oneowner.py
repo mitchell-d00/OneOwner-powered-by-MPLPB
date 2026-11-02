@@ -14,7 +14,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = json.loads((ROOT / 'upstream.lock.json').read_text(encoding='utf-8'))
-TAG = '<!-- OneOwner product overlay: presentation only -->'
+TAG = '<!-- OneOwner dedicated page: original engine unchanged -->'
 
 
 def sha(raw):
@@ -36,17 +36,17 @@ def verified_engine(root):
 
 
 def overlay(html):
-    if TAG in html: raise ValueError('OneOwner overlay already present; refusing double injection')
+    if TAG in html: raise ValueError('OneOwner product page already present; refusing double injection')
     if html.count('</head>') != 1 or html.count('</body>') != 1:
         raise ValueError('Unexpected upstream HTML shape; review integration')
-    css = (ROOT / 'oneowner/panel.css').read_text(encoding='utf-8')
+    css = (ROOT / 'oneowner/app.css').read_text(encoding='utf-8')
     adapter = (ROOT / 'oneowner/adapter.js').read_text(encoding='utf-8')
-    panel = (ROOT / 'oneowner/panel.js').read_text(encoding='utf-8')
-    if any('</script' in x.lower() for x in (adapter, panel)) or '</style' in css.lower():
+    app = (ROOT / 'oneowner/app.js').read_text(encoding='utf-8')
+    if any('</script' in x.lower() for x in (adapter, app)) or '</style' in css.lower():
         raise ValueError('Overlay source contains an unsafe inline-tag terminator')
     output = html.replace('</head>', TAG + '\n<style id="oneowner-style">\n' + css + '\n</style>\n</head>')
     output = output.replace('</body>', '<script>\n/* oneowner-adapter: CSP compatible */\n' + adapter +
-                            '\n</script>\n<script>\n/* oneowner-panel: CSP compatible */\n' + panel + '\n</script>\n</body>')
+                            '\n</script>\n<script>\n/* oneowner-app: CSP compatible */\n' + app + '\n</script>\n</body>')
     output = output.replace('<title>MPLPB · The Local Ledger</title>',
                             '<title>OneOwner · Powered by Combined MPLPB</title>')
     return output

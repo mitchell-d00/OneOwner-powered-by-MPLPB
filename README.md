@@ -1,57 +1,77 @@
 # OneOwner
 
-**One eligible current page owns the question: return a supported answer with its citation; two or more owners: stop as ambiguous; no owner: refuse.**
+**One eligible current page owns a question: return its supported answer with evidence. Competing owners: ambiguous. No owner: refuse.**
 
-OneOwner is a small, offline-first product interface **powered by the original Combined MPLPB research engine**. It does not rewrite the ledger, hash seal, provenance gate, bounded reader, or supersession mechanics. The product and research repositories are intentionally separate.
+OneOwner is a polished, offline-first evidence workspace, powered by **Combined MPLPB**. It has its **own application page and GitHub repository**, separate from the Combined MPLPB research application.
 
-- **Research / engine:** [Combined MPLPB](https://github.com/mitchell-d00/Combined-MPLPB-A-closed-local-ledger-of-pages-that-answers-only-from-those-pages)
-- **Original API and authority contracts:** [JavaScript API](https://github.com/mitchell-d00/Combined-MPLPB-A-closed-local-ledger-of-pages-that-answers-only-from-those-pages/blob/main/JAVASCRIPT-API.md), [source retrieval](https://github.com/mitchell-d00/Combined-MPLPB-A-closed-local-ledger-of-pages-that-answers-only-from-those-pages/blob/main/docs/PAGE_RETRIEVAL.md), [supersession policy](https://github.com/mitchell-d00/Combined-MPLPB-A-closed-local-ledger-of-pages-that-answers-only-from-those-pages/blob/main/docs/SUPERSESSION_POLICY.md)
-- **Pinned engine commit:** [`acf7800a5f8320ec29ee957d002eaaba8ed4e816`](upstream.lock.json). Changing this pin requires explicit code review and retesting.
+- **OneOwner product repository:** https://github.com/mitchell-d00/OneOwner-powered-by-MPLPB
+- **OneOwner independent website (after successful deployment):** https://mitchell-d00.github.io/OneOwner-powered-by-MPLPB/
+- **Unchanged MPLPB research application:** https://mitchell-d00.github.io/Combined-MPLPB-A-closed-local-ledger-of-pages-that-answers-only-from-those-pages/
+- **Pinned engine revision:** `acf7800a5f8320ec29ee957d002eaaba8ed4e816`
 
-## Where the product is today
+The two websites do not redirect to each other and use separate GitHub Pages deployments. OneOwner's build consumes a **read-only, hash-pinned checkout** of the research engine; it **does not commit to or deploy the research repository**.
 
-**Initial integration candidate, not yet a validated public release.** The included presentation overlay provides Ask, Explore, Import / Revise, History, a visible raw decision trace, and an inspection-only “Continue from this page” action. It uses only `window.MPLPB` and the original Combined MPLPB JavaScript API. The engine and original interface are bundled into the generated browser build; the OneOwner panel is additive.
+## Your OneOwner workspace
 
-A `return` becomes a displayed **source-supported** answer only when the engine's response includes a citation and sealed hash and does not explicitly deny answer support. Candidate-only, assisted, ambiguous, missing-evidence, and retrieval-only paths never become supported answers. Hashes show **integrity**, not factual truth, authorship, or independent verification.
+OneOwner opens as a dedicated **full-page product**, not a popup on top of the research UI. Its own navigation offers:
 
-Pasted text and uploaded text files require a real public HTTPS source URL to be recorded as supplied-source metadata; OneOwner does **not fetch** that URL. The engine classifies authorship as unknown. Reimporting the same title and URL through a user-created collection invokes the existing revision path and creates a successor; no page overwrite is implemented. Actual URL fetching remains an explicitly network-enabled action in the original MPLPB interface, not this product overlay.
+1. **Overview:** accessible introduction and the single-owner guarantee.
+2. **Ask:** strict deterministic reader, explicit citation and sealed hash for supported responses, transparent refusal and ambiguity, full raw trace when needed.
+3. **Explore pages:** source inventory, eligibility labels, and inspection-only lineage context.
+4. **Add or revise:** paste source text or choose a text/Markdown/HTML file, create a collection, seal imported content, create a successor for the same source identity.
+5. **History:** original retained capture and revision history.
+6. **About:** clear explanation of support, hashes, provenance, and offline storage.
 
-## Three ways to run the packaged product
+No independent owner-ranking or answer-generating path exists in OneOwner. The local page calls the original `window.MPLPB` JavaScript API, which runs the unchanged Python engine in the embedded WASM worker. The original UI remains part of the bundled engine but is **not shown as the OneOwner product page**.
 
-Once a **successfully validated** `OneOwner.zip` build exists, extract it and choose:
+## Importing a document like your research notes
 
-| Mode | Command / action | Notes |
-| --- | --- | --- |
-| Standalone browser | Open `OneOwner.html` | Self-contained Pyodide/WASM generated by Combined MPLPB. Can run offline after download in supported browsers with working IndexedDB/WebCrypto/Web Workers; some `file:` browser policies may block persistence. |
-| Local Python | `cd desktop && python3 launch.py` | Original Python HTTP server and full engine, with an additive OneOwner surface. No model account required. |
-| CLI | `cd desktop && python3 -m mplpb_answers --help` | Original Combined MPLPB CLI, unchanged; the OneOwner browser panel is not involved. |
+Choose **Add or revise**, create or select a collection, supply a title and the genuine public HTTPS origin URL, and paste its text or choose a local `.txt`, `.md`, or `.html` file. Import uses `window.MPLPB.importSource` and does **not fetch the URL**. Original source authorship is marked **unknown**; the hash certifies the retained bytes, not their truth. Reimporting the same title and URL creates an engine-managed successor and retains the previous record.
 
-These are **packaging targets**, not a claim that the current GitHub repository already contains a downloadable validated runtime. The research repo's bundled synthetic examples serve as a starter collection; they are not asserted as real-world facts.
+**Current input limitation:** this frozen MPLPB browser API requires a real public HTTPS source URL even for supplied text. Do not invent one. Original unpublished pages with no genuine URL can be authored using the packaged existing MPLPB CLI `write` and `revise`; adding a browser-native URL-free authoring path requires a reviewed extension to the engine API and is not included here.
 
-## Build a candidate from the pinned research commit
+## Three ways to run OneOwner
+
+After a successful OneOwner validation workflow produces `OneOwner.zip`:
+
+| Mode | Open |
+| --- | --- |
+| Standalone, offline-capable browser | Extract the ZIP, open `OneOwner.html` in a supported browser; browser policies for local `file:` URLs can limit persistence |
+| Local Python server | `cd desktop && python3 launch.py`, then open the localhost URL to use the OneOwner page |
+| Original CLI | `cd desktop && python3 -m mplpb_answers --help` — engine command syntax is unchanged |
+
+The standalone bundle includes the pinned Pyodide runtime, the original engine, and bundled starter research fixtures. No model provider is needed. Local collection and chat storage follows MPLPB's original browser-origin and local-save rules; avoid clearing storage without backups.
+
+## Developer build
+
+Build only from the reviewed commit:
 
 ```bash
 git clone https://github.com/mitchell-d00/OneOwner-powered-by-MPLPB.git
-cd OneOwner-powered-by-MPLPB
-# Obtain the exact upstream revision in a separate directory, NOT inside this repo:
-git clone https://github.com/mitchell-d00/Combined-MPLPB-A-closed-local-ledger-of-pages-that-answers-only-from-those-pages.git ../combined-engine
-git -C ../combined-engine checkout acf7800a5f8320ec29ee957d002eaaba8ed4e816
-
-# Baseline checks must pass before packaging (from the engine directory):
-(cd ../combined-engine && python3 -m unittest discover -s tests -q)
-(cd ../combined-engine && node tests/javascript-api.cjs)
-# Use Combined MPLPB's existing pinned Pyodide builder; it verifies the core SHA-256.
-(cd ../combined-engine && python3 tools/build_browser_runtime.py)
-# Build the OneOwner HTML and complete ZIP without changing the engine checkout:
-python3 scripts/build_oneowner.py --engine ../combined-engine \
-  --standalone ../combined-engine/dist/MPLPB_Browser.html \
+git clone https://github.com/mitchell-d00/Combined-MPLPB-A-closed-local-ledger-of-pages-that-answers-only-from-those-pages.git combined-engine
+git -C combined-engine checkout acf7800a5f8320ec29ee957d002eaaba8ed4e816
+(cd combined-engine && python3 -m unittest discover -s tests -q)
+(cd combined-engine && python3 tools/build_browser_runtime.py)
+python3 scripts/build_oneowner.py --engine combined-engine \
+  --standalone combined-engine/dist/MPLPB_Browser.html \
   --output dist/OneOwner.html --zip dist/OneOwner.zip
 ```
 
-Run `node --test tests/adapter.test.cjs` and `python3 -m unittest discover -s tests -v` for OneOwner's focused tests. These tests do not replace the upstream tests, kill tests, Chromium journeys, archive-first checks, or deployed release smoke tests. The [CI workflow](.github/workflows/oneowner-validation.yml) is designed to enforce the upstream test gate and exercise an extracted product archive; confirm its actual GitHub Actions outcome before claiming a release.
+For full safety, use **GitHub Actions**: it confirms the pinned engine, runs the original Python, JavaScript, WASM and archive-first tests, extracts the OneOwner ZIP, runs the product's own full-page Chromium journey and retains the tested artifact. The standalone build builder requires the **unmodified upstream checkout**, and the exact validated HTML artifact is the only input to the separate OneOwner Pages deployment workflow.
 
-## Safety and product limits
+Run the focused product tests:
 
-The product layer cannot authenticate a pasted source, guarantee general-language interpretation, or establish true answers beyond the original bounded reader contract. The browser UI displays raw engine traces in readable text; it does not run a second ranking or ownership algorithm. Local data persists by browser origin/storage or the original Python save store. OneOwner does not yet include a dedicated self-contained folder-of-HTML-pages export, a standalone human-scoring UI, or an independent OneOwner Chromium product journey. Those remain required before a user-ready production release. See [Architecture](docs/ARCHITECTURE.md) and [Acceptance roadmap](docs/ROADMAP.md).
+```bash
+node --check oneowner/app.js
+node --check oneowner/adapter.js
+node --test tests/adapter.test.cjs
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+```
 
-**Research integrity is more important than a polished-looking answer. A refusal is a successful, expected outcome.**
+## Release status and honest boundaries
+
+A polished UI cannot change the supported-answer grammar. An eligible retrieved page, a candidate, or a gated source is not by itself an answered question. A sealed hash proves integrity of the page as written, not author identity, accuracy, or factual truth. All unsupported states fail closed.
+
+**Do not describe OneOwner as deployed or production-validated until the exact main-branch GitHub workflow and separate Pages deployment have succeeded.** Current acceptance and deferred items are documented in [ROADMAP](docs/ROADMAP.md), [architecture](docs/ARCHITECTURE.md) and [separate website and publishing rules](docs/PRODUCT_SITE.md).
+
+Combined MPLPB copyright, source licenses, and the original third-party attributions remain present in the packaged `desktop/` tree.

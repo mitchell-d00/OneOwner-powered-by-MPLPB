@@ -1,7 +1,7 @@
-"""OneOwner real Chromium smoke: strictly product UI on the extracted WASM archive.
+"""Real Chromium product journey, against a built and extracted OneOwner site.
 
-Requires playwright==1.58.0 and available Chrome/Chromium. No result from
-this test may be claimed unless it actually runs against the product archive.
+The original Combined MPLPB engine decides all answers and page mutations.
+No browser result may be claimed without actually running this test.
 """
 import argparse
 from functools import partial
@@ -11,53 +11,120 @@ import threading
 
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--html', type=Path, required=True)
     parser.add_argument('--browser-executable')
-    args=parser.parse_args()
-    html=args.html.resolve()
-    if not html.is_file(): raise SystemExit('Archive HTML not found')
+    parser.add_argument('--screenshots', type=Path)
+    args = parser.parse_args()
+    html = args.html.resolve()
+    if not html.is_file():
+        raise SystemExit('Built OneOwner HTML not found')
+
     from playwright.sync_api import sync_playwright
+
     class Handler(SimpleHTTPRequestHandler):
-        def log_message(self, *_): pass
-    server=ThreadingHTTPServer(('127.0.0.1', 0),partial(Handler,directory=str(html.parent)))
-    thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+        def log_message(self, *_):
+            pass
+
+    server = ThreadingHTTPServer(('127.0.0.1', 0), partial(Handler, directory=str(html.parent)))
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    base = 'http://127.0.0.1:%d/' % server.server_port
+    if args.screenshots:
+        args.screenshots.mkdir(parents=True, exist_ok=True)
+
+    def shot(page, name):
+        if args.screenshots:
+            page.screenshot(path=str(args.screenshots / (name + '.png')), full_page=True)
+
     try:
         with sync_playwright() as p:
-            opts={'headless':True}
-            if args.browser_executable: opts['executable_path']=args.browser_executable
-            browser=p.chromium.launch(**opts)
+            opts = {'headless': True}
+            if args.browser_executable:
+                opts['executable_path'] = args.browser_executable
+            browser = p.chromium.launch(**opts)
             try:
-                page=browser.new_page()
-                page.goto('http://127.0.0.1:%d/%s' % (server.server_port,html.name),wait_until='domcontentloaded')
-                page.locator('#oneowner-launch').click(timeout=60_000)
-                page.locator('#oneowner-panel select').select_option('logic',timeout=90_000)
-                page.locator('#oneowner-panel textarea').fill('What is Dungeons and Dragons?')
-                page.get_by_role('button',name='Ask the ledger').click()
-                page.get_by_text('SOURCE SUPPORTED',exact=True).wait_for(timeout=90_000)
-                # Every supported answer shown in this UI requires both source and hash.
-                assert 'Citation:' in page.locator('.oo-result').inner_text()
-                assert 'Page seal:' in page.locator('.oo-result').inner_text()
-                page.locator('#oneowner-panel textarea').fill('unfindable zzzzzzzzz')
-                page.get_by_role('button',name='Ask the ledger').click()
-                page.get_by_text('REFUSAL',exact=True).wait_for(timeout=90_000)
-                assert 'Page seal:' not in page.locator('.oo-result').inner_text()
-                # Imported bytes never count as a validated source answer merely by being present.
-                page.get_by_role('button',name='Import / Revise').click()
-                page.get_by_label('New collection name').fill('OneOwner pilot')
-                page.get_by_role('button',name='Create collection').click()
-                page.get_by_text('Collection created:').wait_for(timeout=45_000)
-                page.get_by_label('Source title').fill('Pilot notes')
-                page.get_by_label('Actual HTTPS source URL').fill('https://example.org/pilot')
-                page.get_by_label('Paste source text').fill('The test topic is a demonstration page.')
-                page.get_by_role('button',name='Import or create successor').click()
-                page.get_by_text('Imported through the existing seal / revision pipeline.').wait_for(timeout=45_000)
-                page.get_by_role('button',name='History',exact=True).click()
-                page.get_by_role('button',name='Show retained history').click()
-                page.get_by_text('Source capture and revision history').wait_for(timeout=45_000)
-                print('OneOwner extracted archive browser smoke passed.')
-            finally:browser.close()
-    finally:
-        server.shutdown();server.server_close();thread.join(timeout=2)
+                context = browser.new_context(viewport={'width': 1440, 'height': 960})
+                # Only the served self-contained artifact is needed. An outbound
+                # lookup is a product error, never silently enabled.
+                outbound = []
+                def allow_local(route):
+                    if route.request.url.startswith(base):
+                        route.continue_()
+                    else:
+                        outbound.append(route.request.url)
+                        route.abort()
+                context.route('**/*', allow_local)
+                page = context.new_page()
+                page.goto(base + html.name, wait_until='domcontentloaded', timeout=90000)
+                page.locator('#oneowner-app').wait_for(timeout=90000)
+                page.get_by_text('Know what your pages can prove.').wait_for(timeout=90000)
+                assert page.locator('#oneowner-launch').count() == 0, 'Old floating panel must be absent'
+                assert page.get_by_role('navigation').count() > 0, 'Product needs its own navigation'
+                shot(page, 'overview')
 
-if __name__=='__main__':main()
+                page.locator('button[data-screen="ask"]').click()
+                page.locator('#oo-corpus').select_option('logic', timeout=90000)
+                page.locator('#oo-question').fill('What is Dungeons and Dragons?')
+                page.locator('#oo-ask').click()
+                page.get_by_text('SOURCE SUPPORTED', exact=True).wait_for(timeout=90000)
+                answer = page.locator('#oo-answer').inner_text()
+                assert 'Source citation' in answer and 'Sealed page hash' in answer
+                shot(page, 'supported')
+
+                page.locator('#oo-question').fill('unfindable zzzzzzzzz')
+                page.locator('#oo-ask').click()
+                page.get_by_text('REFUSAL', exact=True).wait_for(timeout=90000)
+                answer = page.locator('#oo-answer').inner_text()
+                assert 'Sealed page hash' not in answer
+                shot(page, 'refusal')
+
+                page.locator('#oo-corpus').select_option('canned')
+                page.locator('#oo-question').fill('Phrynomedusa vanzolinii Hyundai Engineering and Construction')
+                page.locator('#oo-ask').click()
+                page.get_by_text('AMBIGUOUS', exact=True).wait_for(timeout=90000)
+                assert 'Sealed page hash' not in page.locator('#oo-answer').inner_text()
+
+                page.locator('button[data-screen="import"]').click()
+                page.locator('#oo-new-collection').fill('OneOwner pilot')
+                page.locator('#oo-create').click()
+                page.get_by_text('COLLECTION CREATED', exact=True).wait_for(timeout=45000)
+                selected = page.locator('#oo-corpus').input_value()
+                assert selected.startswith('mind-')
+                page.locator('#oo-title-input').fill('Pilot notes')
+                page.locator('#oo-url-input').fill('https://example.org/pilot')
+                page.locator('#oo-text-input').fill('The pilot notes contain supplied text, not verified web evidence.')
+                page.locator('#oo-import').click()
+                page.get_by_text('IMPORTED THROUGH MPLPB', exact=True).wait_for(timeout=60000)
+                shot(page, 'imported')
+
+                # Same source identity invokes original revision/successor path.
+                page.locator('#oo-text-input').fill('The pilot notes contain a second retained revision.')
+                page.locator('#oo-import').click()
+                page.get_by_text('IMPORTED THROUGH MPLPB', exact=True).wait_for(timeout=60000)
+
+                page.locator('button[data-screen="library"]').click()
+                page.get_by_text('Pilot notes').first.wait_for(timeout=60000)
+                shot(page, 'explore')
+                page.locator('button[data-screen="history"]').click()
+                page.get_by_text('Retained source and revision history').wait_for(timeout=60000)
+                shot(page, 'history')
+
+                # Test a saved browser origin/session: do not silently lose pages.
+                page.reload(wait_until='domcontentloaded', timeout=90000)
+                page.locator('button[data-screen="history"]').wait_for(timeout=90000)
+                page.locator('#oo-corpus').select_option(selected, timeout=90000)
+                page.locator('button[data-screen="history"]').click()
+                page.get_by_text('Retained source and revision history').wait_for(timeout=60000)
+                assert not outbound, 'Product unexpectedly attempted remote requests: ' + str(outbound)
+                print('OneOwner own-page Chromium journey: supported, refusal, ambiguity, import, successor, history, persistence and offline-local transport PASSED')
+            finally:
+                browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+if __name__ == '__main__':
+    main()
