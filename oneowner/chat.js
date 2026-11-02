@@ -62,6 +62,12 @@
     intro.appendChild(make('h1', 'oo-title', 'Chat with your information'));
     paragraph(intro, 'Ask follow-up questions, keep notes, explore topics and work with your collections. MPLPB runs the conversation locally. Only the original ledger decides which source claims are supported.', 'oo-intro');
     host.appendChild(intro);
+    const guideLine=make('div', 'oo-chat-guidance');
+    paragraph(guideLine, 'New? Chat uses MPLPB’s local language rules for conversation. Strict Ask is for citations. Saved pages can be explored offline; new website captures need a connection.', 'oo-muted');
+    if (typeof opts.navigate === 'function') {
+      guideLine.appendChild(button('Learn how it works', () => opts.navigate('learn'), 'oo-btn oo-btn-secondary', 'oo-chat-learn'));
+    }
+    host.appendChild(guideLine);
     const layout = make('div', 'oo-chat-grid');
     const panel = make('section', 'oo-card oo-chat-panel');
     const top = make('div', 'oo-chat-controls');
@@ -105,7 +111,8 @@
     const composer = make('form', 'oo-chat-composer'); composer.id = 'oo-chat-form';
     const label = make('label', '', 'Your message'); label.htmlFor = 'oo-chat-input';
     const input = make('textarea', 'oo-control'); input.id = 'oo-chat-input'; input.rows = 3; input.maxLength = 4000;
-    input.placeholder = 'Ask, try “remember ...”, or choose an idea on the right';
+    input.placeholder = 'Say hello, ask about a saved page, or try “remember ...”';
+    if (typeof opts.draft === 'string' && opts.draft.trim()) input.value = opts.draft.slice(0,4000);
     const sendBtn = make('button', 'oo-btn oo-btn-primary', 'Send'); sendBtn.id = 'oo-chat-send'; sendBtn.type = 'submit';
     composer.append(label, input, sendBtn);
     input.addEventListener('keydown', ev => {
@@ -132,8 +139,26 @@
     panel.appendChild(messageStatus);
     const side = make('aside', 'oo-chat-aside');
     const quick = make('div', 'oo-card oo-chat-help');
-    quick.appendChild(make('h2', '', 'What would you like to do?'));
-    paragraph(quick, 'Choose an example to fill your message. Nothing is sent until you press Send.');
+    quick.appendChild(make('h2', '', 'Choose your chat level'));
+    paragraph(quick, 'Beginner examples are plain-language. Advanced tools use the original MPLPB commands. Choosing an example only fills your message.');
+    const tabs=make('div','oo-chat-level-tabs');
+    tabs.setAttribute('role','group');
+    tabs.setAttribute('aria-label','Chat learning level');
+    const basic=make('div', 'oo-chat-basic');
+    const advanced=make('div', 'oo-chat-advanced');
+    const switchLevel=level=>{
+      const beginner=level==='basic';
+      basic.hidden=!beginner;
+      advanced.hidden=beginner;
+      basicTab.setAttribute('aria-pressed',String(beginner));
+      advancedTab.setAttribute('aria-pressed',String(!beginner));
+    };
+    const basicTab=button('Basic chat',()=>switchLevel('basic'),'oo-chat-level-btn','oo-chat-basic-tab');
+    const advancedTab=button('Advanced chat',()=>switchLevel('advanced'),'oo-chat-level-btn','oo-chat-advanced-tab');
+    tabs.append(basicTab,advancedTab);
+    quick.appendChild(tabs);
+    basic.appendChild(make('h3','','Try something familiar'));
+    paragraph(basic, 'You can chat, remember a note, or ask about a saved page. Choose an example below to fill the message box.', 'oo-footnote');
     const scenarios = [
       ['Research', 'topic Exact source title', 'Explore an existing page or start from your research collection.'],
       ['Recipes', 'What does my saved recipe say about the ingredients?', 'Ask about a recipe you have added as a source page.'],
@@ -144,17 +169,44 @@
     for (const [name, example, description] of scenarios) {
       const item=make('div', 'oo-chat-scenario');
       item.append(button(name, () => {input.value=example; input.focus();}, 'oo-chat-idea'));
-      paragraph(item, description, 'oo-footnote'); quick.appendChild(item);
+      paragraph(item, description, 'oo-footnote'); basic.appendChild(item);
     }
+    const beginnerActions=make('div','oo-chat-mode');
+    basic.appendChild(make('h3','','Start with a guided lesson'));
+    paragraph(basic, 'MPLPB can teach itself in four native chat steps. Ask “guide me”, then reply “next” or “previous step”.','oo-footnote');
+    beginnerActions.appendChild(button('Start guided lesson',()=>{input.value='guide me';input.focus();},'oo-btn oo-btn-secondary','oo-chat-guide'));
+    basic.appendChild(beginnerActions);
     const actions = make('div', 'oo-chat-mode');
-    quick.appendChild(make('h3', '', 'Conversation tools'));
+    advanced.appendChild(make('h3', '', 'Native MPLPB conversation modes'));
+    paragraph(advanced,'These commands go to the unchanged MPLPB language engine. They change chat context, not which page owns a strict answer.','oo-footnote');
     for (const [label, command] of [
       ['Just chat', 'chat mode'], ['Focus on evidence', 'serious mode'],
       ['Use all collections', 'load all MPLPB'], ['Show remembered notes', 'what do you remember about me?'],
       ['Off-the-record chat', 'off-the-record free chat']]) {
       actions.appendChild(button(label, () => {input.value=command; input.focus();}, 'oo-btn oo-btn-secondary'));
     }
-    quick.appendChild(actions); side.appendChild(quick);
+    advanced.appendChild(actions);
+    advanced.appendChild(make('h3','','Source-focused steps'));
+    for(const [label,command,explanation] of [
+      ['List saved page titles','show my MPLPB','Shows what the current collection can inspect.'],
+      ['Select an exact page','topic Exact title','Replace “Exact title” with a page title you have saved.'],
+      ['View source text','show source','Works after a supported topic is selected.'],
+      ['Find a remote topic','search dinosaurs','Needs one-time Wikipedia permission and a connection.']
+    ]) {
+      const item=make('div','oo-chat-scenario');
+      item.appendChild(button(label,()=>{input.value=command;input.focus();},'oo-chat-idea'));
+      paragraph(item,explanation,'oo-footnote');advanced.appendChild(item);
+    }
+    paragraph(advanced,'“Chat mode” is casual; “serious mode” consults loaded collections. A native conversation reply is not automatically source-supported.', 'oo-footnote');
+    quick.append(basic,advanced);
+    switchLevel('basic');
+    side.appendChild(quick);
+    const offlineCard=make('section','oo-card oo-chat-offline');
+    offlineCard.appendChild(make('h2','','Offline and source support'));
+    paragraph(offlineCard,'Local chat and previously captured pages use the embedded MPLPB runtime. Network lookup is optional, off by default, and requires a connection.');
+    paragraph(offlineCard,'A remembered note is conversational context, not a sealed evidence page. For a strict answer, use Ask · cited answers.');
+    if(typeof opts.navigate==='function') offlineCard.appendChild(button('Learn offline pages',()=>opts.navigate('learn'),'oo-btn oo-btn-secondary'));
+    side.appendChild(offlineCard);
     const notePanel=make('section', 'oo-card oo-chat-notes');
     notePanel.appendChild(make('h2', '', 'Conversation notes'));
     const noteContents=make('div'); noteContents.id = 'oo-chat-notes';

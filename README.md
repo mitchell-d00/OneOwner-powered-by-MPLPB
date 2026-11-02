@@ -26,6 +26,22 @@ Optional Wikipedia lookup in Chat uses native MPLPB commands such as `search Cat
 All chat and collection data uses the original local persistence. OneOwner indexes recently used session IDs per collection locally; it never silently replaces source pages or confuses conversation history with ledger lineage. Exports back up **chat transcripts only**, not entire source collections. Deleting a conversation does not delete source pages. No language model is required.
 
 
+## Learn OneOwner: chat, cited answers and offline pages
+
+The user-facing **Learn OneOwner** page is a four-step introduction to the unchanged MPLPB engine. It explains how to talk naturally, create a source collection, explore retained pages and request a strict cited answer. The product now explicitly routes questions such as **“What are you?”** to Chat instead of making new users wonder why the strict ledger Ask page refused them.
+
+In **Chat**, **Basic chat** shows simple examples for research, recipes, personal notes and factual collections, plus **Start guided lesson**. That pre-fills the original MPLPB `guide me` command. MPLPB's real four-step guide then responds through its existing native chat API; `next` and `previous step` move through the lesson. **Advanced chat** exposes the original `chat mode`, `serious mode`, `load all MPLPB`, `topic Exact title` and `show source` commands without reimplementing their language interpretation or authority rules. OneOwner only fills the message box until the user sends it.
+
+### Offline operation explained
+
+Once the standalone OneOwner runtime and a source collection are present in the same browser origin, the deterministic MPLPB chat/reader can work locally without live web access. Browsing another website, looking up new Wikipedia content or capturing a new HTTPS snapshot still needs a connection and source permission where applicable. OneOwner is **not** a complete offline replica of arbitrary web pages. Saved captures are retained source text, metadata and lineage in the engine's local store, not a live website mirror.
+
+Browser storage is origin and profile specific, so changing the website origin, using a different browser or clearing website data can separate the user from their saved local records. Chat export contains a conversation transcript and does **not** back up an entire collection. The downloadable OneOwner ZIP is the option for carrying the full self-contained runtime.
+
+### Testing usability, not inventing claims
+
+`tests/learn.test.cjs` checks that tutorial steps route to the original MPLPB commands and existing OneOwner views. `tests/browser_learn_oneowner.py` tests beginner and advanced chat against the actual packaged WebAssembly engine in Chromium, verifies no unsolicited network access, and checks the mobile layout. These are **developer-authored synthetic tests**, not observed independent human usability studies.
+
 ## Search, link, and save snapshots
 
 Open **Add or revise**, create or select your own collection, and use **Search Google** to discover a source. Google opens in a separate tab; OneOwner does **not** scrape Google result pages or treat search snippets as evidence. Copy the selected source webpage's real public HTTPS address, paste it into **Webpage address**, and choose **Read and save snapshot**. The product suggests a page name from the URL path; you can edit it.
