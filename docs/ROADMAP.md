@@ -4,6 +4,7 @@
 
 - [x] Independent full-page OneOwner visual design, responsive masthead, navigation, Chat, Ask, Explore, Add/Revise, History, and About.
 - [x] Learn OneOwner tutorial screen with four native-MPLPB-oriented lessons; Chat vs strict Ask guidance and offline-source explanation.
+- [x] Readable local source page inspection in Explore, with source hash and a native topic command to start a chat, without treating the page itself as a supported answer.
 - [x] Basic/Advanced chat controls exposing native MPLPB guide me, chat mode, serious mode, loaded collections and pinned topic/source commands.
 - [x] Synthetic real-browser tutorial journey; record final pass evidence before representing it as validated or deployed.
 - [x] Original MPLPB native Chat API adapter plus responsive chat, saved conversations, notes, export, delete, support labels and per-turn Wikipedia opt-in.

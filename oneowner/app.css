@@ -230,3 +230,7 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
 #oneowner-app .oo-chat-offline p{font-size:13px}
 #oneowner-app .oo-ask-help{margin:-12px 0 20px}
 @media(max-width:760px){#oneowner-app .oo-learn-grid,#oneowner-app .oo-learn-columns{grid-template-columns:1fr}#oneowner-app .oo-chat-guidance{flex-direction:column;align-items:flex-start}#oneowner-app .oo-chat-guidance .oo-btn{width:100%}}
+
+#oneowner-app .oo-page-reading{background:#f8fbfc;border:1px solid #dce8ee;border-radius:14px;padding:23px;margin:18px 0}
+#oneowner-app .oo-page-reading .oo-source-text{white-space:pre-wrap;line-height:1.8;color:#264157;max-height:480px;overflow:auto;font-size:14px}
+#oneowner-app .oo-page-reading .oo-mono{display:block;padding:11px 0;color:#47677f}

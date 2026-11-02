@@ -59,6 +59,15 @@ def main():
             page.goto(base+html.name,wait_until='domcontentloaded',timeout=120000)
             page.wait_for_function("() => document.querySelector('#oo-notice')?.dataset.kind==='ok'",timeout=150000)
             check('learn_navigation_visible',page.locator('button[data-screen="learn"]').is_visible())
+            page.locator('#oo-corpus').select_option('logic')
+            page.locator('button[data-screen="library"]').click()
+            page.locator('#oo-library-list').get_by_role('button',name='Inspect page').first.click(timeout=60000)
+            expect(page.locator('.oo-page-reading .oo-source-text')).not_to_be_empty(timeout=60000)
+            check('saved_eligible_page_readable_offline_without_raw_json',
+                page.locator('.oo-page-reading .oo-source-text').inner_text().strip()!='')
+            page.locator('#oo-inspector-chat').click()
+            check('source_chat_uses_original_topic_command',
+                page.locator('#oo-chat-input').input_value().startswith('topic '))
             page.locator('button[data-screen="learn"]').click()
             expect(page.get_by_text('Four steps to get comfortable')).to_be_visible()
             check('first_time_lesson_has_real_steps',page.locator('.oo-learn-step').count()==4)

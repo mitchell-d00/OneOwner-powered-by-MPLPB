@@ -36,6 +36,8 @@ In **Chat**, **Basic chat** shows simple examples for research, recipes, persona
 
 Once the standalone OneOwner runtime and a source collection are present in the same browser origin, the deterministic MPLPB chat/reader can work locally without live web access. Browsing another website, looking up new Wikipedia content or capturing a new HTTPS snapshot still needs a connection and source permission where applicable. OneOwner is **not** a complete offline replica of arbitrary web pages. Saved captures are retained source text, metadata and lineage in the engine's local store, not a live website mirror.
 
+**Explore pages** now displays the retained text of a current eligible page as a readable local document, and offers **Chat about this page**, which pre-fills MPLPB's original exact-topic command. This is source inspection, not a supported answer or a new ownership algorithm.
+
 Browser storage is origin and profile specific, so changing the website origin, using a different browser or clearing website data can separate the user from their saved local records. Chat export contains a conversation transcript and does **not** back up an entire collection. The downloadable OneOwner ZIP is the option for carrying the full self-contained runtime.
 
 ### Testing usability, not inventing claims

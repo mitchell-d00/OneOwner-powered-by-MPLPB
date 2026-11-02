@@ -276,8 +276,21 @@
         const value = await api.continueFrom(p.path, selected());
         const section = $('oo-page-inspector');
         clear(section); section.hidden = false;
-        top(section, 'Inspection only · not an answer', p.title || p.path, value.notice);
-        raw(section, value.source, 'Sealed page text, fields and hash');
+        top(section, 'Saved page · inspection only', p.title || p.path, value.notice);
+        if (value.source && typeof value.source.text === 'string') {
+          const reading = make('article', 'oo-page-reading');
+          paragraph(reading, 'READABLE SAVED SOURCE', 'oo-eyebrow');
+          paragraph(reading, value.source.text, 'oo-source-text');
+          paragraph(reading, 'This is the page as retained locally. It is not a new answer or a verification of the source’s truth.', 'oo-footnote');
+          if (typeof value.source.hash === 'string') {
+            reading.appendChild(make('code', 'oo-mono', 'Sealed page hash: ' + value.source.hash));
+          }
+          const sourceActions = make('div', 'oo-actions');
+          sourceActions.appendChild(button('Chat about this page', () => openChatWithPrompt('topic ' + (value.source.title || p.title || p.path)), 'oo-btn oo-btn-primary', 'oo-inspector-chat'));
+          reading.appendChild(sourceActions);
+          section.appendChild(reading);
+        }
+        raw(section, value.source, 'Inspect original page fields and hash');
         raw(section, value.history, 'Retained lineage and capture history');
         section.scrollIntoView({behavior:'smooth',block:'start'});
       }), 'oo-btn oo-btn-secondary'));
@@ -285,7 +298,7 @@
     }
   }
   function renderLibrary(parent) {
-    top(parent, 'Your source ledger', 'Explore pages', 'Inspect current pages, retired records, eligibility, and history without upgrading retrieved text into an answer.');
+    top(parent, 'Your source ledger', 'Explore pages', 'Read saved eligible pages locally, chat about a selected topic, and inspect history. Page inspection is not the same as a strict supported answer.');
     const toolbar = make('div', 'oo-toolbar');
     toolbar.append(make('span', 'oo-muted', 'Collection: ' + currentLabel()), button('Refresh pages', () => action(loadPages), 'oo-btn oo-btn-secondary'));
     parent.appendChild(toolbar);
