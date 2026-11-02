@@ -1,0 +1,25 @@
+/* OneOwner's additive surface is scoped to oo- classes; no core layout overrides. */
+.oo-launch{position:fixed;right:1rem;bottom:1rem;z-index:9998;border-radius:999px;padding:.8rem 1.2rem;background:#132c3a;color:white;border:1px solid #89b9cf;box-shadow:0 4px 28px #0004;font-weight:700}
+.oo-panel{--oo-bg:#f9fafb;--oo-fg:#15232c;--oo-border:#b6c4cc;position:fixed;right:1rem;bottom:4.8rem;width:min(94vw,550px);max-height:min(85vh,900px);overflow-y:auto;z-index:9999;background:var(--oo-bg);color:var(--oo-fg);border:1px solid var(--oo-border);border-radius:15px;padding:1.1rem;box-shadow:0 10px 45px #0006;font:14px/1.45 system-ui,sans-serif}
+.oo-panel[hidden]{display:none}
+.oo-panel *{box-sizing:border-box}
+.oo-panel h2{margin:0;font:700 23px/1.2 system-ui,sans-serif;color:var(--oo-fg)}
+.oo-head{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.oo-panel p{margin:.7rem 0}
+.oo-bar{display:flex;flex-wrap:wrap;gap:.35rem;margin:1rem 0}
+.oo-panel button,.oo-panel select,.oo-panel input,.oo-panel textarea{font:inherit;color:var(--oo-fg);background:white;border:1px solid var(--oo-border);border-radius:7px;padding:.5rem .6rem}
+.oo-panel button{cursor:pointer;font-weight:650}
+.oo-panel button:hover,.oo-panel button:focus-visible{outline:2px solid #246188;outline-offset:1px}
+.oo-panel button.oo-active,.oo-panel .oo-primary{background:#183f56;color:white}
+.oo-panel label{display:block;font-weight:600}
+.oo-field{display:block;margin:1rem 0}
+.oo-panel label input,.oo-panel label select,.oo-panel label textarea{display:block;width:100%;margin-top:.4rem;max-width:100%;font-weight:400}
+.oo-panel pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.45 ui-monospace,monospace;max-height:40vh;overflow:auto;background:#edf1f5;padding:.7rem;border-radius:6px}
+.oo-item,.oo-result{margin:.8rem 0;padding:.7rem;border-left:3px solid #4b7187;background:#f0f5f7;overflow-wrap:anywhere}
+.oo-panel .oo-warning{font-weight:600}
+.oo-panel .oo-authority{display:block;text-transform:uppercase;letter-spacing:.02em}
+.oo-panel .oo-note{color:#405566}
+.oo-panel details{margin:.7rem 0}
+.oo-panel summary{cursor:pointer;font-weight:600}
+.oo-status{font-size:12px;border-top:1px solid var(--oo-border);padding-top:.6rem;overflow-wrap:anywhere}
+@media (prefers-color-scheme:dark){.oo-panel{--oo-bg:#18212a;--oo-fg:#f3f7f9;--oo-border:#6c8596}.oo-panel button,.oo-panel input,.oo-panel select,.oo-panel textarea{background:#263746;color:#f3f7f9}.oo-panel .oo-item,.oo-panel .oo-result{background:#253742}.oo-panel pre{background:#101f2a;color:#f3f7f9}.oo-panel .oo-note{color:#b8cbd8}}
