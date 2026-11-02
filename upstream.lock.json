@@ -1,0 +1,7 @@
+{
+  "repository": "mitchell-d00/Combined-MPLPB-A-closed-local-ledger-of-pages-that-answers-only-from-those-pages",
+  "commit": "acf7800a5f8320ec29ee957d002eaaba8ed4e816",
+  "pyodide_core_version": "314.0.7",
+  "pyodide_core_sha256": "2abdcc2e35208af406e07724cffa85bc582ced97e9028383ecf5462541393f95",
+  "purpose": "Immutable baseline for the initial OneOwner product overlay. Any upgrade is a reviewed pin change."
+}
