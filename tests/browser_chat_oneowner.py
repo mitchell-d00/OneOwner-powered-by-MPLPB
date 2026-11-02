@@ -64,8 +64,13 @@ def main():
                     check('research_recipes_memories_facts_are_discoverable',all(
                         page.locator('.oo-chat-help').get_by_text(term,exact=True).count()>=1
                         for term in ['Research','Recipes','Personal notes','Factual collections']))
+                    expect(page.locator('#oo-chat-input')).to_be_visible(timeout=30000)
+                    expect(page.locator('#oo-chat-send')).to_be_enabled(timeout=30000)
+                    check('chat_input_and_send_button_are_mounted',
+                          page.locator('#oo-chat-input').count()==1 and page.locator('#oo-chat-send').count()==1)
                     shot(page,'chat-welcome')
                     page.locator('#oo-corpus').select_option('logic')
+                    expect(page.locator('#oo-chat-input')).to_be_visible(timeout=30000)
                     page.locator('#oo-chat-input').fill('remember I study dinosaurs')
                     check('network_defaults_off',not page.locator('#oo-chat-network').is_checked())
                     page.locator('#oo-chat-send').click()
