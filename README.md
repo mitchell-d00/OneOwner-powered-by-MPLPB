@@ -68,6 +68,12 @@ node --test tests/adapter.test.cjs
 python3 -m unittest discover -s tests -p 'test_*.py' -v
 ```
 
+## Synthetic first-time user acceptance
+
+The exact extracted `OneOwner.html` is exercised in **real Chromium with the original embedded Python/WebAssembly engine** using `tests/synthetic_user_oneowner.py`. This is not a toy UI mock or a second answer algorithm. Four scripted personas test practical tasks: first-time orientation, a policy researcher importing and citing a policy with an exception, a policy editor creating a successor with an updated answer, and a source auditor detecting contradictory current policy claims. The script also checks refusal, explanatory next steps, unknown authorship, sealed citation/hash, stale predecessor rejection, persisted offline query, small screens, and unexpected network calls.
+
+It records a JSON report with each check's result and optional screenshots. **Synthetic completion is a developer-authored proxy for usability, not independent human evidence or a usability score.** A user's private notes still need a genuine public HTTPS source URL for the current browser import API; that limitation remains visible in the product.
+
 ## Release status and honest boundaries
 
 A polished UI cannot change the supported-answer grammar. An eligible retrieved page, a candidate, or a gated source is not by itself an answered question. A sealed hash proves integrity of the page as written, not author identity, accuracy, or factual truth. All unsupported states fail closed.

@@ -119,6 +119,13 @@ jobs:
           --html extracted/OneOwner.html
           --browser-executable "$(command -v google-chrome)"
           --screenshots "$RUNNER_TEMP/oneowner-browser"
+      - name: Run synthetic first-time user journeys on packaged OneOwner and original engine
+        run: >-
+          python product/tests/synthetic_user_oneowner.py
+          --html extracted/OneOwner.html
+          --browser-executable "$(command -v google-chrome)"
+          --output "$RUNNER_TEMP/oneowner-synthetic/report.json"
+          --screenshots "$RUNNER_TEMP/oneowner-synthetic/screenshots"
       - name: Preserve ZIP and candidate evidence (not deployed-site evidence)
         if: always()
         uses: actions/upload-artifact@v4
@@ -128,5 +135,6 @@ jobs:
             product/dist/OneOwner.zip
             product/dist/OneOwner.html
             ${{ runner.temp }}/oneowner-browser/
+            ${{ runner.temp }}/oneowner-synthetic/
           if-no-files-found: warn
           retention-days: 30

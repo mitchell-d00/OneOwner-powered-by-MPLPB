@@ -37,7 +37,7 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(adapted.count('<script id="mplpb-runtime-bundle"'), 1)
         self.assertEqual(len(re.findall(r'<script>(.*?)</script>', adapted, flags=re.S)), 1)
         self.assertLess(adapted.index('window.MPLPB={}'), adapted.index('oneowner-adapter'))
-        self.assertLess(adapted.index('oneowner-adapter'), adapted.index('oneowner-app'))
+        self.assertLess(adapted.index('/* oneowner-adapter: CSP compatible */'), adapted.index('/* oneowner-app: CSP compatible */'))
 
     def test_source_shape_and_hash_fail_closed(self):
         for doc in ('<html></html>', '<head></head><body></body></body>'):

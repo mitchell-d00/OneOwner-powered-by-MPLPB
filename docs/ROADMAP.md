@@ -9,6 +9,8 @@
 - [x] HTTPS metadata plus supplied-text/file source imports using the original engine; successor revision path preserved.
 - [x] Pinned upstream commit and Pyodide core, unmodified WASM builder, candidate archive, SHA-256 file manifest.
 - [x] Independent Chromium product journey script for the full-page OneOwner UI, supported/refusal/ambiguity, import, successor, history, persistence and local transport.
+- [x] Scripted first-time synthetic-user journeys and JSON rubric for accessible navigation, useful conditional policy answers, revisions, conflicting claims, honest provenance, understandable refusal actions, offline persistence and mobile width.
+- [ ] Independently run the synthetic-user journey on the exact merged main artifact and retain the report/screenshots (no pass claimed until run).
 - [x] Product isolation and publish workflow that consumes an exact successful main-branch validation artifact.
 
 ## Evidence to verify on this exact main revision before declaring release

@@ -198,6 +198,17 @@
       evidence.appendChild(make('strong', '', 'Sealed page hash'));
       evidence.appendChild(make('code', '', res.hash));
       parent.appendChild(evidence);
+    } else {
+      const guidance = make('div', 'oo-next-steps');
+      guidance.appendChild(make('strong', '', 'What you can do next'));
+      paragraph(guidance, res.status === 'ambiguous'
+        ? 'Review the competing pages and revise the ledger before asking again.'
+        : 'Explore what is recorded, or add a relevant source page. The answer cannot be supplied from outside this ledger.');
+      const actions = make('div', 'oo-actions');
+      actions.appendChild(button('Explore pages', () => switchTo('library'), 'oo-btn oo-btn-secondary'));
+      actions.appendChild(button('Add a source', () => switchTo('import'), 'oo-btn oo-btn-secondary'));
+      guidance.appendChild(actions);
+      parent.appendChild(guidance);
     }
     raw(parent, res.trace, 'Inspect decision trace · owners, exclusions, diagnostics');
   }
@@ -267,6 +278,10 @@
       clear(result);
       pill(result, 'IMPORTED THROUGH MPLPB', 'success');
       paragraph(result, 'The engine retained the source capture and checked the ledger. This is not a claim of factual truth or verified authorship.');
+      if (saved.capture && typeof saved.capture.authorship === 'string') {
+        paragraph(result, 'Recorded authorship: ' + saved.capture.authorship + ' · Capture method: ' +
+          String(saved.capture.transport || 'not reported'), 'oo-footnote');
+      }
       raw(result, saved, 'Inspect the engine import record');
       setNotice('Import completed. Same title + URL creates a new sealed successor when an earlier version exists.', 'ok');
     }), 'oo-btn oo-btn-primary', 'oo-import'));
