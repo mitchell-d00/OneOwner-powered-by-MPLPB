@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   actions: read
   pages: write
   id-token: write
@@ -24,33 +24,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - name: Switch Pages off branch Jekyll builds and verify mode
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TARGET_REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          api="https://api.github.com/repos/$TARGET_REPO/pages"
-          headers=(-H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GH_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28")
-          curl --fail --silent --show-error "${headers[@]}" "$api" -o pages-before.json
-          mode="$(python3 -c 'import json;print(json.load(open("pages-before.json")).get("build_type","unknown"))')"
-          echo "Pages source before repair: $mode"
-          if [ "$mode" != "workflow" ]; then
-            if ! curl --fail --silent --show-error -X PUT "${headers[@]}" \
-              -H "Content-Type: application/json" \
-              -d '{"build_type":"workflow"}' "$api"; then
-              echo "::error::GitHub denied automatic Pages source configuration. In OneOwner Settings > Pages > Build and deployment, select GitHub Actions instead of Deploy from a branch; then rerun this workflow."
-              exit 1
-            fi
-          fi
-          curl --fail --silent --show-error "${headers[@]}" "$api" -o pages-after.json
-          actual="$(python3 -c 'import json;print(json.load(open("pages-after.json")).get("build_type","unknown"))')"
-          echo "Pages source after repair: $actual"
-          if [ "$actual" != "workflow" ]; then
-            echo "::error::Pages still uses branch/Jekyll. Switch Settings > Pages > Source to GitHub Actions."
-            exit 1
-          fi
       - name: Restore the last independently validated OneOwner app while new main builds
         uses: actions/download-artifact@v4
         with:
@@ -72,6 +45,25 @@ jobs:
           grep -q '<title>OneOwner' site/index.html
           sha256sum site/index.html
           echo "Restoring validated product from run 41516305139 until a newer successful main build is released."
+      - name: Synchronize the validated page into main/index.html
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: source
+          persist-credentials: true
+      - name: Repair default Pages entry point and retain the original engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp site/index.html source/index.html
+          touch source/.nojekyll
+          git -C source config user.name 'github-actions[bot]'
+          git -C source config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C source add index.html .nojekyll
+          if ! git -C source diff --cached --quiet; then
+            git -C source commit -m 'Restore validated OneOwner application at root index.html'
+            git -C source push origin HEAD:main
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -92,4 +84,4 @@ jobs:
             echo "::error::GitHub Pages is displaying a repository README instead of OneOwner."
             exit 1
           fi
-          echo "Live OneOwner app verified; branch-based Jekyll publishing disabled."
+          echo "Live OneOwner app verified; root index.html now prevents README fallback."
