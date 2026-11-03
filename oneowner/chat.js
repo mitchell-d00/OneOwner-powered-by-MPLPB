@@ -25,9 +25,10 @@
     b.addEventListener('click', callback);
     return b;
   };
-  const folded = (host, label, data) => {
+  const folded = (host, label, data, expanded) => {
     const d = make('details', 'oo-details');
     d.append(make('summary', '', label), make('pre', 'oo-raw', JSON.stringify(data, null, 2)));
+    d.open=!!expanded;
     host.appendChild(d); return d;
   };
   function readIndex() {
@@ -239,7 +240,7 @@
       }
       for (const turn of messages) {
         const bubble = make('article', 'oo-chat-bubble '+(turn.role==='user' ? 'oo-chat-user' : 'oo-chat-assistant'));
-        bubble.appendChild(make('strong', 'oo-chat-speaker', turn.role==='user' ? 'You' : 'OneOwner · MPLPB'));
+        bubble.appendChild(make('strong', 'oo-chat-speaker', turn.role==='user' ? 'You' : (opts.helperEnabled === false ? 'MPLPB' : (String(opts.helperName || 'OneOwner').slice(0,32) + ' · MPLPB'))));
         if (turn.role === 'assistant') {
           const r=displayLabel(turn.response);
           const authority=make('div', 'oo-chat-authority');
@@ -256,7 +257,7 @@
             bubble.appendChild(sources);
           }
           if (turn.response) folded(bubble, 'Inspect original evidence, rules and reply metadata',
-            {response:turn.response, turn_sha256:turn.pin||null, authority:'unaltered_native_chat_reply'});
+            {response:turn.response, turn_sha256:turn.pin||null, authority:'unaltered_native_chat_reply'}, opts.reasonMode);
         } else paragraph(bubble, turn.text, 'oo-chat-text');
         log.appendChild(bubble);
       }

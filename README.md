@@ -26,6 +26,18 @@ Optional Wikipedia lookup in Chat uses native MPLPB commands such as `search Cat
 All chat and collection data uses the original local persistence. OneOwner indexes recently used session IDs per collection locally; it never silently replaces source pages or confuses conversation history with ledger lineage. Exports back up **chat transcripts only**, not entire source collections. Deleting a conversation does not delete source pages. No language model is required.
 
 
+## OneOwner user settings
+
+**Settings** is a dedicated OneOwner product page, and the top bar has a one-click Light/Dark switch. The controls adapt the presentation ideas from the original Combined MPLPB UI without modifying its code or sharing its `mplpb-ui-preferences` storage key.
+
+The color-mode selector offers **Follow device**, **Light**, and **Dark**. Visual styles offer **OneOwner modern** (default), **Fantasy parchment**, **Sci-fi console**, and **Wasteland archive**, each with light and dark colors. Reading-size controls offer standard and larger text. Accessibility controls can reduce motion independently of the device setting; the operating-system reduced-motion preference is still honored.
+
+The original MPLPB helper concept is represented as a purely visual **helper label** in OneOwner Chat. Users may rename or hide it; the underlying language interpretation, native chat session, citation labels and one-owner decision stay unchanged. **Expand evidence details** opens the original metadata and decision-trace panels; it does not enable new reasoning, LLM synthesis, or stronger factual support.
+
+Preferences save locally under `oneowner-ui-preferences-v1`. They survive reloads in the same browser and origin where storage is available. They do **not** sync between devices, alter engine pages or revisions, change network consent, or write to MPLPB's original `mplpb-ui-preferences` key. Reset restores OneOwner's presentation defaults, not source pages or conversations.
+
+`tests/settings.test.cjs` tests default/fallback/roundtrip behavior and independence from engine storage. `tests/browser_settings_oneowner.py` uses the actual extracted standalone WebAssembly product to verify visual changes, system/display options, saved preferences, helper identity, evidence-detail disclosure, mobile widths, original native answer-contract invariance and no unexpected network traffic.
+
 ## Learn OneOwner: chat, cited answers and offline pages
 
 The user-facing **Learn OneOwner** page is a four-step introduction to the unchanged MPLPB engine. It explains how to talk naturally, create a source collection, explore retained pages and request a strict cited answer. The product now explicitly routes questions such as **“What are you?”** to Chat instead of making new users wonder why the strict ledger Ask page refused them.

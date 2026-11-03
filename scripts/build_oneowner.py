@@ -44,8 +44,9 @@ def overlay(html):
     capture = (ROOT / 'oneowner/source-capture.js').read_text(encoding='utf-8')
     chat = (ROOT / 'oneowner/chat.js').read_text(encoding='utf-8')
     learn = (ROOT / 'oneowner/learn.js').read_text(encoding='utf-8')
+    settings = (ROOT / 'oneowner/settings.js').read_text(encoding='utf-8')
     app = (ROOT / 'oneowner/app.js').read_text(encoding='utf-8')
-    if any('</script' in x.lower() for x in (adapter, capture, chat, learn, app)) or '</style' in css.lower():
+    if any('</script' in x.lower() for x in (adapter, capture, chat, learn, settings, app)) or '</style' in css.lower():
         raise ValueError('Overlay source contains an unsafe inline-tag terminator')
     output = html.replace('</head>', TAG + '\n<style id="oneowner-style">\n' + css + '\n</style>\n</head>')
     # The upstream desktop HTTP/UI tests and CSP expect exactly one inline
@@ -60,6 +61,7 @@ def overlay(html):
                  '\n/* oneowner-capture: CSP compatible */\n' + capture +
                  '\n/* oneowner-chat: CSP compatible */\n' + chat +
                  '\n/* oneowner-learn: CSP compatible */\n' + learn +
+                 '\n/* oneowner-settings: CSP compatible */\n' + settings +
                  '\n/* oneowner-app: CSP compatible */\n' + app + '\n')
     output = output[:close] + extension + output[close:]
     output = output.replace('<title>MPLPB · The Local Ledger</title>',
