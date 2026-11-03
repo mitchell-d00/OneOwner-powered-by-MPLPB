@@ -39,3 +39,8 @@ test('URL-free drafts remain unsealed, isolated by collection, and storage failu
   assert.equal(d.drafts(storage,'mind-a')[0].origin,'ai');assert.deepEqual(d.drafts(storage,'mind-b'),[]);
   assert.throws(()=>d.saveDraft({getItem:()=>null,setItem:()=>{throw Error('Quota');}},'mind-a','idea','user'),/Quota/);
 });
+
+test('guided lookup removes request boilerplate while retaining the supplied book clues',()=>{
+  assert.equal(d.searchPhrase('I remember a book that was choose your own adventure can you search web?'),'choose your own adventure');
+  assert.equal(d.searchPhrase('A book about clocks'),'A book about clocks');
+});

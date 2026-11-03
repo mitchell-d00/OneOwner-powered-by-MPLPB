@@ -23,6 +23,11 @@
     }
     return list.slice(0,10);
   }
+  function searchPhrase(value){
+    return String(value).replace(/^\s*(?:i remember|i am looking for|i'm looking for|help me find|can you find)\s+/i,'')
+      .replace(/\s*(?:can|could) you (?:please )?(?:search|look)(?: the)?(?: web| internet| online)?[^.!?]*[.!?]*$/i,'')
+      .replace(/^a book (?:that |it )?was /i,'').replace(/[?.!]+$/,'').trim().slice(0,110);
+  }
   function results(response){
     const search=response?.search;
     if(!search || !['simple','english'].includes(search.wiki) || !Array.isArray(search.results))return [];
@@ -92,5 +97,5 @@
       return Array.isArray(value)?value.filter(d=>typeof d?.text==='string').map(d=>({text:d.text.slice(0,16000),origin:d.origin==='ai'?'ai':'user',created:d.created,answer_supported:false})):[];
     }catch(_){return [];}
   }
-  return Object.freeze({actions,results,endpoint,brainstorm,webResults,searchWeb,saveDraft,drafts});
+  return Object.freeze({actions,searchPhrase,results,endpoint,brainstorm,webResults,searchWeb,saveDraft,drafts});
 });

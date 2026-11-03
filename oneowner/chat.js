@@ -270,7 +270,7 @@
     function guideReply(value){
       const clue=value.trim();messages.push({role:'user',text:clue,product:true});
       if(guide.stage==='subject'){
-        guide.query=clue.slice(0,110);
+        guide.query=discovery.searchPhrase(clue)||clue.slice(0,110);
         if(/book|story|novel/i.test(clue)){
           guide.stage='era';product('Roughly when did you read it?',{choices:['1980s–90s','2000s','2010s or later','Not sure']});
         }else{guide.stage='ready';product('You can edit the search phrase below or search Wikipedia now.',{lookup:guide.query});}
