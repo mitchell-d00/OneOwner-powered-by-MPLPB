@@ -16,7 +16,7 @@ def refresh(html):
         raise ValueError('Expected one validated OneOwner overlay')
     start=html.index(marker)
     close=html.rfind('</script>')
-    if close<start or 'window.MPLPB' not in html[:start]:
+    if close<start or not any(registration in html[:start] for registration in ('window.MPLPB=', 'globalThis.MPLPB=')):
         raise ValueError('Missing original engine script')
     original=html[:start]+html[close:]
     original,count=re.subn(re.escape(TAG)+r'\s*<style id="oneowner-style">[\s\S]*?</style>\s*','',original,count=1)

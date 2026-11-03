@@ -97,7 +97,7 @@ def main():
             page.get_by_role('button',name='Fantasy',exact=True).click()
             check('guide_keeps_clues','1980s' in page.get_by_role('textbox',name='Search phrase').input_value())
             check('clarification_does_not_access_network',not online)
-            page.get_by_role('button',name='Search Wikipedia · online',exact=True).click()
+            page.get_by_role('button',name='Search Wikipedia · online',exact=True).last.click()
             expect(page.locator('.oo-search-card a').first).to_have_text('Choose Your Own Adventure',timeout=60000)
             check('search_results_are_clickable_in_chat',page.locator('.oo-search-card a').first.get_attribute('href')=='https://simple.wikipedia.org/wiki/Choose_Your_Own_Adventure')
             check('one_time_permission_reset',not page.locator('#oo-chat-network').is_checked())

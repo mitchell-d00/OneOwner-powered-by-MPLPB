@@ -74,10 +74,10 @@ class BuildTests(unittest.TestCase):
                 module.write_overlay(source, Path(folder) / 'out.html')
 
     def test_fast_overlay_retains_original_engine_and_rejects_unrecognized_input(self):
-        html='<html><head></head><body><script>window.MPLPB={};/* engine fixture */</script></body></html>'
+        html='<html><head></head><body><script>globalThis.MPLPB={};/* engine fixture */</script></body></html>'
         first=module.overlay(html)
         updated=refresh(first)
-        self.assertIn('window.MPLPB={};/* engine fixture */', updated)
+        self.assertIn('globalThis.MPLPB={};/* engine fixture */', updated)
         self.assertEqual(updated.count(module.TAG),1)
         self.assertEqual(updated.count('oneowner-adapter: CSP compatible'),1)
         self.assertIn('OneOwnerDiscovery',updated)
