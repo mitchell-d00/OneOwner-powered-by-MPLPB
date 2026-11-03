@@ -1,3 +1,4 @@
+from browser_support import navigate
 """Real Chromium product journey, against a built and extracted OneOwner site.
 
 The original Combined MPLPB engine decides all answers and page mutations.
@@ -63,7 +64,7 @@ def main():
                 assert page.get_by_role('navigation').count() > 0, 'Product needs its own navigation'
                 shot(page, 'overview')
 
-                page.locator('button[data-screen="ask"]').click()
+                navigate(page, 'ask')
                 page.locator('#oo-corpus').select_option('logic', timeout=90000)
                 page.locator('#oo-question').fill('What is Dungeons and Dragons?')
                 page.locator('#oo-ask').click()
@@ -85,7 +86,7 @@ def main():
                 page.get_by_text('AMBIGUOUS', exact=True).wait_for(timeout=90000)
                 assert 'Sealed page hash' not in page.locator('#oo-answer').inner_text()
 
-                page.locator('button[data-screen="import"]').click()
+                navigate(page, 'import')
                 page.locator('#oo-new-collection').fill('OneOwner pilot')
                 page.locator('#oo-create').click()
                 page.get_by_text('COLLECTION CREATED', exact=True).wait_for(timeout=45000)
@@ -103,10 +104,10 @@ def main():
                 page.locator('#oo-import').click()
                 page.get_by_text('IMPORTED THROUGH MPLPB', exact=True).wait_for(timeout=60000)
 
-                page.locator('button[data-screen="library"]').click()
+                navigate(page, 'library')
                 page.get_by_text('Pilot notes').first.wait_for(timeout=60000)
                 shot(page, 'explore')
-                page.locator('button[data-screen="history"]').click()
+                navigate(page, 'history')
                 page.get_by_text('Retained source and revision history').wait_for(timeout=60000)
                 shot(page, 'history')
 
@@ -114,7 +115,7 @@ def main():
                 page.reload(wait_until='domcontentloaded', timeout=90000)
                 page.locator('button[data-screen="history"]').wait_for(timeout=90000)
                 page.locator('#oo-corpus').select_option(selected, timeout=90000)
-                page.locator('button[data-screen="history"]').click()
+                navigate(page, 'history')
                 page.get_by_text('Retained source and revision history').wait_for(timeout=60000)
                 assert not outbound, 'Product unexpectedly attempted remote requests: ' + str(outbound)
                 print('OneOwner own-page Chromium journey: supported, refusal, ambiguity, import, successor, history, persistence and offline-local transport PASSED')

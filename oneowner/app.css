@@ -412,3 +412,32 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
     min-width:0;width:100%;flex:1 0 100%;order:2;
   }
 }
+
+/* Conversation discovery, drafts and optional assistance. */
+#oneowner-app .oo-navigation summary{padding:10px 14px;cursor:pointer;color:#f5f9ff;font-weight:700}
+#oneowner-app .oo-assistant-config{padding:12px 18px;border-top:1px solid var(--oo-border)}
+#oneowner-app .oo-assistant-config summary,#oneowner-app .oo-native-labels summary{cursor:pointer;color:var(--oo-secondary-text);font-size:12px}
+#oneowner-app .oo-assistant-config .oo-control{margin:10px 0}
+#oneowner-app .oo-search-card{border:1px solid var(--oo-border);border-radius:12px;padding:13px;margin:12px 0;background:var(--oo-panel);min-width:0}
+#oneowner-app .oo-search-card p{font-size:13px;overflow-wrap:anywhere;margin:7px 0}
+#oneowner-app .oo-chat-tools{padding:0 14px}
+#oneowner-app .oo-chat-tools .oo-btn{font-size:12px}
+#oneowner-app .oo-chat-suggestion{min-height:44px;max-width:100%;overflow-wrap:anywhere}
+#oneowner-app .oo-chat-bubble>.oo-pill{letter-spacing:0;font-size:12px}
+#oneowner-app .oo-native-labels{margin:6px 0}
+@media(min-width:981px){#oneowner-app .oo-navigation>summary{display:none}}
+@media(max-width:980px){
+  #oneowner-app .oo-layout{grid-template-columns:minmax(0,1fr)}
+  #oneowner-app .oo-sidebar{padding:12px 16px}
+  #oneowner-app .oo-sidebar-desc,#oneowner-app .oo-nav-label,#oneowner-app .oo-sidebar-footer{display:none}
+  #oneowner-app .oo-brand{padding:0 12px}
+  #oneowner-app .oo-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  #oneowner-app .oo-chat-grid{grid-template-columns:minmax(0,1fr)}
+  #oneowner-app .oo-content{padding:24px 14px 40px}
+  #oneowner-app .oo-topbar{padding:12px 16px}
+}
+@media(max-width:680px){
+  #oneowner-app .oo-chat-log{max-height:65vh}
+  #oneowner-app .oo-chat-bubble{max-width:100%}
+  #oneowner-app .oo-chat-composer{position:sticky;bottom:0;z-index:2}
+}

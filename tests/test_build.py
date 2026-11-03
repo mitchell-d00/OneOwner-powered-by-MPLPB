@@ -1,5 +1,6 @@
 import importlib.util
 import re
+import sys
 from pathlib import Path
 import tempfile
 import unittest
@@ -9,6 +10,9 @@ SPEC = importlib.util.spec_from_file_location(
 )
 module = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(module)
+
+sys.path.insert(0, str(Path(__file__).parents[1] / 'scripts'))
+from refresh_product_overlay import refresh
 
 
 class BuildTests(unittest.TestCase):
@@ -68,6 +72,16 @@ class BuildTests(unittest.TestCase):
             source.write_text('<html><head></head><body></body></html>')
             with self.assertRaises(ValueError):
                 module.write_overlay(source, Path(folder) / 'out.html')
+
+    def test_fast_overlay_retains_original_engine_and_rejects_unrecognized_input(self):
+        html='<html><head></head><body><script>globalThis.MPLPB={};/* engine fixture */</script></body></html>'
+        first=module.overlay(html)
+        updated=refresh(first)
+        self.assertIn('globalThis.MPLPB={};/* engine fixture */', updated)
+        self.assertEqual(updated.count(module.TAG),1)
+        self.assertEqual(updated.count('oneowner-adapter: CSP compatible'),1)
+        self.assertIn('OneOwnerDiscovery',updated)
+        with self.assertRaises(ValueError):refresh(html)
 
     def test_pinned_upstream_is_required(self):
         with tempfile.TemporaryDirectory() as folder:

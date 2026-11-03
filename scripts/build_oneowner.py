@@ -42,11 +42,12 @@ def overlay(html):
     css = (ROOT / 'oneowner/app.css').read_text(encoding='utf-8')
     adapter = (ROOT / 'oneowner/adapter.js').read_text(encoding='utf-8')
     capture = (ROOT / 'oneowner/source-capture.js').read_text(encoding='utf-8')
+    discovery = (ROOT / 'oneowner/discovery.js').read_text(encoding='utf-8')
     chat = (ROOT / 'oneowner/chat.js').read_text(encoding='utf-8')
     learn = (ROOT / 'oneowner/learn.js').read_text(encoding='utf-8')
     settings = (ROOT / 'oneowner/settings.js').read_text(encoding='utf-8')
     app = (ROOT / 'oneowner/app.js').read_text(encoding='utf-8')
-    if any('</script' in x.lower() for x in (adapter, capture, chat, learn, settings, app)) or '</style' in css.lower():
+    if any('</script' in x.lower() for x in (adapter, capture, discovery, chat, learn, settings, app)) or '</style' in css.lower():
         raise ValueError('Overlay source contains an unsafe inline-tag terminator')
     output = html.replace('</head>', TAG + '\n<style id="oneowner-style">\n' + css + '\n</style>\n</head>')
     # The upstream desktop HTTP/UI tests and CSP expect exactly one inline
@@ -59,6 +60,7 @@ def overlay(html):
         raise ValueError('The original engine script is not closed')
     extension = ('\n/* oneowner-adapter: CSP compatible */\n' + adapter +
                  '\n/* oneowner-capture: CSP compatible */\n' + capture +
+                 '\n/* oneowner-discovery: CSP compatible */\n' + discovery +
                  '\n/* oneowner-chat: CSP compatible */\n' + chat +
                  '\n/* oneowner-learn: CSP compatible */\n' + learn +
                  '\n/* oneowner-settings: CSP compatible */\n' + settings +
@@ -106,6 +108,10 @@ def release_zip(engine, standalone, output):
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_bytes(source.read_bytes())
         write_overlay(engine / 'index.html', base / 'desktop/index.html')
+        # Optional service is product code, outside the immutable desktop engine.
+        (base / 'assistant').mkdir()
+        for name in ('server.py', 'README.md'):
+            (base / 'assistant' / name).write_bytes((ROOT / 'assistant' / name).read_bytes())
         (base / 'README-FIRST.md').write_text(
             'OneOwner — Powered by Combined MPLPB\n\n'
             '1. Standalone: open OneOwner.html in a supported browser (no server).\n'

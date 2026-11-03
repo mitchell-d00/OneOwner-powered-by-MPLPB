@@ -23,3 +23,22 @@ The browser source import requires the original API's genuine HTTPS source URL p
 The `oneowner-validation.yml` workflow validates the pinned engine and product including tests from the extracted ZIP. After a successful **main** run, only OneOwner's `oneowner-pages.yml` publishes that exact tested HTML artifact to the **OneOwner** website. The research site is not modified or redeployed. Candidate validation and deployed verification are distinct gates.
 
 See [PRODUCT_SITE](PRODUCT_SITE.md) and [ROADMAP](ROADMAP.md).
+
+## Conversation extensions
+
+`oneowner/discovery.js` handles UI actions, native Wikipedia result normalization,
+explicit-consent requests to a configured assistant service, and unsealed local
+drafts. `chat.js` sends numbered choices and native follow-ups back to `api.chat`.
+Product guide steps are interface guidance, not engine evidence or a second reader.
+AI output ignores all provider claims of citations, support and tool actions;
+only its message text is rendered, always with `answer_supported:false`.
+The companion Python service holds provider credentials and cannot access the
+ledger. Search excerpts are not automatically imported. General-web capture still
+uses the native source bridge, while Wikipedia imports retain the native revision
+capture path. All user and provider strings use `textContent`.
+
+Native labels are disclosed in a compact Engine labels panel; exact metadata is
+retained. Product guidance and AI activity are explicitly outside the native
+transcript chain. Drafts use separate collection-scoped browser keys, not engine
+storage. Full URL-free sealed browser authoring remains deferred; draft storage
+does not pretend to implement that absent engine API.

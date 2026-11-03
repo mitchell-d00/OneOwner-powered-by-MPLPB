@@ -1,3 +1,4 @@
+from browser_support import navigate
 """OneOwner appearance and user-setting acceptance against extracted real WASM HTML.
 
 Modes, visual styles, helper labels, and evidence detail are product-only. No
@@ -71,7 +72,7 @@ def main():
             before=p.evaluate("async()=>{const x=await window.MPLPB.query('What does the unrecorded lunar cookbook require?',{corpus:'logic'});return {kind:x.data?.reader?.kind,supported:x.data?.reader?.answer_contract?.answer_supported}}")
             p.locator('#oo-theme-toggle').click()
             check('quick_toggle_enables_dark',p.locator('#oneowner-app').get_attribute('data-oo-theme')=='dark')
-            p.locator('button[data-screen="settings"]').click()
+            navigate(p, 'settings')
             expect(p.get_by_text('Settings & appearance')).to_be_visible()
             check('settings_show_explicit_dark',p.locator('#oo-theme').input_value()=='dark')
             check('original_and_three_mplpb_visual_styles_exposed',
@@ -98,7 +99,7 @@ def main():
             check('original_mplpb_preferences_untouched',p.evaluate("localStorage.getItem('mplpb-ui-preferences')")==upstream_preferences)
             p.reload(wait_until='domcontentloaded',timeout=120000)
             p.wait_for_function("() => document.querySelector('#oo-notice')?.dataset.kind==='ok'",timeout=150000)
-            p.locator('button[data-screen="settings"]').click()
+            navigate(p, 'settings')
             check('all_settings_persist_after_reload',
                   p.locator('#oo-theme').input_value()=='dark' and
                   p.locator('#oo-setting').input_value()=='fantasy' and
@@ -106,7 +107,7 @@ def main():
                   p.locator('#oo-reason-mode').is_checked() and
                   p.locator('#oo-reduce-motion').is_checked() and
                   p.locator('#oo-helper-name').input_value()=='Study Buddy')
-            p.locator('button[data-screen="chat"]').click()
+            navigate(p, 'chat')
             p.locator('#oo-chat-input').fill('hello')
             p.locator('#oo-chat-send').click()
             expect(p.locator('.oo-chat-assistant')).to_have_count(1,timeout=60000)
@@ -115,13 +116,13 @@ def main():
             check('reason_mode_opens_original_reply_metadata',
                   p.locator('.oo-chat-assistant details.oo-details').last.evaluate('(el)=>el.open') is True)
             shot(p,'appearance-dark-chat')
-            p.locator('button[data-screen="settings"]').click()
+            navigate(p, 'settings')
             p.locator('#oo-helper-enabled').uncheck()
-            p.locator('button[data-screen="chat"]').click()
+            navigate(p, 'chat')
             expect(p.locator('.oo-chat-assistant')).to_have_count(1,timeout=60000)
             check('helper_disabled_shows_plain_mplpb_name',
                   p.locator('.oo-chat-assistant .oo-chat-speaker').last.inner_text()=='MPLPB')
-            p.locator('button[data-screen="settings"]').click()
+            navigate(p, 'settings')
             p.locator('#oo-settings-reset').click()
             check('reset_restores_safe_product_defaults',
                   p.locator('#oo-theme').input_value()=='system' and

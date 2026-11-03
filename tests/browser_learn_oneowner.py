@@ -1,3 +1,4 @@
+from browser_support import navigate
 """Chromium novice/advanced tutorial and fully local chat on packaged OneOwner.
 
 Exercises the actual pinned MPLPB WASM engine; no mock answer rules.
@@ -60,7 +61,7 @@ def main():
             page.wait_for_function("() => document.querySelector('#oo-notice')?.dataset.kind==='ok'",timeout=150000)
             check('learn_navigation_visible',page.locator('button[data-screen="learn"]').is_visible())
             page.locator('#oo-corpus').select_option('logic')
-            page.locator('button[data-screen="library"]').click()
+            navigate(page, 'library')
             page.locator('#oo-library-list').get_by_role('button',name='Inspect page').first.click(timeout=60000)
             expect(page.locator('.oo-page-reading .oo-source-text')).not_to_be_empty(timeout=60000)
             check('saved_eligible_page_readable_offline_without_raw_json',
@@ -68,7 +69,7 @@ def main():
             page.locator('#oo-inspector-chat').click()
             check('source_chat_uses_original_topic_command',
                 page.locator('#oo-chat-input').input_value().startswith('topic '))
-            page.locator('button[data-screen="learn"]').click()
+            navigate(page, 'learn')
             expect(page.get_by_text('Four steps to get comfortable')).to_be_visible()
             check('first_time_lesson_has_real_steps',page.locator('.oo-learn-step').count()==4)
             check('offline_guidance_is_explicit',page.locator('#oo-learn-offline').get_by_text('web pages offline',exact=False).count()>0)
@@ -81,6 +82,7 @@ def main():
             check('native_mplpb_chat_available',page.evaluate("typeof window.MPLPB.chat==='function'"))
             page.locator('#oo-chat-send').click()
             expect(page.locator('.oo-chat-assistant')).to_have_count(1,timeout=60000)
+            page.locator('.oo-chat-assistant').last.locator('.oo-native-labels > summary').click()
             check('basic_reply_labels_original_engine','Engine kind:' in page.locator('.oo-chat-assistant').last.inner_text() and
                   'Engine support:' in page.locator('.oo-chat-assistant').last.inner_text())
             shot(page,'basic-chat')
@@ -107,12 +109,12 @@ def main():
             expect(page.locator('.oo-chat-assistant')).to_have_count(before+1,timeout=60000)
             check('offline_chats_with_embedded_engine',not page.locator('#oo-chat-network').is_checked())
             ctx.set_offline(False)
-            page.locator('button[data-screen="ask"]').click()
+            navigate(page, 'ask')
             check('strict_ask_explains_when_to_chat',page.locator('#oo-ask-to-chat').is_visible())
             page.locator('#oo-ask-to-chat').click()
             expect(page.locator('#oo-chat-input')).to_have_value('What are you?')
             check('ask_to_chat_avoids_falsely_promoted_evidence',page.locator('.oo-chat-assistant').count()>=0)
-            page.locator('button[data-screen="learn"]').click()
+            navigate(page, 'learn')
             page.set_viewport_size({'width':390,'height':844})
             check('mobile_guide_without_horizontal_overflow',page.evaluate("document.documentElement.scrollWidth<=window.innerWidth+2"))
             shot(page,'learn-mobile')

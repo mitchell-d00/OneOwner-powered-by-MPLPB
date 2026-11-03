@@ -72,6 +72,7 @@ def main():
             page.screenshot(path=str(args.screenshots/(name+'.png')), full_page=True)
     def nav(page, name):
         button = page.locator('#oo-nav').get_by_role('button', name=name, exact=True)
+        if not button.is_visible():page.locator('.oo-navigation > summary').click()
         expect(button).to_be_visible(timeout=30000)
         button.click()
     def engine(page, method, *arguments):

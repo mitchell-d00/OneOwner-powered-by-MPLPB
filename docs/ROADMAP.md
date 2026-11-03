@@ -24,6 +24,18 @@
 - [ ] Independently run the synthetic-user journey on the exact merged main artifact and retain the report/screenshots (no pass claimed until run).
 - [x] Product isolation and publish workflow that consumes an exact successful main-branch validation artifact.
 
+## Conversation discovery additions
+
+- [x] Direct-submit native suggestions and numbered brainstorming choices.
+- [x] Guided clue collection and inline Wikipedia results with explicit imports.
+- [x] In-chat collection creation and source inspection.
+- [x] URL-free unsealed idea drafts with export, reuse and deletion.
+- [x] Optional per-message AI assistance with separate server-side credentials.
+- [x] Optional general-web result cards through configured Brave Search service.
+- [x] Narrow-screen collapsible menu and compact engine-label disclosure.
+- [ ] Operator deploys and configures the optional provider service for public use.
+- [ ] Live-provider checks with authorized credentials (fixture tests are separate).
+
 ## Evidence to verify on this exact main revision before declaring release
 
 - [ ] All original engine tests and kill tests successful on the new OneOwner candidate.
