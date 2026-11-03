@@ -397,3 +397,18 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
  #oneowner-app .oo-theme-toggle {order:1;margin-left:auto;min-width:0;min-height:38px;padding:8px 11px;font-size:12px}
  #oneowner-app .oo-collection-picker {order:2;flex-basis:100%;width:100%;min-width:0}
 }
+
+/* Tablet top bar: avoid three fixed-width controls exceeding the content column. */
+@media (min-width:681px) and (max-width:980px) {
+  #oneowner-app .oo-topbar {
+    flex-wrap:wrap;gap:10px 14px;padding:16px 22px;
+  }
+  #oneowner-app .oo-context {flex:1 1 0;min-width:0;}
+  #oneowner-app .oo-context strong {
+    display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  #oneowner-app .oo-theme-toggle {flex:0 0 auto;order:1;}
+  #oneowner-app .oo-collection-picker {
+    min-width:0;width:100%;flex:1 0 100%;order:2;
+  }
+}
