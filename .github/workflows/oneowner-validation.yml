@@ -26,11 +26,12 @@ jobs:
         run: |
           node --check oneowner/adapter.js
           node --check oneowner/chat.js
+          node --check oneowner/discovery.js
           node --check oneowner/learn.js
           node --check oneowner/settings.js
           node --check oneowner/source-capture.js
           node --check oneowner/app.js
-          node --test tests/adapter.test.cjs tests/learn.test.cjs tests/settings.test.cjs
+          node --test tests/*.test.cjs
           python -m unittest discover -s tests -p 'test_*.py' -v
 
   archive-first:
@@ -158,6 +159,13 @@ jobs:
           --browser-executable "$(command -v google-chrome)"
           --output "$RUNNER_TEMP/oneowner-settings/report.json"
           --screenshots "$RUNNER_TEMP/oneowner-settings/screenshots"
+      - name: Native guided choices, inline search and optional AI negative probes
+        run: >-
+          python product/tests/browser_discovery_oneowner.py
+          --html extracted/OneOwner.html
+          --browser-executable "$(command -v google-chrome)"
+          --output "$RUNNER_TEMP/oneowner-discovery/report.json"
+          --screenshots "$RUNNER_TEMP/oneowner-discovery/screenshots"
       - name: Preserve ZIP and candidate evidence (not deployed-site evidence)
         if: always()
         uses: actions/upload-artifact@v4
@@ -172,5 +180,6 @@ jobs:
             ${{ runner.temp }}/oneowner-link/
             ${{ runner.temp }}/oneowner-learn/
             ${{ runner.temp }}/oneowner-settings/
+            ${{ runner.temp }}/oneowner-discovery/
           if-no-files-found: warn
           retention-days: 30

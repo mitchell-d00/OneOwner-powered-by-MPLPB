@@ -1,3 +1,4 @@
+from browser_support import navigate
 """Synthetic novice acceptance: OneOwner full native chat in real Chromium and real MPLPB WASM.
 
 Run against the exact extracted OneOwner release archive. All simulated user actions
@@ -59,7 +60,7 @@ def main():
                 try:
                     check('native_MPLPB_chat_API_available',page.evaluate("typeof window.MPLPB.chat==='function'"))
                     check('chat_is_first_class_navigation',page.locator('button[data-screen="chat"]').count()==1)
-                    page.locator('button[data-screen="chat"]').click()
+                    navigate(page, 'chat')
                     expect(page.locator('#oo-chat-log')).to_contain_text('Start with a question or a note')
                     check('research_recipes_memories_facts_are_discoverable',all(
                         page.locator('.oo-chat-help').get_by_text(term,exact=True).count()>=1
@@ -77,8 +78,8 @@ def main():
                     expect(page.locator('.oo-chat-assistant')).to_have_count(1,timeout=60000)
                     expect(page.locator('#oo-chat-status')).to_contain_text('MPLPB:',timeout=60000)
                     check('original_chat_support_kind_visible',page.locator('.oo-chat-authority').count()==1 and
-                          'Engine kind:' in page.locator('.oo-chat-assistant').inner_text() and
-                          'Engine support:' in page.locator('.oo-chat-assistant').inner_text())
+                          'Engine kind:' in page.locator('.oo-chat-assistant').text_content() and
+                          'Engine support:' in page.locator('.oo-chat-assistant').text_content())
                     check('native_remember_updates_visible_notes','dinosaurs' in page.locator('#oo-chat-notes').inner_text().lower())
                     sid=page.locator('#oo-chat-sessions').input_value()
                     check('native_saved_session_ID_is_not_a_UI_fake',len(sid)>=8 and sid != 'free:')
@@ -97,8 +98,8 @@ def main():
                           followup['ok'] and followup['data']['chain_intact'] is True and
                           len(followup['data']['turns'])==2)
                     check('native_refusal_never_promoted_to_cited_answer',
-                          'SOURCE SUPPORTED' not in page.locator('.oo-chat-assistant').last.inner_text() and
-                          'Engine kind:' in page.locator('.oo-chat-assistant').last.inner_text())
+                          'SOURCE SUPPORTED' not in page.locator('.oo-chat-assistant').last.text_content() and
+                          'Engine kind:' in page.locator('.oo-chat-assistant').last.text_content())
                     # Network permission must be opt-in on each individual turn.
                     page.locator('#oo-chat-network').check()
                     page.locator('#oo-chat-input').fill('hello')
@@ -115,25 +116,25 @@ def main():
                     page.reload(wait_until='domcontentloaded',timeout=120000)
                     page.wait_for_function("() => document.querySelector('#oo-notice')?.dataset.kind==='ok'",timeout=150000)
                     page.locator('#oo-corpus').select_option('logic')
-                    page.locator('button[data-screen="chat"]').click()
+                    navigate(page, 'chat')
                     expect(page.locator('.oo-chat-assistant')).to_have_count(3,timeout=60000)
                     check('persisted_conversation_resumes_after_browser_reload',page.locator('#oo-chat-sessions').input_value()==sid)
                     # Source chat and strict Ask are separate; latter always requires ledger support.
-                    page.locator('button[data-screen="ask"]').click()
+                    navigate(page, 'ask')
                     page.locator('#oo-question').fill('What does the unrecorded lunar cheesecake recipe require?')
                     page.locator('#oo-ask').click()
                     expect(page.locator('#oo-answer')).to_contain_text('No supported answer',timeout=60000)
                     check('casual_chat_does_not_promote_unsupported_claims','SOURCE SUPPORTED' not in page.locator('#oo-answer').inner_text())
-                    page.locator('button[data-screen="chat"]').click()
+                    navigate(page, 'chat')
                     expect(page.locator('.oo-chat-assistant')).to_have_count(3,timeout=60000)
                     # A second collection's chat must not leak into the active one.
-                    page.locator('button[data-screen="import"]').click()
+                    navigate(page, 'import')
                     page.locator('#oo-new-collection').fill('Recipes and kitchen research')
                     page.locator('#oo-create').click()
                     expect(page.locator('#oo-new-result')).to_contain_text('COLLECTION CREATED',timeout=60000)
                     new_corpus=page.locator('#oo-corpus').input_value()
                     check('new_user_collection_selected',new_corpus.startswith('mind-'))
-                    page.locator('button[data-screen="chat"]').click()
+                    navigate(page, 'chat')
                     check('new_collection_does_not_reuse_old_session',page.locator('#oo-chat-sessions').input_value()!=sid and
                           page.locator('.oo-chat-assistant').count()==0)
                     page.locator('#oo-chat-input').fill('guide me')

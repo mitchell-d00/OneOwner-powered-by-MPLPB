@@ -1,3 +1,4 @@
+from browser_support import navigate
 """Browser smoke: Google discovery link -> original MPLPB CORS snapshot -> sealed page."""
 import argparse
 import json
@@ -47,7 +48,7 @@ def main():
           page=context.new_page()
           page.goto(base+source.name,wait_until='domcontentloaded',timeout=120000)
           page.wait_for_function("() => document.querySelector('#oo-notice')?.dataset.kind==='ok'",timeout=150000)
-          page.locator('button[data-screen="import"]').click()
+          navigate(page, 'import')
           check('search_button_visible',page.locator('#oo-search-google').is_visible())
           page.evaluate("window.__search=[];window.open=(url)=>{window.__search.push(url);return null}")
           page.locator('#oo-google-search').fill('research recipes')

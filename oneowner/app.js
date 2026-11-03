@@ -579,7 +579,7 @@
     top(parent, 'Our operating promise', 'Trust the boundaries', 'OneOwner is a product experience powered by your pinned Combined MPLPB research.');
     const c = card(parent, '');
     c.appendChild(make('h2', '', 'A deterministic ledger, not a guessing engine'));
-    paragraph(c, 'A single eligible owner with supported body evidence can return an answer. Multiple owners are ambiguous; no owner means refusal. Model-assisted paths are not enabled in this product.');
+    paragraph(c, 'A single eligible owner with supported body evidence can return an answer. Multiple owners are ambiguous; no owner means refusal. Optional AI brainstorming produces unverified drafts and never decides source support.');
     line(c);
     paragraph(c, 'Pages carry integrity hashes and lineage pins. A hash does not establish authorship, accuracy, or factual truth.');
     paragraph(c, 'All source decisions and revisions are made by the unchanged Combined MPLPB Python engine via its page-local API. The interface does not rank, merge, or synthesize source answers.');
@@ -602,10 +602,12 @@
     brand.appendChild(brandText); aside.appendChild(brand);
     paragraph(aside, 'Closed ledger. Clear answers.', 'oo-sidebar-desc');
     const navLabel = make('div', 'oo-nav-label', 'WORKSPACE'); aside.appendChild(navLabel);
-    aside.appendChild(make('nav', 'oo-nav')).id = 'oo-nav';
+    const navigation=make('details','oo-navigation');navigation.open=window.innerWidth>980;
+    navigation.appendChild(make('summary','','Menu'));
+    navigation.appendChild(make('nav','oo-nav')).id='oo-nav';aside.appendChild(navigation);
     const footer = make('div', 'oo-sidebar-footer');
     pill(footer, 'LOCAL BY DEFAULT', 'local');
-    paragraph(footer, 'No model. No hidden retrieval. No silent overwrites.');
+    paragraph(footer, 'Local chat by default. Optional AI drafts. Explicit online lookup.');
     aside.appendChild(footer);
     const main = make('div', 'oo-workspace');
     const head = make('header', 'oo-topbar');

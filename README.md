@@ -11,13 +11,42 @@ OneOwner is a polished, offline-first evidence workspace, powered by **Combined 
 
 The two websites do not redirect to each other and use separate GitHub Pages deployments. OneOwner's build consumes a **read-only, hash-pinned checkout** of the research engine; it **does not commit to or deploy the research repository**.
 
+## Conversation, discovery and optional AI
+
+Chat now offers **Find something**, guided book clues, native local brainstorming
+with clickable numbered choices, inline native follow-ups and Wikipedia result
+cards. Choosing an action inside a reply submits it directly. Online actions are
+explicitly labeled; searching and saving a result are separate actions. You can
+create a collection inside Chat, read captured sources there, and keep URL-free
+ideas as **unsealed drafts** with reuse, export and deletion controls.
+
+Optional AI brainstorming is opt-in for each message and always unverified with
+`answer_supported:false`. It cannot select evidence owners or write ledger pages.
+Optional broader web search returns clickable result cards through a separately
+configured provider. **Both hosted options require a deployed companion service
+and operator-provided credentials**; GitHub Pages alone cannot run them. Native
+Wikipedia discovery, native chat and drafts work without that service.
+See [assistant setup and privacy](assistant/README.md).
+
+The immutable engine already includes bounded brainstorming and clarification;
+OneOwner now exposes those native paths alongside product-level guided discovery.
+The research repository is unchanged. Native engine labels remain available under
+**Engine labels**, with original responses under evidence details. Product guidance
+and AI activity have their own labels and never masquerade as native replies.
+
+Guided discovery and AI exchanges last while Chat is open. **Save as draft** or
+**Export workspace ideas** preserves them; native transcript export includes them
+only as a separate, explicitly unverified activity field outside its hash chain.
+Browser drafts are not sealed evidence and do not extend the engine's URL-required
+source import API. Native conversations continue to use verified engine persistence.
+
 ## Your OneOwner workspace
 
 OneOwner is the **user-friendly, offline-first product built from Combined MPLPB research**, not a new ledger. People can chat, manage notes and memories, build recipe collections, organize research, and maintain factual libraries without needing to learn hash or lineage terminology.
 
-The product now has an independent **Chat** workspace powered directly by the pinned native `window.MPLPB.chat` API. Its purpose is comfortable everyday interaction. The native engine still decides all chat replies, saved context, support labels, topic handling, and source eligibility. OneOwner adds readable conversations, discoverable examples, follow-ups, native session resume, visible notes, explicit deletion, and verified transcript export.
+The product now has an independent **Chat** workspace powered directly by the pinned native `window.MPLPB.chat` API. Its purpose is comfortable everyday interaction. The native engine decides its own chat replies, saved native context, support labels, topic handling, and source eligibility. Optional AI and product guidance are separately labeled. OneOwner adds readable conversations, discoverable examples, follow-ups, native session resume, visible notes, explicit deletion, and verified transcript export.
 
-Chat can help with daily tasks, help commands, remembered notes, and exploration; **a casual chat reply or saved memory is not automatically an evidence-supported answer or a sealed page**. Use **Ask · cited answers** for a deterministic answer requiring one eligible current owner and a valid citation/hash. Full native support labels and source references remain visible in chat, and raw evidence metadata is inspectable without replacing the engine's authority.
+Chat can help with daily tasks, help commands, remembered notes, and exploration; **a casual chat reply or saved memory is not automatically an evidence-supported answer or a sealed page**. Use **Ask · cited answers** for a deterministic answer requiring one eligible current owner and a valid citation/hash. Full native support labels remain under Engine labels and source references remain visible in chat, and raw evidence metadata is inspectable without replacing the engine's authority.
 
 The other product views remain **Explore pages**, **Add or revise**, **History**, and **About**. Collections can hold source documents for research, recipes and reference topics. A factual database here means a searchable and revisable collection of sealed source pages, **not** an unbounded AI-generated database or a guarantee that imported information is true.
 
@@ -42,7 +71,7 @@ Preferences save locally under `oneowner-ui-preferences-v1`. They survive reload
 
 The user-facing **Learn OneOwner** page is a four-step introduction to the unchanged MPLPB engine. It explains how to talk naturally, create a source collection, explore retained pages and request a strict cited answer. The product now explicitly routes questions such as **“What are you?”** to Chat instead of making new users wonder why the strict ledger Ask page refused them.
 
-In **Chat**, **Basic chat** shows simple examples for research, recipes, personal notes and factual collections, plus **Start guided lesson**. That pre-fills the original MPLPB `guide me` command. MPLPB's real four-step guide then responds through its existing native chat API; `next` and `previous step` move through the lesson. **Advanced chat** exposes the original `chat mode`, `serious mode`, `load all MPLPB`, `topic Exact title` and `show source` commands without reimplementing their language interpretation or authority rules. OneOwner only fills the message box until the user sends it.
+In **Chat**, **Basic chat** shows simple examples for research, recipes, personal notes and factual collections, plus **Start guided lesson**. That pre-fills the original MPLPB `guide me` command. MPLPB's real four-step guide then responds through its existing native chat API; `next` and `previous step` move through the lesson. **Advanced chat** exposes the original `chat mode`, `serious mode`, `load all MPLPB`, `topic Exact title` and `show source` commands without reimplementing their language interpretation or authority rules. The Basic/Advanced examples fill the message box; inline response actions submit directly.
 
 ### Offline operation explained
 
