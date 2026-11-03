@@ -259,6 +259,184 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
 #oneowner-app .oo-page-reading .oo-source-text{white-space:pre-wrap;line-height:1.8;color:#264157;max-height:480px;overflow:auto;font-size:14px}
 #oneowner-app .oo-page-reading .oo-mono{display:block;padding:11px 0;color:#47677f}
 
+/* OneOwner-only appearance system, inherited from the original MPLPB idea.
+   Never mutate the upstream :root data-theme/data-setting or engine CSS.
+   All palettes keep user-supplied source text readable without using HTML. */
+#oneowner-app {
+  --oo-page:#f5f7fb;--oo-panel:#fff;--oo-soft:#f1f6fb;
+  --oo-elevated:#f8fbfe;--oo-border:#dce6f0;--oo-primary-text:#1c3449;
+  --oo-secondary-text:#536d83;--oo-accent:#2457ce;--oo-chat-user:#eaf2ff;
+  --oo-sidebar-bg:linear-gradient(160deg,#172b46,#101d32 72%,#0d192a);
+  --oo-hero-bg:linear-gradient(120deg,#182f51,#244b72 59%,#237985);
+}
+#oneowner-app[data-oo-theme="dark"] {
+  --ink:#e9f1fc;--muted:#a9bed2;--line:#35465a;
+  --oo-page:#101925;--oo-panel:#1a293a;--oo-soft:#26394e;
+  --oo-elevated:#1f3246;--oo-border:#40546a;
+  --oo-primary-text:#e9f1fc;--oo-secondary-text:#b3c8d9;
+  --oo-accent:#75a7ff;--oo-chat-user:#28476a;
+  --oo-sidebar-bg:linear-gradient(150deg,#0b1625,#111e2e 72%,#08121f);
+  --oo-hero-bg:linear-gradient(120deg,#172d4b,#1d4166 58%,#146574);
+  color-scheme:dark;
+}
+#oneowner-app[data-oo-setting="fantasy"] {
+  --oo-page:#eee8da;--oo-panel:#fcf7ec;--oo-soft:#f3ebdd;
+  --oo-elevated:#f7f0e4;--oo-border:#d9ccb5;
+  --oo-primary-text:#33291d;--oo-secondary-text:#6b5c46;
+  --oo-accent:#8c5d12;--oo-chat-user:#f3e8cc;
+  --oo-sidebar-bg:linear-gradient(155deg,#3a2e30,#231d26);
+  --oo-hero-bg:linear-gradient(120deg,#57402c,#776137 56%,#91713c);
+}
+#oneowner-app[data-oo-setting="scifi"] {
+  --oo-page:#e9eff4;--oo-panel:#f7fbff;--oo-soft:#e6f2f8;
+  --oo-elevated:#edf7fc;--oo-border:#bed6e3;
+  --oo-primary-text:#183846;--oo-secondary-text:#496b7b;
+  --oo-accent:#086c91;--oo-chat-user:#dceff7;
+  --oo-sidebar-bg:linear-gradient(155deg,#102a3b,#071725);
+  --oo-hero-bg:linear-gradient(120deg,#102a46,#07617c 60%,#0f7f90);
+}
+#oneowner-app[data-oo-setting="wasteland"] {
+  --oo-page:#eae4d7;--oo-panel:#f7f1e6;--oo-soft:#eee4d2;
+  --oo-elevated:#f4ead8;--oo-border:#d0bfa3;
+  --oo-primary-text:#392e21;--oo-secondary-text:#70604b;
+  --oo-accent:#984d19;--oo-chat-user:#edddc2;
+  --oo-sidebar-bg:linear-gradient(150deg,#3d3027,#28221c);
+  --oo-hero-bg:linear-gradient(120deg,#533421,#825333 62%,#a86f41);
+}
+#oneowner-app[data-oo-setting="fantasy"][data-oo-theme="dark"] {
+  --oo-page:#17141a;--oo-panel:#26212b;--oo-soft:#302936;
+  --oo-elevated:#312b35;--oo-border:#54495c;--oo-primary-text:#f0e9dc;
+  --oo-secondary-text:#c6b7a7;--oo-accent:#e1b465;--oo-chat-user:#3e343d;
+}
+#oneowner-app[data-oo-setting="scifi"][data-oo-theme="dark"] {
+  --oo-page:#091622;--oo-panel:#142735;--oo-soft:#1b3747;
+  --oo-elevated:#1a3645;--oo-border:#365667;--oo-primary-text:#e4f6fa;
+  --oo-secondary-text:#a7ced8;--oo-accent:#53d5e2;--oo-chat-user:#204451;
+}
+#oneowner-app[data-oo-setting="wasteland"][data-oo-theme="dark"] {
+  --oo-page:#1c1814;--oo-panel:#2a261f;--oo-soft:#373024;
+  --oo-elevated:#332c24;--oo-border:#594b39;--oo-primary-text:#f1e4cc;
+  --oo-secondary-text:#cdb89c;--oo-accent:#e9aa73;--oo-chat-user:#4a3729;
+}
+#oneowner-app {
+  background:var(--oo-page);color:var(--oo-primary-text);
+}
+#oneowner-app .oo-sidebar {background:var(--oo-sidebar-bg)}
+#oneowner-app .oo-topbar,#oneowner-app .oo-chat-composer {background:var(--oo-panel);border-color:var(--oo-border)}
+#oneowner-app .oo-title,#oneowner-app h2,#oneowner-app h3,
+#oneowner-app .oo-context strong {color:var(--oo-primary-text)}
+#oneowner-app .oo-card,#oneowner-app .oo-chat-bubble,
+#oneowner-app .oo-chat-welcome,#oneowner-app .oo-lesson-card {
+  background:var(--oo-panel);border-color:var(--oo-border);color:var(--oo-primary-text)
+}
+#oneowner-app .oo-hero {background:var(--oo-hero-bg)}
+#oneowner-app .oo-control {background:var(--oo-panel);border-color:var(--oo-border);color:var(--oo-primary-text)}
+#oneowner-app .oo-field label,#oneowner-app .oo-collection-picker label,
+#oneowner-app .oo-chat-check,#oneowner-app .oo-context .oo-eyebrow,
+#oneowner-app .oo-footnote,#oneowner-app .oo-intro {color:var(--oo-secondary-text)}
+#oneowner-app .oo-btn-primary {background:var(--oo-accent);color:#fff}
+#oneowner-app[data-oo-theme="dark"] .oo-btn-primary {color:#0b1825}
+#oneowner-app .oo-btn-secondary,#oneowner-app .oo-chat-suggestion,
+#oneowner-app .oo-chat-level-tabs,#oneowner-app .oo-chat-level-btn[aria-pressed="true"] {
+  background:var(--oo-soft);border-color:var(--oo-border);color:var(--oo-primary-text)
+}
+#oneowner-app .oo-btn-secondary:hover {background:var(--oo-elevated)}
+#oneowner-app .oo-muted,#oneowner-app .oo-bottom {color:var(--oo-secondary-text)}
+#oneowner-app .oo-raw,#oneowner-app .oo-evidence,#oneowner-app .oo-chat-source-list,
+#oneowner-app .oo-use-card,#oneowner-app .oo-capture-row,
+#oneowner-app .oo-learn-columns>div,#oneowner-app .oo-page-reading,
+#oneowner-app .oo-chat-level-tabs {
+  background:var(--oo-soft);border-color:var(--oo-border);color:var(--oo-primary-text)
+}
+#oneowner-app .oo-raw,#oneowner-app .oo-evidence code,
+#oneowner-app .oo-mono,#oneowner-app .oo-source-text,#oneowner-app .oo-chat-text,
+#oneowner-app .oo-chat-speaker,#oneowner-app .oo-page-reading .oo-source-text,
+#oneowner-app .oo-page-reading .oo-mono,#oneowner-app .oo-chat-idea,
+#oneowner-app .oo-text-link,#oneowner-app .oo-details summary,
+#oneowner-app .oo-evidence strong {
+  color:var(--oo-primary-text)
+}
+#oneowner-app .oo-chat-log {background:var(--oo-elevated)}
+#oneowner-app .oo-chat-user {background:var(--oo-chat-user);border-color:var(--oo-border)}
+#oneowner-app .oo-chat-network,#oneowner-app .oo-chat-controls,
+#oneowner-app .oo-details,#oneowner-app .oo-rule,#oneowner-app .oo-bottom,
+#oneowner-app .oo-chat-scenario {border-color:var(--oo-border)}
+#oneowner-app .oo-chat-guidance,#oneowner-app .oo-guidance,
+#oneowner-app .oo-chat-notes,#oneowner-app .oo-chat-offline,
+#oneowner-app .oo-learn-intro,#oneowner-app .oo-learn-offline,
+#oneowner-app .oo-link-capture {
+  background:var(--oo-elevated);border-color:var(--oo-border);color:var(--oo-primary-text)
+}
+#oneowner-app .oo-chat-level-btn {color:var(--oo-secondary-text)}
+#oneowner-app .oo-chat-level-btn[aria-pressed="true"] {box-shadow:inset 0 0 0 1px var(--oo-border)}
+#oneowner-app .oo-chat-notes .oo-footnote,#oneowner-app .oo-chat-guidance .oo-muted {color:var(--oo-secondary-text)}
+#oneowner-app[data-oo-setting="fantasy"] .oo-hero-title,
+#oneowner-app[data-oo-setting="fantasy"] .oo-title,
+#oneowner-app[data-oo-setting="fantasy"] h2,
+#oneowner-app[data-oo-setting="fantasy"] h3 {font-family:Georgia,serif;letter-spacing:-.02em}
+#oneowner-app[data-oo-setting="wasteland"] .oo-eyebrow,
+#oneowner-app[data-oo-setting="wasteland"] .oo-number {font-family:ui-monospace,Consolas,monospace}
+#oneowner-app[data-oo-setting="scifi"] .oo-brand strong,
+#oneowner-app[data-oo-setting="scifi"] .oo-eyebrow {letter-spacing:.08em}
+#oneowner-app[data-oo-setting="fantasy"] .oo-brand-mark {background:#d5b469;color:#3c2c15}
+#oneowner-app[data-oo-setting="scifi"] .oo-brand-mark {background:#64d9e1;color:#052b35}
+#oneowner-app[data-oo-setting="wasteland"] .oo-brand-mark {background:#d29b63;color:#432c1a}
+/* Keep semantic verdicts legible in both color modes. */
+#oneowner-app[data-oo-theme="dark"] .oo-success {background:#184e3a;color:#bbf6d7}
+#oneowner-app[data-oo-theme="dark"] .oo-warning {background:#57351f;color:#ffdbaf}
+#oneowner-app[data-oo-theme="dark"] .oo-neutral {background:#30445b;color:#e1effb}
+#oneowner-app[data-oo-theme="dark"] .oo-supported-copy {color:#bdf4da}
+#oneowner-app[data-oo-theme="dark"] .oo-refusal-copy {color:#ffcfb2}
+#oneowner-app[data-oo-theme="dark"] .oo-btn-danger {background:#4d2c2c;color:#ffd5c8;border-color:#854c44}
+#oneowner-app .oo-theme-toggle {flex-shrink:0;white-space:nowrap;min-width:116px}
+#oneowner-app .oo-settings-card,#oneowner-app .oo-settings-limits {margin:0 0 19px}
+#oneowner-app .oo-settings-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+#oneowner-app .oo-settings-options {display:grid;gap:11px;margin:5px 0 19px}
+#oneowner-app .oo-settings-choice {
+  display:flex;align-items:flex-start;gap:13px;padding:15px;border:1px solid var(--oo-border);
+  background:var(--oo-elevated);border-radius:12px;cursor:pointer
+}
+#oneowner-app .oo-settings-choice input {height:18px;width:18px;flex-shrink:0;accent-color:var(--oo-accent);margin:2px 0 0}
+#oneowner-app .oo-settings-choice strong {display:block;color:var(--oo-primary-text);font-size:14px}
+#oneowner-app .oo-settings-choice small {display:block;color:var(--oo-secondary-text);line-height:1.55;margin-top:3px}
+#oneowner-app .oo-settings-preview {background:var(--oo-elevated);border:1px solid var(--oo-border);border-radius:12px;padding:20px;margin:12px 0 19px}
+#oneowner-app .oo-settings-preview h3 {margin-bottom:7px}
+#oneowner-app .oo-settings-preview p {font-size:14px}
+#oneowner-app[data-oo-text="large"] {font-size:17px}
+#oneowner-app[data-oo-text="large"] .oo-content p,
+#oneowner-app[data-oo-text="large"] .oo-chat-text,
+#oneowner-app[data-oo-text="large"] .oo-source-text {font-size:17px;line-height:1.8}
+#oneowner-app[data-oo-text="large"] .oo-nav-item,
+#oneowner-app[data-oo-text="large"] .oo-control,
+#oneowner-app[data-oo-text="large"] .oo-btn {font-size:15px}
+#oneowner-app[data-oo-motion="reduce"] *,
+#oneowner-app[data-oo-motion="reduce"] *::before,
+#oneowner-app[data-oo-motion="reduce"] *::after {
+  animation:none !important;transition:none !important;scroll-behavior:auto !important
+}
+@media(max-width:1050px) {#oneowner-app .oo-settings-grid {grid-template-columns:1fr 1fr}}
+@media(max-width:680px) {
+ #oneowner-app .oo-settings-grid {grid-template-columns:1fr}
+ #oneowner-app .oo-topbar {flex-wrap:wrap;gap:10px}
+ #oneowner-app .oo-theme-toggle {order:1;margin-left:auto;min-width:0;min-height:38px;padding:8px 11px;font-size:12px}
+ #oneowner-app .oo-collection-picker {order:2;flex-basis:100%;width:100%;min-width:0}
+}
+
+/* Tablet top bar: avoid three fixed-width controls exceeding the content column. */
+@media (min-width:681px) and (max-width:980px) {
+  #oneowner-app .oo-topbar {
+    flex-wrap:wrap;gap:10px 14px;padding:16px 22px;
+  }
+  #oneowner-app .oo-context {flex:1 1 0;min-width:0;}
+  #oneowner-app .oo-context strong {
+    display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  #oneowner-app .oo-theme-toggle {flex:0 0 auto;order:1;}
+  #oneowner-app .oo-collection-picker {
+    min-width:0;width:100%;flex:1 0 100%;order:2;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -750,9 +928,10 @@ startBrowserRuntime();
     b.addEventListener('click', callback);
     return b;
   };
-  const folded = (host, label, data) => {
+  const folded = (host, label, data, expanded) => {
     const d = make('details', 'oo-details');
     d.append(make('summary', '', label), make('pre', 'oo-raw', JSON.stringify(data, null, 2)));
+    d.open=!!expanded;
     host.appendChild(d); return d;
   };
   function readIndex() {
@@ -964,7 +1143,7 @@ startBrowserRuntime();
       }
       for (const turn of messages) {
         const bubble = make('article', 'oo-chat-bubble '+(turn.role==='user' ? 'oo-chat-user' : 'oo-chat-assistant'));
-        bubble.appendChild(make('strong', 'oo-chat-speaker', turn.role==='user' ? 'You' : 'OneOwner · MPLPB'));
+        bubble.appendChild(make('strong', 'oo-chat-speaker', turn.role==='user' ? 'You' : (opts.helperEnabled === false ? 'MPLPB' : (String(opts.helperName || 'OneOwner').slice(0,32) + ' · MPLPB'))));
         if (turn.role === 'assistant') {
           const r=displayLabel(turn.response);
           const authority=make('div', 'oo-chat-authority');
@@ -981,7 +1160,7 @@ startBrowserRuntime();
             bubble.appendChild(sources);
           }
           if (turn.response) folded(bubble, 'Inspect original evidence, rules and reply metadata',
-            {response:turn.response, turn_sha256:turn.pin||null, authority:'unaltered_native_chat_reply'});
+            {response:turn.response, turn_sha256:turn.pin||null, authority:'unaltered_native_chat_reply'}, opts.reasonMode);
         } else paragraph(bubble, turn.text, 'oo-chat-text');
         log.appendChild(bubble);
       }
@@ -1161,6 +1340,64 @@ startBrowserRuntime();
   return Object.freeze({mount,lessons});
 });
 
+/* oneowner-settings: CSP compatible */
+/* OneOwner-only, local presentation preferences.
+ * Inspired by MPLPB's original visual settings, but never reads/writes the
+ * upstream mplpb-ui-preferences key, ledger, page seals or session store.
+ */
+(function(root,factory) {
+  'use strict';
+  const moduleValue=factory();
+  if (typeof module==='object' && module.exports) module.exports=moduleValue;
+  else root.OneOwnerSettings=moduleValue;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+  'use strict';
+  const KEY='oneowner-ui-preferences-v1';
+  const DEFAULT=Object.freeze({
+    theme:'system',setting:'oneowner',textSize:'normal',reduceMotion:false,
+    reasonMode:false,helperName:'OneOwner',helperEnabled:true
+  });
+  const allowed={
+    theme:['system','light','dark'],
+    setting:['oneowner','fantasy','scifi','wasteland'],
+    textSize:['normal','large']
+  };
+  function normalize(candidate) {
+    const x=candidate&&typeof candidate==='object'&&!Array.isArray(candidate)?candidate:{};
+    const clean={};
+    for(const key of Object.keys(allowed))clean[key]=allowed[key].includes(x[key])?x[key]:DEFAULT[key];
+    clean.reduceMotion=typeof x.reduceMotion==='boolean'?x.reduceMotion:DEFAULT.reduceMotion;
+    clean.reasonMode=typeof x.reasonMode==='boolean'?x.reasonMode:DEFAULT.reasonMode;
+    clean.helperEnabled=typeof x.helperEnabled==='boolean'?x.helperEnabled:DEFAULT.helperEnabled;
+    clean.helperName=typeof x.helperName==='string'&&x.helperName.trim()?
+      x.helperName.trim().slice(0,32):DEFAULT.helperName;
+    return clean;
+  }
+  function load(storage) {
+    try {return normalize(JSON.parse(storage.getItem(KEY)||'{}'));}
+    catch (_) {return normalize({});}
+  }
+  function save(storage,value) {
+    const pref=normalize(value);
+    try {storage.setItem(KEY,JSON.stringify(pref));return true;}
+    catch (_) {return false;}
+  }
+  function resolvedTheme(pref,systemDark) {
+    const value=normalize(pref).theme;
+    return value==='system'?(systemDark?'dark':'light'):value;
+  }
+  function apply(root,pref,systemDark) {
+    if(!root || !root.dataset)throw Error('OneOwner settings need the product root.');
+    const p=normalize(pref);
+    root.dataset.ooTheme=resolvedTheme(p,!!systemDark);
+    root.dataset.ooSetting=p.setting;
+    root.dataset.ooText=p.textSize;
+    root.dataset.ooMotion=p.reduceMotion?'reduce':'system';
+    return p;
+  }
+  return Object.freeze({KEY,DEFAULT,normalize,load,save,resolvedTheme,apply});
+});
+
 /* oneowner-app: CSP compatible */
 /* OneOwner's independent, local-first product page.
    Presentation and user actions only; all ledger authority stays in window.MPLPB. */
@@ -1197,12 +1434,14 @@ startBrowserRuntime();
   const raw = (parent, obj, summary) => {
     const details = make('details', 'oo-details');
     details.append(make('summary', '', summary), make('pre', 'oo-raw', JSON.stringify(obj, null, 2)));
+    details.open = !!preferences.reasonMode;
     parent.appendChild(details);
     return details;
   };
   let api, screen = 'home', corpus = '', corpora = [], busy = false;
   let question = '', latestAnswer = null, pageCache = null, pageError = '';
   let chatController = null, chatDraft = '';
+  let preferences = null, themeMedia = null;
   const views = [
     ['home', 'Overview', 'layout-dashboard'],
     ['chat', 'Chat', 'messages-square'],
@@ -1211,6 +1450,7 @@ startBrowserRuntime();
     ['library', 'Explore pages', 'files'],
     ['import', 'Add or revise', 'file-plus'],
     ['history', 'History', 'history'],
+    ['settings', 'Settings', 'settings'],
     ['about', 'About', 'shield-check']
   ];
   function currentLabel() {
@@ -1290,6 +1530,106 @@ startBrowserRuntime();
     if (next === 'library') action(loadPages);
     if (next === 'history') action(loadHistory);
   }
+  function isSystemDark() {
+    return !!(themeMedia && themeMedia.matches);
+  }
+  function applyPreferences() {
+    if (!preferences || !window.OneOwnerSettings) return;
+    window.OneOwnerSettings.apply($('oneowner-app'),preferences,isSystemDark());
+    const toggle=$('oo-theme-toggle');
+    if (toggle) {
+      const dark=$('oneowner-app').dataset.ooTheme==='dark';
+      toggle.textContent=dark?'☀ Light mode':'☾ Dark mode';
+      toggle.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
+      toggle.title='Change color mode; more options in Settings';
+    }
+  }
+  function storage() {
+    try {return window.localStorage;}
+    catch (_) {return {getItem:()=>null,setItem:()=>{throw Error('Storage unavailable');}};}
+  }
+  function updatePreference(name,value) {
+    preferences=window.OneOwnerSettings.normalize({...preferences,[name]:value});
+    applyPreferences();
+    const saved=window.OneOwnerSettings.save(storage(),preferences);
+    const status=$('oo-settings-status');
+    if (status)status.textContent=saved
+      ? 'Saved in this browser. These settings do not change ledger pages, chat authority or stored hashes.'
+      : 'Preference applied for this tab, but browser storage is unavailable.';
+  }
+  function renderSettings(parent) {
+    top(parent,'Your workspace','Settings & appearance',
+      'Choose how OneOwner looks and how much evidence detail to show. These are display preferences; the pinned MPLPB engine and saved pages are unchanged.');
+    const section=card(parent,'oo-settings-card');
+    section.appendChild(make('h2','','Make the workspace comfortable'));
+    const grid=make('div','oo-settings-grid');
+    function option(name,id,values) {
+      const holder=make('div','oo-field');
+      const label=make('label','',name);label.htmlFor=id;
+      const sel=make('select','oo-control');sel.id=id;
+      for(const [value,text] of values) {
+        const opt=make('option','',text);opt.value=value;sel.appendChild(opt);
+      }
+      sel.value=preferences[id.slice(3)]||'';
+      holder.append(label,sel);
+      grid.appendChild(holder);
+      return sel;
+    }
+    const theme=option('Color mode','oo-theme',[
+      ['system','Follow device'],['light','Light'],['dark','Dark']
+    ]);
+    const skin=option('Visual setting','oo-setting',[
+      ['oneowner','OneOwner · modern'],['fantasy','Fantasy · parchment'],
+      ['scifi','Sci-fi · console'],['wasteland','Wasteland · archive']
+    ]);
+    const text=option('Reading size','oo-textSize',[
+      ['normal','Standard'],['large','Larger text']
+    ]);
+    theme.addEventListener('change',()=>updatePreference('theme',theme.value));
+    skin.addEventListener('change',()=>updatePreference('setting',skin.value));
+    text.addEventListener('change',()=>updatePreference('textSize',text.value));
+    section.appendChild(grid);
+    const controls=make('div','oo-settings-options');
+    function choice(name,id,key,description) {
+      const row=make('label','oo-settings-choice');
+      const checkbox=make('input');checkbox.type='checkbox';checkbox.id=id;
+      checkbox.checked=!!preferences[key];
+      const info=make('span');
+      info.append(make('strong','',name),make('small','',description));
+      row.append(checkbox,info);controls.appendChild(row);
+      checkbox.addEventListener('change',()=>updatePreference(key,checkbox.checked));
+    }
+    choice('Reduce animation','oo-reduce-motion','reduceMotion','Turn off decorative transitions. Device reduced-motion preferences are also respected.');
+    choice('Expand evidence details','oo-reason-mode','reasonMode','Show decision traces and original response metadata by default. This does not change answer support.');
+    choice('Show custom helper label','oo-helper-enabled','helperEnabled','Change only the speaker label in OneOwner Chat, not the MPLPB language engine.');
+    section.appendChild(controls);
+    const helper=field('Chat helper display name','oo-helper-name','input','OneOwner');
+    helper.input.value=preferences.helperName;
+    helper.input.maxLength=32;
+    helper.input.autocomplete='off';
+    helper.input.addEventListener('change',()=>{updatePreference('helperName',helper.input.value);helper.input.value=preferences.helperName;});
+    section.appendChild(helper.holder);
+    const preview=make('div','oo-settings-preview');
+    preview.appendChild(make('h3','','Preview'));
+    paragraph(preview,'Readable pages, comfortable conversations, and evidence you can inspect.');
+    const accent=make('span','oo-pill oo-success','SOURCE SUPPORTED');preview.appendChild(accent);
+    section.appendChild(preview);
+    const actions=make('div','oo-actions');
+    actions.appendChild(button('Restore appearance defaults',()=>{
+      preferences=window.OneOwnerSettings.normalize({});
+      window.OneOwnerSettings.save(storage(),preferences);
+      applyPreferences();clear(parent);renderSettings(parent);
+    },'oo-btn oo-btn-secondary','oo-settings-reset'));
+    section.appendChild(actions);
+    const status=make('p','oo-footnote');status.id='oo-settings-status';
+    status.setAttribute('role','status');
+    status.textContent='Appearance is stored only in this browser; it does not sync to MPLPB or change source eligibility.';
+    section.appendChild(status);
+    const limits=card(parent,'oo-settings-limits');
+    limits.appendChild(make('h2','','Privacy and local use'));
+    paragraph(limits,'These settings are local to OneOwner on this browser. They do not alter your MPLPB research settings, collection history, hashes, or the one-owner rule.');
+    paragraph(limits,'Website searches and Wikipedia lookup remain opt-in for each request. Changing a color or helper name never enables network access.');
+  }
   function render() {
     const parent = $('oo-screen');
     if (chatController) {chatController.destroy(); chatController=null;}
@@ -1297,7 +1637,7 @@ startBrowserRuntime();
     if (screen === 'home') renderHome(parent);
     if (screen === 'chat') {
       if (!window.OneOwnerChat) throw Error('The OneOwner chat interface is missing; no fallback chat is permitted.');
-      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), draft:chatDraft, navigate:switchTo, refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
+      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), draft:chatDraft, navigate:switchTo, helperName:preferences.helperName, helperEnabled:preferences.helperEnabled, reasonMode:preferences.reasonMode, refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
       chatDraft = '';
     }
     if (screen === 'learn') {
@@ -1308,6 +1648,7 @@ startBrowserRuntime();
     if (screen === 'library') renderLibrary(parent);
     if (screen === 'import') renderImport(parent);
     if (screen === 'history') renderHistory(parent);
+    if (screen === 'settings') renderSettings(parent);
     if (screen === 'about') renderAbout(parent);
   }
   function renderHome(parent) {
@@ -1675,6 +2016,11 @@ startBrowserRuntime();
     head.appendChild(context);
     const selection = make('div', 'oo-collection-picker');
     const label = make('label', '', 'Collection'); label.htmlFor = 'oo-corpus'; selection.appendChild(label);
+    const quickTheme=button('☾ Dark mode',()=>{
+      const dark=$('oneowner-app').dataset.ooTheme==='dark';
+      updatePreference('theme',dark?'light':'dark');
+    },'oo-btn oo-btn-secondary oo-theme-toggle','oo-theme-toggle');
+    head.appendChild(quickTheme);
     const select = make('select', 'oo-control'); select.id = 'oo-corpus';
     select.addEventListener('change', () => {corpus = select.value; latestAnswer = null; navRender(); render(); if(screen==='library') action(loadPages); if(screen==='history') action(loadHistory);});
     selection.appendChild(select); head.appendChild(selection);
@@ -1688,6 +2034,13 @@ startBrowserRuntime();
     const notice = make('div', 'oo-notice'); notice.id = 'oo-notice';
     notice.setAttribute('role', 'status'); notice.setAttribute('aria-live', 'polite');
     root.appendChild(notice); document.body.appendChild(root);
+    if (!window.OneOwnerSettings) throw Error('OneOwner appearance settings module unavailable.');
+    preferences=window.OneOwnerSettings.load(storage());
+    try { themeMedia=window.matchMedia('(prefers-color-scheme: dark)'); } catch (_) { themeMedia=null; }
+    if(themeMedia && typeof themeMedia.addEventListener==='function') themeMedia.addEventListener('change',()=>{
+      if(preferences.theme==='system')applyPreferences();
+    });
+    applyPreferences();
     $('oo-screen').appendChild(make('h1', '', 'Opening your local ledger…'));
     (async () => {
       try {
