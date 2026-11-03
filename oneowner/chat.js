@@ -435,7 +435,7 @@
         });return;
       }
       if(guide && guide.stage!=='ready'){guideReply(text);return;}
-      if(/(?:remember|find|search).*(?:book|novel)|(?:book|novel).*search/i.test(text) && !/^(find|search|import) /i.test(text)){
+      if(/(?:find|identify|search|look for).*(?:book|novel)|(?:book|novel).*(?:find|identify|search)/i.test(text) && !/^(find|search|import) /i.test(text)){
         guide={stage:'subject',query:'',era:''};guideReply(text);return;
       }
       guide=null;
