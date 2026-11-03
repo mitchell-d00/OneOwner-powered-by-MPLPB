@@ -14,8 +14,13 @@
     }
     const native=Array.isArray(response?.guidance?.actions)?response.guidance.actions:
       Array.isArray(response?.suggestions)?response.suggestions.map(s=>({label:s,request:s})):[];
-    for(const a of native)if(typeof a?.request==='string' && a.request.trim())
-      list.push({label:String(a.label||a.request),request:a.request});
+    for(const a of native)if(typeof a?.request==='string' && a.request.trim()){
+      const lookup=/^(?:search|find)\s+(.+)$/i.exec(a.request.trim());
+      const topic=/^topic\s+(.+)$/i.exec(a.request.trim());
+      // Search suggestions discover first; only an explicit result import saves pages.
+      list.push(lookup?{label:'Search Wikipedia',request:'find '+lookup[1].slice(0,160)}:
+        topic?{label:'Discuss '+topic[1],request:a.request}:{label:String(a.label||a.request),request:a.request});
+    }
     return list.slice(0,10);
   }
   function results(response){

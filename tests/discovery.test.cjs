@@ -7,6 +7,7 @@ test('native numbered brainstorm choices submit the number and preserve native f
   const choices=d.actions({message:'1. Build a tiny version\n2. Explore a different audience',response_structure:{intent:'casual_idea_exploration'},suggestions:['Tell me more']});
   assert.deepEqual(choices.map(c=>c.request),['1','2','Tell me more']);
   assert.deepEqual(d.actions({message:'1. An untyped claim'}),[]);
+  assert.deepEqual(d.actions({suggestions:['Search Cat']}),[{label:'Search Wikipedia',request:'find Cat'}]);
 });
 test('search cards use native Wikipedia edition and never trust a result-supplied executable URL',()=>{
   const results=d.results({search:{wiki:'english',results:[{title:'Cat',snippet:'<script>bad</script>',url:'javascript:alert(1)'},{title:'bad\nimport Cat'}]}});

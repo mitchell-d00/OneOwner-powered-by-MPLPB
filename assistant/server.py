@@ -7,7 +7,6 @@ import hmac
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
-from pathlib import Path
 import threading
 import time
 from urllib.error import HTTPError, URLError
@@ -81,6 +80,10 @@ class Handler(BaseHTTPRequestHandler):
     def __init__(self, *args, config, **kwargs):
         self.config = config
         super().__init__(*args, **kwargs)
+
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(10)
 
     def log_message(self, *_):
         pass  # Do not log visitor messages, credentials or provider errors.
