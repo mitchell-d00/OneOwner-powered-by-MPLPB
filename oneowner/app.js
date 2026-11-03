@@ -33,12 +33,14 @@
   const raw = (parent, obj, summary) => {
     const details = make('details', 'oo-details');
     details.append(make('summary', '', summary), make('pre', 'oo-raw', JSON.stringify(obj, null, 2)));
+    details.open = !!preferences.reasonMode;
     parent.appendChild(details);
     return details;
   };
   let api, screen = 'home', corpus = '', corpora = [], busy = false;
   let question = '', latestAnswer = null, pageCache = null, pageError = '';
   let chatController = null, chatDraft = '';
+  let preferences = null, themeMedia = null;
   const views = [
     ['home', 'Overview', 'layout-dashboard'],
     ['chat', 'Chat', 'messages-square'],
@@ -47,6 +49,7 @@
     ['library', 'Explore pages', 'files'],
     ['import', 'Add or revise', 'file-plus'],
     ['history', 'History', 'history'],
+    ['settings', 'Settings', 'settings'],
     ['about', 'About', 'shield-check']
   ];
   function currentLabel() {
@@ -126,6 +129,106 @@
     if (next === 'library') action(loadPages);
     if (next === 'history') action(loadHistory);
   }
+  function isSystemDark() {
+    return !!(themeMedia && themeMedia.matches);
+  }
+  function applyPreferences() {
+    if (!preferences || !window.OneOwnerSettings) return;
+    window.OneOwnerSettings.apply($('oneowner-app'),preferences,isSystemDark());
+    const toggle=$('oo-theme-toggle');
+    if (toggle) {
+      const dark=$('oneowner-app').dataset.ooTheme==='dark';
+      toggle.textContent=dark?'☀ Light mode':'☾ Dark mode';
+      toggle.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
+      toggle.title='Change color mode; more options in Settings';
+    }
+  }
+  function storage() {
+    try {return window.localStorage;}
+    catch (_) {return {getItem:()=>null,setItem:()=>{throw Error('Storage unavailable');}};}
+  }
+  function updatePreference(name,value) {
+    preferences=window.OneOwnerSettings.normalize({...preferences,[name]:value});
+    applyPreferences();
+    const saved=window.OneOwnerSettings.save(storage(),preferences);
+    const status=$('oo-settings-status');
+    if (status)status.textContent=saved
+      ? 'Saved in this browser. These settings do not change ledger pages, chat authority or stored hashes.'
+      : 'Preference applied for this tab, but browser storage is unavailable.';
+  }
+  function renderSettings(parent) {
+    top(parent,'Your workspace','Settings & appearance',
+      'Choose how OneOwner looks and how much evidence detail to show. These are display preferences; the pinned MPLPB engine and saved pages are unchanged.');
+    const section=card(parent,'oo-settings-card');
+    section.appendChild(make('h2','','Make the workspace comfortable'));
+    const grid=make('div','oo-settings-grid');
+    function option(name,id,values) {
+      const holder=make('div','oo-field');
+      const label=make('label','',name);label.htmlFor=id;
+      const sel=make('select','oo-control');sel.id=id;
+      for(const [value,text] of values) {
+        const opt=make('option','',text);opt.value=value;sel.appendChild(opt);
+      }
+      sel.value=preferences[id.slice(3)]||'';
+      holder.append(label,sel);
+      grid.appendChild(holder);
+      return sel;
+    }
+    const theme=option('Color mode','oo-theme',[
+      ['system','Follow device'],['light','Light'],['dark','Dark']
+    ]);
+    const skin=option('Visual setting','oo-setting',[
+      ['oneowner','OneOwner · modern'],['fantasy','Fantasy · parchment'],
+      ['scifi','Sci-fi · console'],['wasteland','Wasteland · archive']
+    ]);
+    const text=option('Reading size','oo-textSize',[
+      ['normal','Standard'],['large','Larger text']
+    ]);
+    theme.addEventListener('change',()=>updatePreference('theme',theme.value));
+    skin.addEventListener('change',()=>updatePreference('setting',skin.value));
+    text.addEventListener('change',()=>updatePreference('textSize',text.value));
+    section.appendChild(grid);
+    const controls=make('div','oo-settings-options');
+    function choice(name,id,key,description) {
+      const row=make('label','oo-settings-choice');
+      const checkbox=make('input');checkbox.type='checkbox';checkbox.id=id;
+      checkbox.checked=!!preferences[key];
+      const info=make('span');
+      info.append(make('strong','',name),make('small','',description));
+      row.append(checkbox,info);controls.appendChild(row);
+      checkbox.addEventListener('change',()=>updatePreference(key,checkbox.checked));
+    }
+    choice('Reduce animation','oo-reduce-motion','reduceMotion','Turn off decorative transitions. Device reduced-motion preferences are also respected.');
+    choice('Expand evidence details','oo-reason-mode','reasonMode','Show decision traces and original response metadata by default. This does not change answer support.');
+    choice('Show custom helper label','oo-helper-enabled','helperEnabled','Change only the speaker label in OneOwner Chat, not the MPLPB language engine.');
+    section.appendChild(controls);
+    const helper=field('Chat helper display name','oo-helper-name','input','OneOwner');
+    helper.input.value=preferences.helperName;
+    helper.input.maxLength=32;
+    helper.input.autocomplete='off';
+    helper.input.addEventListener('change',()=>{updatePreference('helperName',helper.input.value);helper.input.value=preferences.helperName;});
+    section.appendChild(helper.holder);
+    const preview=make('div','oo-settings-preview');
+    preview.appendChild(make('h3','','Preview'));
+    paragraph(preview,'Readable pages, comfortable conversations, and evidence you can inspect.');
+    const accent=make('span','oo-pill oo-success','SOURCE SUPPORTED');preview.appendChild(accent);
+    section.appendChild(preview);
+    const actions=make('div','oo-actions');
+    actions.appendChild(button('Restore appearance defaults',()=>{
+      preferences=window.OneOwnerSettings.normalize({});
+      window.OneOwnerSettings.save(storage(),preferences);
+      applyPreferences();clear(parent);renderSettings(parent);
+    },'oo-btn oo-btn-secondary','oo-settings-reset'));
+    section.appendChild(actions);
+    const status=make('p','oo-footnote');status.id='oo-settings-status';
+    status.setAttribute('role','status');
+    status.textContent='Appearance is stored only in this browser; it does not sync to MPLPB or change source eligibility.';
+    section.appendChild(status);
+    const limits=card(parent,'oo-settings-limits');
+    limits.appendChild(make('h2','','Privacy and local use'));
+    paragraph(limits,'These settings are local to OneOwner on this browser. They do not alter your MPLPB research settings, collection history, hashes, or the one-owner rule.');
+    paragraph(limits,'Website searches and Wikipedia lookup remain opt-in for each request. Changing a color or helper name never enables network access.');
+  }
   function render() {
     const parent = $('oo-screen');
     if (chatController) {chatController.destroy(); chatController=null;}
@@ -133,7 +236,7 @@
     if (screen === 'home') renderHome(parent);
     if (screen === 'chat') {
       if (!window.OneOwnerChat) throw Error('The OneOwner chat interface is missing; no fallback chat is permitted.');
-      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), draft:chatDraft, navigate:switchTo, refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
+      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), draft:chatDraft, navigate:switchTo, helperName:preferences.helperName, helperEnabled:preferences.helperEnabled, reasonMode:preferences.reasonMode, refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
       chatDraft = '';
     }
     if (screen === 'learn') {
@@ -144,6 +247,7 @@
     if (screen === 'library') renderLibrary(parent);
     if (screen === 'import') renderImport(parent);
     if (screen === 'history') renderHistory(parent);
+    if (screen === 'settings') renderSettings(parent);
     if (screen === 'about') renderAbout(parent);
   }
   function renderHome(parent) {
@@ -511,6 +615,11 @@
     head.appendChild(context);
     const selection = make('div', 'oo-collection-picker');
     const label = make('label', '', 'Collection'); label.htmlFor = 'oo-corpus'; selection.appendChild(label);
+    const quickTheme=button('☾ Dark mode',()=>{
+      const dark=$('oneowner-app').dataset.ooTheme==='dark';
+      updatePreference('theme',dark?'light':'dark');
+    },'oo-btn oo-btn-secondary oo-theme-toggle','oo-theme-toggle');
+    head.appendChild(quickTheme);
     const select = make('select', 'oo-control'); select.id = 'oo-corpus';
     select.addEventListener('change', () => {corpus = select.value; latestAnswer = null; navRender(); render(); if(screen==='library') action(loadPages); if(screen==='history') action(loadHistory);});
     selection.appendChild(select); head.appendChild(selection);
@@ -524,6 +633,13 @@
     const notice = make('div', 'oo-notice'); notice.id = 'oo-notice';
     notice.setAttribute('role', 'status'); notice.setAttribute('aria-live', 'polite');
     root.appendChild(notice); document.body.appendChild(root);
+    if (!window.OneOwnerSettings) throw Error('OneOwner appearance settings module unavailable.');
+    preferences=window.OneOwnerSettings.load(storage());
+    try { themeMedia=window.matchMedia('(prefers-color-scheme: dark)'); } catch (_) { themeMedia=null; }
+    if(themeMedia && typeof themeMedia.addEventListener==='function') themeMedia.addEventListener('change',()=>{
+      if(preferences.theme==='system')applyPreferences();
+    });
+    applyPreferences();
     $('oo-screen').appendChild(make('h1', '', 'Opening your local ledger…'));
     (async () => {
       try {

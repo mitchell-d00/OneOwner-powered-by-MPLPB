@@ -22,6 +22,10 @@ class BuildTests(unittest.TestCase):
         self.assertIn('oneowner-app: CSP compatible', result)
         self.assertIn('oneowner-chat: CSP compatible', result)
         self.assertIn('oneowner-learn: CSP compatible', result)
+        self.assertIn('oneowner-settings: CSP compatible', result)
+        self.assertIn('OneOwnerSettings', result)
+        self.assertIn('Settings & appearance', result)
+        self.assertIn('oo-theme-toggle', result)
         self.assertIn('OneOwnerLearn', result)
         self.assertIn('Four steps to get comfortable', result)
         self.assertIn('oneowner-capture: CSP compatible', result)
@@ -52,7 +56,8 @@ class BuildTests(unittest.TestCase):
         self.assertLess(adapted.index('/* oneowner-adapter: CSP compatible */'), adapted.index('/* oneowner-capture: CSP compatible */'))
         self.assertLess(adapted.index('/* oneowner-capture: CSP compatible */'), adapted.index('/* oneowner-chat: CSP compatible */'))
         self.assertLess(adapted.index('/* oneowner-chat: CSP compatible */'), adapted.index('/* oneowner-learn: CSP compatible */'))
-        self.assertLess(adapted.index('/* oneowner-learn: CSP compatible */'), adapted.index('/* oneowner-app: CSP compatible */'))
+        self.assertLess(adapted.index('/* oneowner-learn: CSP compatible */'), adapted.index('/* oneowner-settings: CSP compatible */'))
+        self.assertLess(adapted.index('/* oneowner-settings: CSP compatible */'), adapted.index('/* oneowner-app: CSP compatible */'))
 
     def test_source_shape_and_hash_fail_closed(self):
         for doc in ('<html></html>', '<head></head><body></body></body>'):
