@@ -39,6 +39,8 @@ jobs:
           grep -q 'OneOwner dedicated page: original engine unchanged' "$html"
           echo "html=$html" >> "$GITHUB_OUTPUT"
           sha256sum "$html"
+      - name: Apply current product code to the retained original compiled engine
+        run: python scripts/refresh_product_overlay.py "${{ steps.artifact.outputs.html }}"
       - name: Install browser test runner
         run: python -m pip install 'playwright==1.58.0'
       - name: Verify original native-chat session handling and local refusal

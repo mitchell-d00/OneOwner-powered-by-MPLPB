@@ -82,6 +82,7 @@ def main():
             check('native_mplpb_chat_available',page.evaluate("typeof window.MPLPB.chat==='function'"))
             page.locator('#oo-chat-send').click()
             expect(page.locator('.oo-chat-assistant')).to_have_count(1,timeout=60000)
+            page.locator('.oo-chat-assistant').last.locator('.oo-native-labels > summary').click()
             check('basic_reply_labels_original_engine','Engine kind:' in page.locator('.oo-chat-assistant').last.inner_text() and
                   'Engine support:' in page.locator('.oo-chat-assistant').last.inner_text())
             shot(page,'basic-chat')
