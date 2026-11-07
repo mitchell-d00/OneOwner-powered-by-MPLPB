@@ -53,3 +53,9 @@ test('an explicit fork snapshots current references even while automatic handoff
  store.addNote(parent.id,'A later task','task');const child=store.newInstance(parent.id);
  assert.equal(child.parentHandoff.notes[0].text,'A later task');assert.equal(child.parentHandoff.checkpoint,child.parent.checkpoint);
 });
+
+test('resuming a product-only instance selects it for subsequent notes and navigation',()=>{
+ const store=create(memory(),'mind-a'),parent=store.newInstance();const snapshot={messages:[{role:'user',text:'A local idea',product:true}]};
+ store.sync(parent.id,snapshot);store.newInstance(parent.id);store.sync(parent.id,snapshot);
+ assert.equal(store.read().active,parent.id);assert.equal(store.read().instances.find(i=>i.id===parent.id).session,null);
+});

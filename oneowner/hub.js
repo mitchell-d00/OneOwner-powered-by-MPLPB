@@ -57,9 +57,9 @@
       const safeGuide=guide && ['subject','era','genre','ready'].includes(guide.stage)?{stage:guide.stage,query:text(guide.query,160),era:text(guide.era,80)}:null;
       const state=read(),current=find(state,instanceId);
       const safeNotes=nativeNotes.filter(n=>typeof n==='string').map(n=>text(n,500)).slice(-30);
-      if(JSON.stringify(current.timeline)===JSON.stringify(timeline) && current.session===session && JSON.stringify(current.nativeNotes||[])===JSON.stringify(safeNotes) && JSON.stringify(current.guide||null)===JSON.stringify(safeGuide))return current;
+      if(state.active===instanceId && JSON.stringify(current.timeline)===JSON.stringify(timeline) && current.session===session && JSON.stringify(current.nativeNotes||[])===JSON.stringify(safeNotes) && JSON.stringify(current.guide||null)===JSON.stringify(safeGuide))return current;
       return mutate(next=>{
-        const instance=find(next,instanceId);
+        const instance=find(next,instanceId);next.active=instanceId;
         instance.timeline=timeline;instance.session=session;instance.guide=safeGuide;instance.updated=now();instance.checkpoint=id();
         instance.nativeTurnCount=timeline.filter(t=>t.type==='native').length;
         instance.title=users[0]?.slice(0,80)||instance.title;instance.nativeNotes=safeNotes;
