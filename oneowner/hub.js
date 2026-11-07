@@ -31,7 +31,7 @@
       if(state.instances.length>=64)throw Error('Hub holds 64 instances. Export and remove an old instance before creating another.');
       const ancestor=parent?find(state,parent):null;
       const instance={...unverified,id:id(),collection,parent:parent?{id:parent,checkpoint:ancestor.checkpoint}:null,
-        parentHandoff:ancestor?copy(ancestor.handoff||handoff(state,ancestor)):null,
+        parentHandoff:ancestor?handoff(state,ancestor):null,
         created:now(),updated:now(),title:'New conversation',session:null,checkpoint:null,timeline:[],nativeTurnCount:0,
         context:{parentAvailable:!!parent,parentLoaded:false},working:[],handoff:null};
       state.instances.push(instance);state.active=instance.id;return instance;

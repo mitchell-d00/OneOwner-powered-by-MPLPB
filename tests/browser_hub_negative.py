@@ -49,6 +49,8 @@ def main():
     page.get_by_role('button',name='Use parent handoff in message',exact=True).click();page.locator('#oo-chat-send').click();page.wait_for_function("() => document.querySelector('#oo-chat-input').value==='' && !document.querySelector('#oo-chat-send').disabled",timeout=60000)
     child=state()['instances'][-1];check('handoff_supply_is_recorded_without_cloning_session',child['session']!=session and child['context']['parentLoaded'] and child['parent']['id']==parent)
     check('fork_inherits_no_permissions',child['handoff']['permissions']==[])
+    navigate(page,'hub');expect(page.locator('[data-instance="'+child['id']+'"]')).to_contain_text('A parent handoff excerpt was supplied')
+    page.locator('[data-instance="'+child['id']+'"]').get_by_role('button',name='Resume',exact=True).click()
     # Simulate a quota failure only for hub writes. Engine IndexedDB and native index remain available.
     page.evaluate("""() => {window.originalSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key.startsWith('oneowner-hub-v1:'))throw Error('Synthetic quota failure');return window.originalSetItem.call(this,key,value)}}""")
     send('remember this native turn must survive a hub quota failure')

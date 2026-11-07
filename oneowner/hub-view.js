@@ -25,7 +25,7 @@
       for(const instance of [...state.instances].reverse()){
         const row=make('article','oo-search-card');row.dataset.instance=instance.id;
         row.append(make('h3','',instance.title),make('p','oo-mono',instance.id),make('p','',instance.nativeTurnCount+' native turns · '+instance.timeline.filter(t=>t.type==='product').length+' workspace messages'));
-        if(instance.parent)row.appendChild(make('p','oo-footnote','Fork of '+instance.parent.id+'. Parent handoff is recorded, not loaded into the new native session.'));
+        if(instance.parent)row.appendChild(make('p','oo-footnote','Fork of '+instance.parent.id+(instance.context.parentLoaded?'. A parent handoff excerpt was supplied; the full parent state was not restored.':'. Parent handoff is recorded, not loaded into the new native session.')));
         const controls=make('div','oo-actions');
         controls.append(button('Resume',()=>run(()=>{store.activate(instance.id);openChat(instance.id);})),
           button('Fork with handoff',()=>run(()=>{const child=store.newInstance(instance.id);openChat(child.id);})),

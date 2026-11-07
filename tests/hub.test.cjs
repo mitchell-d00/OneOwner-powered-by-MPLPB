@@ -46,3 +46,10 @@ test('a successful native save survives a failed hub checkpoint and is recovered
  const store=create(memory(),'mind-a'),i=store.newInstance();store.sync(i.id,{session:'s1',messages:[]});
  const restored=store.restore(i.id,native);assert.equal(restored.recoveredNativeTurns,1);assert.equal(restored.messages[0].text,'My actual question');
 });
+
+test('an explicit fork snapshots current references even while automatic handoffs are paused',()=>{
+ const store=create(memory(),'mind-a'),parent=store.newInstance();
+ store.sync(parent.id,{messages:[{role:'user',text:'First goal',product:true}]});store.settings({handoffs:false});
+ store.addNote(parent.id,'A later task','task');const child=store.newInstance(parent.id);
+ assert.equal(child.parentHandoff.notes[0].text,'A later task');assert.equal(child.parentHandoff.checkpoint,child.parent.checkpoint);
+});
