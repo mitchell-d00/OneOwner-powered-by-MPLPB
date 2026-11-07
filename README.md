@@ -34,11 +34,16 @@ The research repository is unchanged. Native engine labels remain available unde
 **Engine labels**, with original responses under evidence details. Product guidance
 and AI activity have their own labels and never masquerade as native replies.
 
-Guided discovery and AI exchanges last while Chat is open. **Save as draft** or
-**Export workspace ideas** preserves them; native transcript export includes them
-only as a separate, explicitly unverified activity field outside its hash chain.
-Browser drafts are not sealed evidence and do not extend the engine's URL-required
-source import API. Native conversations continue to use verified engine persistence.
+The **Hub** now preserves guided discovery and AI exchanges as unverified working
+activity alongside references to verified native turns. It also maintains literal
+working notes, editable notes/tasks/decisions, conversation instances, and handoff
+drafts. Forks start new native sessions; parent handoffs must be explicitly sent
+before becoming context. Hub automations run locally during interaction, with
+visible switches and no background messages or permission inheritance.
+
+Use `/note`, `/task`, `/decision`, `/handoff` or `/hub` in Chat, or work directly
+in Hub. Exports distinguish local working records from native transcript and
+source collection backups. See [Hub usage, limits and synthetic evaluation](docs/HUB.md).
 
 ## Your OneOwner workspace
 

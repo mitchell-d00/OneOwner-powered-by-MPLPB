@@ -39,11 +39,12 @@
   };
   let api, screen = 'home', corpus = '', corpora = [], busy = false;
   let question = '', latestAnswer = null, pageCache = null, pageError = '';
-  let chatController = null, chatDraft = '';
+  let chatController = null, chatDraft = '', chatInstance = null;
   let preferences = null, themeMedia = null;
   const views = [
     ['home', 'Overview', 'layout-dashboard'],
     ['chat', 'Chat', 'messages-square'],
+    ['hub', 'Hub', 'notebook'],
     ['learn', 'Learn OneOwner', 'graduation-cap'],
     ['ask', 'Ask · cited answers', 'message-square-text'],
     ['library', 'Explore pages', 'files'],
@@ -116,6 +117,9 @@
     if (prefer && corpora.some(x => x.key === prefer)) corpus = prefer;
     else if (!corpora.some(x => x.key === corpus)) corpus = corpora[0] ? corpora[0].key : '';
     navRender();
+  }
+  function openHubChat(instanceId, draft='') {
+    chatInstance=instanceId;chatDraft=draft;switchTo('chat');
   }
   function openChatWithPrompt(prompt) {
     chatDraft = typeof prompt === 'string' ? prompt : '';
@@ -236,9 +240,10 @@
     if (screen === 'home') renderHome(parent);
     if (screen === 'chat') {
       if (!window.OneOwnerChat) throw Error('The OneOwner chat interface is missing; no fallback chat is permitted.');
-      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), draft:chatDraft, navigate:switchTo, helperName:preferences.helperName, helperEnabled:preferences.helperEnabled, reasonMode:preferences.reasonMode, refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
-      chatDraft = '';
+      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), draft:chatDraft, instanceId:chatInstance, navigate:switchTo, helperName:preferences.helperName, helperEnabled:preferences.helperEnabled, reasonMode:preferences.reasonMode, refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
+      chatDraft = '';chatInstance=null;
     }
+    if (screen === 'hub')window.OneOwnerHubView.mount(parent,{store:window.OneOwnerHub.create(storage(),selected()),openChat:openHubChat});
     if (screen === 'learn') {
       if (!window.OneOwnerLearn) throw Error('The OneOwner learning guide is missing.');
       window.OneOwnerLearn.mount(parent, {openChat:openChatWithPrompt, navigate:switchTo});

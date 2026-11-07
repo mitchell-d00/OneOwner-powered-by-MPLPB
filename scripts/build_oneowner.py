@@ -43,11 +43,13 @@ def overlay(html):
     adapter = (ROOT / 'oneowner/adapter.js').read_text(encoding='utf-8')
     capture = (ROOT / 'oneowner/source-capture.js').read_text(encoding='utf-8')
     discovery = (ROOT / 'oneowner/discovery.js').read_text(encoding='utf-8')
+    hub = (ROOT / 'oneowner/hub.js').read_text(encoding='utf-8')
+    hub_view = (ROOT / 'oneowner/hub-view.js').read_text(encoding='utf-8')
     chat = (ROOT / 'oneowner/chat.js').read_text(encoding='utf-8')
     learn = (ROOT / 'oneowner/learn.js').read_text(encoding='utf-8')
     settings = (ROOT / 'oneowner/settings.js').read_text(encoding='utf-8')
     app = (ROOT / 'oneowner/app.js').read_text(encoding='utf-8')
-    if any('</script' in x.lower() for x in (adapter, capture, discovery, chat, learn, settings, app)) or '</style' in css.lower():
+    if any('</script' in x.lower() for x in (adapter, capture, discovery, hub, hub_view, chat, learn, settings, app)) or '</style' in css.lower():
         raise ValueError('Overlay source contains an unsafe inline-tag terminator')
     output = html.replace('</head>', TAG + '\n<style id="oneowner-style">\n' + css + '\n</style>\n</head>')
     # The upstream desktop HTTP/UI tests and CSP expect exactly one inline
@@ -61,6 +63,8 @@ def overlay(html):
     extension = ('\n/* oneowner-adapter: CSP compatible */\n' + adapter +
                  '\n/* oneowner-capture: CSP compatible */\n' + capture +
                  '\n/* oneowner-discovery: CSP compatible */\n' + discovery +
+                 '\n/* oneowner-hub: CSP compatible */\n' + hub +
+                 '\n/* oneowner-hub-view: CSP compatible */\n' + hub_view +
                  '\n/* oneowner-chat: CSP compatible */\n' + chat +
                  '\n/* oneowner-learn: CSP compatible */\n' + learn +
                  '\n/* oneowner-settings: CSP compatible */\n' + settings +

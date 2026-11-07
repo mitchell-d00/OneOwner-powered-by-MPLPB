@@ -59,6 +59,19 @@
     const pool = () => Array.isArray(index[collection]) ? index[collection] : [];
     let session = null, messages = [], busy = false, generation = 0, notes = [], guide = null, alive = true;
     let savedDrafts=discovery.drafts(localStorage,collection);
+    let hubStore=null,instanceId=null,hubError='',pendingHandoff=null;
+    try{
+      hubStore=globalThis.OneOwnerHub.create(localStorage,collection);
+      const state=hubStore.read();instanceId=opts.instanceId || state.active;
+      if(instanceId && !state.instances.some(i=>i.id===instanceId))throw Error('Requested hub instance is missing.');
+      if(!instanceId)instanceId=hubStore.newInstance().id;
+    }catch(error){hubError=error.message;hubStore=null;}
+    function newHubInstance(){
+      if(!hubStore)return true;
+      try{instanceId=hubStore.newInstance().id;hubError='';return true;}
+      catch(error){status('Could not start a new hub instance: '+error.message);return false;}
+    }
+
     clear(host);
     const intro = make('section', 'oo-chat-intro');
     paragraph(intro, 'YOUR LOCAL CONVERSATION', 'oo-eyebrow');
@@ -77,7 +90,7 @@
     const picker = make('select', 'oo-control oo-chat-picker');
     picker.id = 'oo-chat-sessions'; picker.setAttribute('aria-label', 'Choose a saved conversation');
     const newBtn = button('New chat', () => {
-      if (busy) return;
+      if (busy || !newHubInstance()) return;
       session = null; messages = []; notes = []; guide = null; generation++;
       updatePicker(); draw();
       status('New chat. Your previous conversations have not been deleted.');
@@ -100,6 +113,7 @@
       run(async () => {
         const previous = session;
         await api.resetChat(previous);
+        if(hubStore){try{hubStore.remove(instanceId);instanceId=hubStore.newInstance().id;}catch(error){hubError=error.message;}}
         index[collection] = pool().filter(x => x.id !== previous);
         const saved = persistIndex(index);
         session = null; messages = []; notes = []; guide = null; generation++;
@@ -108,6 +122,16 @@
     }, 'oo-btn oo-btn-danger', 'oo-chat-delete');
     top.append(picker, newBtn, exportBtn, deleteBtn);
     panel.appendChild(top);
+    const hubLine=make('div','oo-chat-hub-line');hubLine.id='oo-chat-instance';panel.appendChild(hubLine);
+    if(typeof opts.navigate==='function')hubLine.appendChild(button('Open hub',()=>opts.navigate('hub')));
+    const instanceLabel=make('span');hubLine.appendChild(instanceLabel);
+    const parentBtn=button('Use parent handoff in message',()=>{
+      const instance=hubStore?.read().instances.find(i=>i.id===instanceId);
+      if(!instance?.parentHandoff)return;
+      pendingHandoff='Working parent handoff (unverified; no permissions):\n'+JSON.stringify(instance.parentHandoff).slice(0,3600);
+      input.value=pendingHandoff;input.focus();
+    });hubLine.appendChild(parentBtn);
+
     const log = make('div', 'oo-chat-log'); log.id = 'oo-chat-log';
     log.setAttribute('role', 'log'); log.setAttribute('aria-label', 'Conversation messages');
     panel.appendChild(log);
@@ -161,7 +185,7 @@
       const link=make('a');link.href=url;link.download='oneowner-workspace-ideas.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     }));
     panel.insertBefore(tools,log);
-    paragraph(panel,'Native conversations resume from MPLPB. Guided discovery and AI exchanges last while this chat is open: save useful ideas as drafts or export workspace ideas before leaving.','oo-footnote');
+    paragraph(panel,'The local Hub saves guided activity, AI exchanges, working notes and handoffs. Native replies resume only after MPLPB verifies their transcript. Hub records are unverified working material.','oo-footnote');
     const build=make('details','oo-assistant-config');build.appendChild(make('summary','','Create a collection here'));
     const collectionName=make('input','oo-control');collectionName.id='oo-chat-collection-name';collectionName.placeholder='Name your collection';collectionName.maxLength=100;collectionName.setAttribute('aria-label','New collection name');
     build.append(collectionName,button('Create collection',()=>run(async()=>{
@@ -291,7 +315,7 @@
       const b=button(label,()=>{guide=null;send(request,{native:true,allowNetwork:online,wiki:edition});},'oo-chat-suggestion');
       b.disabled=busy;return b;
     }
-    function status(text) { messageStatus.textContent = text || ''; }
+    function status(text) { messageStatus.textContent = (text || '')+(hubError?' · Hub not saved: '+hubError:''); }
     function updatePicker() {
       clear(picker);
       const empty = make('option', '', 'New conversation'); empty.value=''; picker.appendChild(empty);
@@ -305,6 +329,13 @@
       deleteBtn.disabled = busy || !session;
     }
     function draw() {
+      if(hubStore && instanceId){
+        try{
+          const instance=hubStore.sync(instanceId,{session,messages,nativeNotes:notes,guide});hubError='';
+          parentBtn.hidden=!instance.parent;
+          instanceLabel.textContent=' Instance '+instance.id.slice(0,8)+(instance.parent?(instance.context.parentLoaded?' · fork; handoff excerpt supplied':' · fork; parent context recorded, not loaded'):'')+' · working handoff '+(instance.handoff?'ready':'pending');
+        }catch(error){hubError=error.message;status('Conversation remains available; hub persistence failed.');}
+      }
       clear(log);
       if (!messages.length) {
         const welcome = make('div', 'oo-chat-welcome');
@@ -424,6 +455,20 @@
     async function send(value, explicit = {}) {
       const text=String(value||'').trim();
       if (!text || busy || !alive) return;
+      const command=/^\/(note|task|decision|handoff|hub)(?:\s+([\s\S]+))?$/i.exec(text);
+      if(command){
+        aiConsent.checked=false;network.checked=false;
+        try{
+          if(!hubStore || !instanceId)throw Error(hubError || 'Hub storage is unavailable.');
+          const kind=command[1].toLowerCase();
+          if(kind==='hub'){if(typeof opts.navigate==='function')opts.navigate('hub');return;}
+          if(kind==='handoff')hubStore.makeHandoff(instanceId);
+          else hubStore.addNote(instanceId,command[2]||'',kind);
+          messages.push({role:'user',text,product:true});
+          product(kind==='handoff'?'Working handoff refreshed in your Hub. It includes no access permissions or source-support claims.':'Saved as an unverified '+kind+' in your Hub.');
+          input.value='';status('Hub updated locally.');
+        }catch(error){status('Not completed: '+error.message);}return;
+      }
       if(aiConsent.checked && explicit.native!==true){
         const seq=generation;aiConsent.checked=false;network.checked=false;
         await run(async()=>{
@@ -453,6 +498,7 @@
           const response=await api.chat(text,options);
           if (!alive || seq!==generation) return;
           if (!response || typeof response.session!=='string' || !response.response) throw Error('Incomplete native chat result.');
+          if(pendingHandoff===text && hubStore){try{hubStore.contextLoaded(instanceId,text.length);pendingHandoff=null;}catch(error){hubError=error.message;}}
           session=response.session;
           notes=Array.isArray(response.mind?.notes)?response.mind.notes.slice():[];
           messages.push({role:'assistant',response:response.response,pin:response.turn_sha256});
@@ -483,16 +529,26 @@
           turns.push({role:'user',text:payload.question});
           turns.push({role:'assistant',response:payload.response,pin:entry.sha256});
         }
-        session=id; messages=turns; notes=Array.isArray(result.notes)?result.notes:[];
+        if(hubStore){
+          const existing=hubStore.read().instances.find(i=>i.session===id);
+          instanceId=existing?existing.id:hubStore.newInstance().id;hubStore.activate(instanceId);
+        }
+        const recorded=hubStore?.read().instances.find(i=>i.id===instanceId);
+        if(recorded?.timeline.length){const restored=hubStore.restore(instanceId,result);messages=restored.messages;guide=restored.instance.guide||null;}
+        else messages=turns;
+        session=id; notes=Array.isArray(result.notes)?result.notes:[];
         draw(); status('Chat resumed with an intact transcript chain. Earlier answers are historical, not newly verified.');
       });
     }
-    picker.addEventListener('change',()=>{guide=null;const id=picker.value; if(id)loadSession(id);else {session=null;messages=[];notes=[];draw();}});
+    picker.addEventListener('change',()=>{guide=null;const id=picker.value; if(id)loadSession(id);else {if(!newHubInstance())return;session=null;messages=[];notes=[];draw();}});
     updatePicker();
-    const previous=pool()[0];
-    if (previous && previous.id) loadSession(previous.id);
+    const recorded=hubStore?.read().instances.find(i=>i.id===instanceId);
+    if(recorded?.session)loadSession(recorded.session);
+    else if(recorded?.timeline.length){
+      try{const restored=hubStore.restore(instanceId,null);messages=restored.messages;guide=restored.instance.guide||null;draw();status('Hub activity resumed. Workspace records are unverified.');}catch(error){status('Hub resume blocked: '+error.message);draw();}
+    }else if(!opts.instanceId && !recorded?.parent && pool()[0]?.id)loadSession(pool()[0].id);
     else draw();
-    return Object.freeze({destroy() {alive=false;generation++;token.value='';}, send, getSession:()=>session});
+    return Object.freeze({destroy() {alive=false;generation++;token.value='';}, send, getSession:()=>session, getInstance:()=>instanceId});
   }
   return Object.freeze({mount, displayLabel});
 });

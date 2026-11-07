@@ -36,6 +36,18 @@
 - [ ] Operator deploys and configures the optional provider service for public use.
 - [ ] Live-provider checks with authorized credentials (fixture tests are separate).
 
+## Hub and handoff additions
+
+- [x] Collection-scoped in-app Hub with local conversation instances.
+- [x] Persist mixed native, guided and AI activity with verified native reconstruction.
+- [x] Local literal working-note and handoff automations, with independent switches.
+- [x] Editable notes, tasks, decisions and local slash commands.
+- [x] Distinct forks, explicit parent handoff supply and empty inherited permissions.
+- [x] Quota recovery, corrupt-record refusal and missing-native-reference probes.
+- [x] Reproducible 2,000-message synthetic suite with normalized uniqueness checks,
+      disclosed template reuse, full event records and assistant repetition counts.
+- [ ] Verify latest CI's exact artifact and recorded 2,000-message result before release.
+
 ## Evidence to verify on this exact main revision before declaring release
 
 - [ ] All original engine tests and kill tests successful on the new OneOwner candidate.
