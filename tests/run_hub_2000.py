@@ -42,7 +42,7 @@ def main():
       'unique_scenarios':len({(e['persona'],e['project'],e['intent'],e['message']) for e in events}),
       'scripted_personas':20,'projects':100,'authored_templates':20,'template_reuse':True,'independent_human_validation':False,
       'native_calls':sum(r['native_turns'] for r in reports),'local_hub_commands':sum(r['local_hub_commands'] for r in reports),
-      'unique_assistant_replies':len(response_counts),'repeated_assistant_replies':sum(n-1 for n in response_counts.values()),
+      'unique_native_assistant_replies':len({e['response_sha256'] for e in events if e['native']}),'native_repeated_assistant_replies':sum(e['native'] for e in events)-len({e['response_sha256'] for e in events if e['native']}),'unique_assistant_replies':len(response_counts),'repeated_assistant_replies':sum(n-1 for n in response_counts.values()),
       'response_kinds':dict(sum((Counter(r['response_kinds']) for r in reports),Counter())),
       'checks_passed':sum(c['passed'] for r in reports for c in r['checks']),'checks_total':sum(len(r['checks']) for r in reports),
       'missing_shards':missing,'exit_codes':exit_codes,'events_sha256':hashlib.sha256(event_path.read_bytes()).hexdigest(),

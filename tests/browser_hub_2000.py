@@ -99,12 +99,14 @@ def main():
               else:kind='local_hub_command'
               if not last.locator('.oo-chat-text').text_content().strip():raise AssertionError('Empty assistant response')
               out.write(json.dumps({**case,'ordinal':a.shard_index*span+index+1,'message_sha256':hashlib.sha256(message.encode()).hexdigest(),
-                'native':not is_command,'response_kind':kind,'response_sha256':hashlib.sha256(last.locator('.oo-chat-text').text_content().encode()).hexdigest(),'response_excerpt':last.locator('.oo-chat-text').text_content()[:800],
+                'native':not is_command,'response_kind':kind,'response_sha256':hashlib.sha256(last.locator('.oo-chat-text').text_content().encode()).hexdigest(),'response_text':last.locator('.oo-chat-text').text_content(),'response_excerpt':last.locator('.oo-chat-text').text_content()[:800],
                 'instance_id':instance['id'],'checkpoint':instance['checkpoint'],'elapsed_seconds':round(time.monotonic()-t0,3),'workflow_checks_passed':True})+'\n');out.flush()
               report['completed_user_messages']+=1
               if persona_turns==100 or index==len(cases)-1:
                 sid=instance['session'];native=page.evaluate('async sid=>await MPLPB.resumeChat(sid)',sid)
                 check('native_chain_'+case['persona'],native['ok'] and native['data']['chain_intact'] and len(native['data']['turns'])==native_count)
+                transcript_dir=a.output.parent/(a.output.stem+'-native');transcript_dir.mkdir(exist_ok=True)
+                (transcript_dir/(case['persona'].replace(' ','-')+'.json')).write_text(json.dumps(native['data'],indent=2)+'\n')
                 corpus=state['corpus'];instance_id=instance['id'];navigate(page,'hub')
                 check('notes_visible_'+case['persona'],page.locator('#oo-hub-notes article').count()==hub_commands)
                 with page.expect_download() as download:page.get_by_role('button',name='Export hub',exact=True).click()
