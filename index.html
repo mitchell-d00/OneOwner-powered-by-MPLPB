@@ -466,6 +466,13 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
   #oneowner-app .oo-chat-composer{position:sticky;bottom:0;z-index:2}
 }
 
+/* Local hub workflow and lineage. */
+#oneowner-app .oo-hub-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;margin-top:18px;align-items:start}
+#oneowner-app #oo-hub-note-form{display:grid;gap:10px}
+#oneowner-app .oo-hub-grid .oo-actions .oo-btn{font-size:12px}
+#oneowner-app .oo-chat-hub-line{padding:10px 18px;border-bottom:1px solid var(--oo-border);font-size:12px;color:var(--oo-secondary-text)}
+@media(max-width:980px){#oneowner-app .oo-hub-grid{grid-template-columns:minmax(0,1fr)}}
+
 </style>
 </head>
 <body>
@@ -1032,6 +1039,221 @@ startBrowserRuntime();
   return Object.freeze({actions,searchPhrase,results,endpoint,brainstorm,webResults,searchWeb,saveDraft,drafts});
 });
 
+/* oneowner-hub: CSP compatible */
+/* Local workflow records, not an evidence ledger or an authentication system. */
+(function(root,factory){
+  const value=factory();
+  if(typeof module==='object' && module.exports)module.exports=value;
+  else root.OneOwnerHub=value;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+  'use strict';
+  const KEY='oneowner-hub-v1:';
+  const copy=value=>JSON.parse(JSON.stringify(value));
+  const text=(v,n=4000)=>typeof v==='string'?v.slice(0,n):'';
+  const id=()=>globalThis.crypto.randomUUID();
+  const now=()=>new Date().toISOString();
+  const unverified={answer_supported:false,authority:'workspace_record'};
+  function fresh(){return {schema:1,revision:0,active:null,instances:[],notes:[],automation:{notes:true,handoffs:true}};}
+  function create(storage,collection){
+    if(!storage || typeof collection!=='string' || !collection)throw Error('A collection and working local storage are required.');
+    const key=KEY+collection;
+    function read(){
+      const raw=storage.getItem(key);if(!raw)return fresh();
+      let value;try{value=JSON.parse(raw);}catch(_){throw Error('Hub data is damaged. Export the stored record before resetting it.');}
+      if(value?.schema!==1 || !Array.isArray(value.instances) || !Array.isArray(value.notes) || !Number.isSafeInteger(value.revision))
+        throw Error('Hub format is unsupported; no records were overwritten.');
+      return value;
+    }
+    function mutate(fn){
+      const state=read(),result=fn(state);
+      state.revision++;storage.setItem(key,JSON.stringify(state));return copy(result===undefined?state:result);
+    }
+    function find(state,instanceId){const value=state.instances.find(x=>x.id===instanceId);if(!value)throw Error('Conversation instance not found in this collection.');return value;}
+    function newInstance(parent=null){return mutate(state=>{
+      if(state.instances.length>=64)throw Error('Hub holds 64 instances. Export and remove an old instance before creating another.');
+      const ancestor=parent?find(state,parent):null;
+      const instance={...unverified,id:id(),collection,parent:parent?{id:parent,checkpoint:ancestor.checkpoint}:null,
+        parentHandoff:ancestor?handoff(state,ancestor):null,
+        created:now(),updated:now(),title:'New conversation',session:null,checkpoint:null,timeline:[],nativeTurnCount:0,
+        context:{parentAvailable:!!parent,parentLoaded:false},working:[],handoff:null};
+      state.instances.push(instance);state.active=instance.id;return instance;
+    });}
+    function activate(instanceId){return mutate(state=>{find(state,instanceId);state.active=instanceId;return instanceId;});}
+    function productTurn(turn){
+      if(turn.role==='user')return {type:'product',role:'user',text:text(turn.text),product:true,ai:turn.ai===true};
+      const r=turn.response||{};
+      return {type:'product',role:'assistant',product:true,ai:turn.ai===true,response:{...unverified,
+        kind:turn.ai?'assisted_draft':text(r.kind,80)||'guided_discovery',support_label:turn.ai?'AI brainstorm · unverified':'Workspace activity · unverified',
+        sources:[],message:text(r.message,16000)},
+        ...(turn.lookup?{lookup:text(turn.lookup,160)}:{}),
+        ...(!turn.ai && Array.isArray(turn.choices)?{choices:turn.choices.filter(c=>typeof c==='string').slice(0,8).map(c=>text(c,100))}:{})};
+    }
+    function sync(instanceId,{session=null,messages=[],nativeNotes=[],guide=null}){
+      const timeline=[];
+      for(const turn of messages){
+        if(turn.product)timeline.push(productTurn(turn));
+        else if(turn.role==='assistant' && typeof turn.pin==='string')timeline.push({type:'native',hash:turn.pin});
+      }
+      if(timeline.length>1000)throw Error('Hub activity limit reached. Export this instance and start another.');
+      const users=messages.filter(t=>t.role==='user').map(t=>text(t.text,500));
+      const safeGuide=guide && ['subject','era','genre','ready'].includes(guide.stage)?{stage:guide.stage,query:text(guide.query,160),era:text(guide.era,80)}:null;
+      const state=read(),current=find(state,instanceId);
+      const safeNotes=nativeNotes.filter(n=>typeof n==='string').map(n=>text(n,500)).slice(-30);
+      if(state.active===instanceId && JSON.stringify(current.timeline)===JSON.stringify(timeline) && current.session===session && JSON.stringify(current.nativeNotes||[])===JSON.stringify(safeNotes) && JSON.stringify(current.guide||null)===JSON.stringify(safeGuide))return current;
+      return mutate(next=>{
+        const instance=find(next,instanceId);next.active=instanceId;
+        instance.timeline=timeline;instance.session=session;instance.guide=safeGuide;instance.updated=now();instance.checkpoint=id();
+        instance.nativeTurnCount=timeline.filter(t=>t.type==='native').length;
+        instance.title=users[0]?.slice(0,80)||instance.title;instance.nativeNotes=safeNotes;
+        // Literal excerpts, never inferred facts or commitments.
+        if(next.automation.notes)instance.working=users.slice(-8).map(value=>({text:value,origin:'user_excerpt',...unverified}));
+        if(next.automation.handoffs)instance.handoff=handoff(next,instance);
+        return instance;
+      });
+    }
+    function handoff(state,instance){
+      return {schema:1,...unverified,instanceId:instance.id,collection,checkpoint:instance.checkpoint,generated:now(),
+        nativeSession:instance.session,nativeTurnCount:instance.nativeTurnCount,
+        nativeReferences:instance.timeline.filter(t=>t.type==='native').slice(-8).map(t=>t.hash),
+        context:copy(instance.context),parent:instance.parent,working:copy(instance.working),nativeNotes:instance.nativeNotes||[],
+        notes:state.notes.filter(n=>n.instanceId===instance.id).map(n=>({...n,...unverified})),
+        instructions:'Working handoff only. Verify native history and read source pages before relying on claims. No access permissions are included.',
+        permissions:[]};
+    }
+    function makeHandoff(instanceId){return mutate(state=>{const instance=find(state,instanceId);instance.handoff=handoff(state,instance);return instance.handoff;});}
+    function addNote(instanceId,value,kind='note'){
+      if(typeof value!=='string' || !value.trim() || value.length>4000)throw Error('Notes need 1–4000 characters.');
+      if(!['note','task','decision'].includes(kind))throw Error('Unknown note type.');
+      return mutate(state=>{
+        const instance=find(state,instanceId);
+        if(state.notes.length>=1000)throw Error('Hub note limit reached. Export notes before removing older ones.');
+        const note={...unverified,id:id(),instanceId,text:value.trim(),kind,status:'open',created:now()};
+        state.notes.push(note);if(state.automation.handoffs)instance.handoff=handoff(state,instance);return note;
+      });
+    }
+    function updateNote(noteId,patch){return mutate(state=>{
+      const note=state.notes.find(n=>n.id===noteId);if(!note)throw Error('Note not found.');
+      if(patch.status!==undefined && !['open','done'].includes(patch.status))throw Error('Invalid task status.');
+      if(patch.status!==undefined)note.status=patch.status;
+      if(patch.text!==undefined){if(typeof patch.text!=='string'||!patch.text.trim()||patch.text.length>4000)throw Error('Invalid note.');note.text=patch.text.trim();}
+      const instance=find(state,note.instanceId);if(state.automation.handoffs)instance.handoff=handoff(state,instance);return note;
+    });}
+    function removeNote(noteId){return mutate(state=>{
+      const note=state.notes.find(n=>n.id===noteId);if(!note)throw Error('Note not found.');
+      state.notes=state.notes.filter(n=>n.id!==noteId);const instance=find(state,note.instanceId);
+      if(state.automation.handoffs)instance.handoff=handoff(state,instance);
+    });}
+    function remove(instanceId){return mutate(state=>{
+      find(state,instanceId);state.instances=state.instances.filter(i=>i.id!==instanceId);
+      state.notes=state.notes.filter(n=>n.instanceId!==instanceId);if(state.active===instanceId)state.active=null;
+    });}
+    function settings(patch){return mutate(state=>{
+      for(const k of ['notes','handoffs'])if(patch[k]!==undefined){if(typeof patch[k]!=='boolean')throw Error('Use an explicit automation toggle.');state.automation[k]=patch[k];}
+    });}
+    function restore(instanceId,native){
+      const instance=find(read(),instanceId),lookup=new Map();
+      if(instance.session){
+        if(native?.chain_intact!==true || native.session!==instance.session || native.corpus!==collection || !Array.isArray(native.turns))throw Error('Native history must be verified for this instance and collection.');
+        for(const entry of native.turns){if(!entry?.sha256 || typeof entry.payload?.question!=='string' || !entry.payload.response)throw Error('Invalid native turn.');lookup.set(entry.sha256,entry.payload);}
+      }
+      const messages=[];
+      for(const event of instance.timeline){
+        if(event.type==='native'){
+          const payload=lookup.get(event.hash);if(!payload)throw Error('A referenced native turn is missing. No conversation was reconstructed.');
+          messages.push({role:'user',text:payload.question},{role:'assistant',response:payload.response,pin:event.hash});
+        }else if(event.type==='product'){
+          const clean=productTurn(event);delete clean.type;messages.push(clean);
+        }else throw Error('Unknown hub event.');
+      }
+      // A native save can succeed while a hub write fails (for example quota).
+      // Recover the verified suffix rather than hide those engine turns.
+      const referenced=new Set(instance.timeline.filter(e=>e.type==='native').map(e=>e.hash));
+      let recoveredNativeTurns=0;
+      for(const entry of native?.turns||[]){
+        if(!referenced.has(entry.sha256)){
+          messages.push({role:'user',text:entry.payload.question},{role:'assistant',response:entry.payload.response,pin:entry.sha256});recoveredNativeTurns++;
+        }
+      }
+      return {instance,messages,notes:native?.notes||[],recoveredNativeTurns};
+    }
+    function contextLoaded(instanceId,characters){return mutate(state=>{const instance=find(state,instanceId);if(!instance.parent)throw Error('No parent handoff.');instance.context={parentAvailable:true,parentLoaded:true,mode:'handoff_excerpt',characters,loaded:now()};});}
+    function exportData(){const state=read();return {schema:1,collection,notice:'Local working records, not authenticated identity, sealed evidence, a native transcript backup, or source collection backup.',...unverified,state};}
+    return Object.freeze({read,newInstance,activate,sync,makeHandoff,addNote,updateNote,removeNote,remove,settings,restore,contextLoaded,exportData});
+  }
+  return Object.freeze({create});
+});
+
+/* oneowner-hub-view: CSP compatible */
+/* A collection-scoped, local hub. All strings are rendered as text. */
+(function(root){
+  'use strict';
+  const make=(tag,cls,value)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(value!==undefined)el.textContent=String(value);return el;};
+  const button=(label,action)=>{const el=make('button','oo-btn oo-btn-secondary',label);el.type='button';el.addEventListener('click',action);return el;};
+  function download(name,data){const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'}));const link=make('a');link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function mount(host,{store,openChat}){
+    const status=make('p','oo-muted');status.id='oo-hub-status';status.setAttribute('role','status');
+    function run(fn){try{fn();}catch(error){status.textContent='Not completed: '+error.message;}}
+    function render(){
+      const state=store.read();host.replaceChildren();
+      host.append(make('p','oo-eyebrow','YOUR WORKING HUB'),make('h1','oo-title','Hub · notes and handoffs'),
+        make('p','oo-intro','Continue a conversation, track your next steps, and prepare a handoff. These local working records are unverified; MPLPB alone decides source support.'));
+      const actions=make('div','oo-actions');
+      actions.append(button('Start a conversation',()=>run(()=>{const instance=store.newInstance();openChat(instance.id);})),
+        button('Export hub',()=>run(()=>download('oneowner-hub.json',store.exportData()))));host.appendChild(actions);
+      const automations=make('section','oo-card');automations.appendChild(make('h2','','Local automations'));
+      for(const [key,label] of [['notes','Keep the latest eight user excerpts as working notes'],['handoffs','Refresh a handoff after each completed interaction']]){
+        const field=make('label','oo-chat-check');const input=make('input');input.type='checkbox';input.checked=state.automation[key];input.id='oo-hub-auto-'+key;
+        input.addEventListener('change',()=>run(()=>{store.settings({[key]:input.checked});render();status.textContent='Automation preference saved locally.';}));field.append(input,make('span','',label));automations.appendChild(field);
+      }
+      automations.appendChild(make('p','oo-footnote','Automations run locally when you interact with OneOwner. They do not run in the background while the app is closed, send messages to others, or grant website permissions.'));host.appendChild(automations);
+      const grid=make('div','oo-hub-grid');const conversations=make('section','oo-card');conversations.appendChild(make('h2','','Conversation instances'));
+      const list=make('div');list.id='oo-hub-instances';
+      for(const instance of [...state.instances].reverse()){
+        const row=make('article','oo-search-card');row.dataset.instance=instance.id;
+        row.append(make('h3','',instance.title),make('p','oo-mono',instance.id),make('p','',instance.nativeTurnCount+' native turns · '+instance.timeline.filter(t=>t.type==='product').length+' workspace messages'));
+        if(instance.parent)row.appendChild(make('p','oo-footnote','Fork of '+instance.parent.id+(instance.context.parentLoaded?'. A parent handoff excerpt was supplied; the full parent state was not restored.':'. Parent handoff is recorded, not loaded into the new native session.')));
+        const controls=make('div','oo-actions');
+        controls.append(button('Resume',()=>run(()=>openChat(instance.id))),
+          button('Fork with handoff',()=>run(()=>{const child=store.newInstance(instance.id);openChat(child.id);})),
+          button('Refresh handoff',()=>run(()=>{store.makeHandoff(instance.id);render();status.textContent='Working handoff refreshed.';})),
+          button('Export handoff',()=>run(()=>download('oneowner-handoff.json',store.makeHandoff(instance.id)))),
+          button('Use handoff in message',()=>run(()=>{const handoff=store.makeHandoff(instance.id);openChat(instance.id,'Working handoff (unverified, permissions not included):\n'+JSON.stringify(handoff).slice(0,3600));})),
+          button('Remove hub record',()=>run(()=>{if(!window.confirm('Remove this hub record and its notes? Native conversations and source pages are retained.'))return;store.remove(instance.id);render();})));
+        row.appendChild(controls);
+        const details=make('details','oo-details');details.appendChild(make('summary','','Working notes and handoff'));
+        if(!instance.working.length)details.appendChild(make('p','','No automatic excerpts yet.'));
+        for(const excerpt of instance.working)details.appendChild(make('p','oo-chat-text',excerpt.text));
+        details.appendChild(make('pre','oo-raw',JSON.stringify(instance.handoff,null,2)));row.appendChild(details);list.appendChild(row);
+      }
+      if(!state.instances.length)list.appendChild(make('p','','Start a conversation to create your first hub record.'));
+      conversations.appendChild(list);grid.appendChild(conversations);
+      const notes=make('section','oo-card');notes.appendChild(make('h2','','Notes, tasks and decisions'));
+      const form=make('form');form.id='oo-hub-note-form';
+      const instanceSelect=make('select','oo-control');instanceSelect.id='oo-hub-note-instance';instanceSelect.setAttribute('aria-label','Conversation for this note');
+      for(const instance of state.instances){const op=make('option','',instance.title);op.value=instance.id;instanceSelect.appendChild(op);}if(state.active)instanceSelect.value=state.active;
+      const kind=make('select','oo-control');kind.id='oo-hub-note-kind';kind.setAttribute('aria-label','Note type');
+      for(const type of ['note','task','decision']){const op=make('option','',type);op.value=type;kind.appendChild(op);}
+      const input=make('textarea','oo-control');input.id='oo-hub-note-text';input.maxLength=4000;input.setAttribute('aria-label','Note text');input.placeholder='A note, next step, or decision to keep';
+      const save=make('button','oo-btn oo-btn-primary','Save note');save.type='submit';save.disabled=!state.instances.length;
+      form.append(instanceSelect,kind,input,save);form.addEventListener('submit',e=>{e.preventDefault();run(()=>{store.addNote(instanceSelect.value,input.value,kind.value);render();status.textContent='Unsealed working note saved.';});});notes.appendChild(form);
+      const noteList=make('div');noteList.id='oo-hub-notes';
+      for(const note of [...state.notes].reverse()){
+        const item=make('article','oo-search-card');item.append(make('strong','',note.kind+' · '+note.status+' · unverified'),make('p','oo-chat-text',note.text));
+        item.append(button(note.status==='done'?'Reopen':'Mark done',()=>run(()=>{store.updateNote(note.id,{status:note.status==='done'?'open':'done'});render();})),
+          button('Delete note',()=>run(()=>{store.removeNote(note.id);render();})));
+        const edit=make('details','oo-details');edit.appendChild(make('summary','','Edit note'));
+        const revised=make('textarea','oo-control');revised.value=note.text;revised.maxLength=4000;revised.setAttribute('aria-label','Edit '+note.kind);
+        edit.append(revised,button('Save edit',()=>run(()=>{store.updateNote(note.id,{text:revised.value});render();status.textContent='Working note updated.';})));item.appendChild(edit);
+        noteList.appendChild(item);
+      }
+      notes.appendChild(noteList);grid.appendChild(notes);host.append(grid,status);
+    }
+    try{render();}catch(error){host.replaceChildren(status);status.textContent='Hub unavailable: '+error.message;}
+    return {refresh:render};
+  }
+  root.OneOwnerHubView=Object.freeze({mount});
+})(typeof globalThis!=='undefined'?globalThis:this);
+
 /* oneowner-chat: CSP compatible */
 /* OneOwner: human-friendly, full-capability local chat surface on the original MPLPB API.
  * No independent reader, answer, owner selection, hashing, or page writes.
@@ -1094,6 +1316,19 @@ startBrowserRuntime();
     const pool = () => Array.isArray(index[collection]) ? index[collection] : [];
     let session = null, messages = [], busy = false, generation = 0, notes = [], guide = null, alive = true;
     let savedDrafts=discovery.drafts(localStorage,collection);
+    let hubStore=null,instanceId=null,hubError='',pendingHandoff=null;
+    try{
+      hubStore=globalThis.OneOwnerHub.create(localStorage,collection);
+      const state=hubStore.read();instanceId=opts.instanceId || state.active;
+      if(instanceId && !state.instances.some(i=>i.id===instanceId))throw Error('Requested hub instance is missing.');
+      if(!instanceId)instanceId=hubStore.newInstance().id;
+    }catch(error){hubError=error.message;hubStore=null;}
+    function newHubInstance(){
+      if(!hubStore)return true;
+      try{instanceId=hubStore.newInstance().id;hubError='';return true;}
+      catch(error){status('Could not start a new hub instance: '+error.message);return false;}
+    }
+
     clear(host);
     const intro = make('section', 'oo-chat-intro');
     paragraph(intro, 'YOUR LOCAL CONVERSATION', 'oo-eyebrow');
@@ -1112,7 +1347,7 @@ startBrowserRuntime();
     const picker = make('select', 'oo-control oo-chat-picker');
     picker.id = 'oo-chat-sessions'; picker.setAttribute('aria-label', 'Choose a saved conversation');
     const newBtn = button('New chat', () => {
-      if (busy) return;
+      if (busy || !newHubInstance()) return;
       session = null; messages = []; notes = []; guide = null; generation++;
       updatePicker(); draw();
       status('New chat. Your previous conversations have not been deleted.');
@@ -1135,6 +1370,7 @@ startBrowserRuntime();
       run(async () => {
         const previous = session;
         await api.resetChat(previous);
+        if(hubStore){try{hubStore.remove(instanceId);instanceId=hubStore.newInstance().id;}catch(error){hubError=error.message;}}
         index[collection] = pool().filter(x => x.id !== previous);
         const saved = persistIndex(index);
         session = null; messages = []; notes = []; guide = null; generation++;
@@ -1143,6 +1379,16 @@ startBrowserRuntime();
     }, 'oo-btn oo-btn-danger', 'oo-chat-delete');
     top.append(picker, newBtn, exportBtn, deleteBtn);
     panel.appendChild(top);
+    const hubLine=make('div','oo-chat-hub-line');hubLine.id='oo-chat-instance';panel.appendChild(hubLine);
+    if(typeof opts.navigate==='function')hubLine.appendChild(button('Open hub',()=>opts.navigate('hub')));
+    const instanceLabel=make('span');hubLine.appendChild(instanceLabel);
+    const parentBtn=button('Use parent handoff in message',()=>{
+      const instance=hubStore?.read().instances.find(i=>i.id===instanceId);
+      if(!instance?.parentHandoff)return;
+      pendingHandoff='Working parent handoff (unverified; no permissions):\n'+JSON.stringify(instance.parentHandoff).slice(0,3600);
+      input.value=pendingHandoff;input.focus();
+    });hubLine.appendChild(parentBtn);
+
     const log = make('div', 'oo-chat-log'); log.id = 'oo-chat-log';
     log.setAttribute('role', 'log'); log.setAttribute('aria-label', 'Conversation messages');
     panel.appendChild(log);
@@ -1196,7 +1442,7 @@ startBrowserRuntime();
       const link=make('a');link.href=url;link.download='oneowner-workspace-ideas.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     }));
     panel.insertBefore(tools,log);
-    paragraph(panel,'Native conversations resume from MPLPB. Guided discovery and AI exchanges last while this chat is open: save useful ideas as drafts or export workspace ideas before leaving.','oo-footnote');
+    paragraph(panel,'The local Hub saves guided activity, AI exchanges, working notes and handoffs. Native replies resume only after MPLPB verifies their transcript. Hub records are unverified working material.','oo-footnote');
     const build=make('details','oo-assistant-config');build.appendChild(make('summary','','Create a collection here'));
     const collectionName=make('input','oo-control');collectionName.id='oo-chat-collection-name';collectionName.placeholder='Name your collection';collectionName.maxLength=100;collectionName.setAttribute('aria-label','New collection name');
     build.append(collectionName,button('Create collection',()=>run(async()=>{
@@ -1326,7 +1572,7 @@ startBrowserRuntime();
       const b=button(label,()=>{guide=null;send(request,{native:true,allowNetwork:online,wiki:edition});},'oo-chat-suggestion');
       b.disabled=busy;return b;
     }
-    function status(text) { messageStatus.textContent = text || ''; }
+    function status(text) { messageStatus.textContent = (text || '')+(hubError?' · Hub not saved: '+hubError:''); }
     function updatePicker() {
       clear(picker);
       const empty = make('option', '', 'New conversation'); empty.value=''; picker.appendChild(empty);
@@ -1340,6 +1586,13 @@ startBrowserRuntime();
       deleteBtn.disabled = busy || !session;
     }
     function draw() {
+      if(hubStore && instanceId){
+        try{
+          const instance=hubStore.sync(instanceId,{session,messages,nativeNotes:notes,guide});hubError='';
+          parentBtn.hidden=!instance.parent;
+          instanceLabel.textContent=' Instance '+instance.id.slice(0,8)+(instance.parent?(instance.context.parentLoaded?' · fork; handoff excerpt supplied':' · fork; parent context recorded, not loaded'):'')+' · working handoff '+(instance.handoff?'ready':'pending');
+        }catch(error){hubError=error.message;status('Conversation remains available; hub persistence failed.');}
+      }
       clear(log);
       if (!messages.length) {
         const welcome = make('div', 'oo-chat-welcome');
@@ -1459,6 +1712,20 @@ startBrowserRuntime();
     async function send(value, explicit = {}) {
       const text=String(value||'').trim();
       if (!text || busy || !alive) return;
+      const command=/^\/(note|task|decision|handoff|hub)(?:\s+([\s\S]+))?$/i.exec(text);
+      if(command){
+        aiConsent.checked=false;network.checked=false;
+        try{
+          if(!hubStore || !instanceId)throw Error(hubError || 'Hub storage is unavailable.');
+          const kind=command[1].toLowerCase();
+          if(kind==='hub'){if(typeof opts.navigate==='function')opts.navigate('hub');return;}
+          if(kind==='handoff')hubStore.makeHandoff(instanceId);
+          else hubStore.addNote(instanceId,command[2]||'',kind);
+          messages.push({role:'user',text,product:true});
+          product(kind==='handoff'?'Working handoff refreshed in your Hub. It includes no access permissions or source-support claims.':'Saved as an unverified '+kind+' in your Hub.');
+          input.value='';status('Hub updated locally.');
+        }catch(error){status('Not completed: '+error.message);}return;
+      }
       if(aiConsent.checked && explicit.native!==true){
         const seq=generation;aiConsent.checked=false;network.checked=false;
         await run(async()=>{
@@ -1488,6 +1755,7 @@ startBrowserRuntime();
           const response=await api.chat(text,options);
           if (!alive || seq!==generation) return;
           if (!response || typeof response.session!=='string' || !response.response) throw Error('Incomplete native chat result.');
+          if(pendingHandoff===text && hubStore){try{hubStore.contextLoaded(instanceId,text.length);pendingHandoff=null;}catch(error){hubError=error.message;}}
           session=response.session;
           notes=Array.isArray(response.mind?.notes)?response.mind.notes.slice():[];
           messages.push({role:'assistant',response:response.response,pin:response.turn_sha256});
@@ -1518,16 +1786,31 @@ startBrowserRuntime();
           turns.push({role:'user',text:payload.question});
           turns.push({role:'assistant',response:payload.response,pin:entry.sha256});
         }
-        session=id; messages=turns; notes=Array.isArray(result.notes)?result.notes:[];
+        if(hubStore){
+          const existing=hubStore.read().instances.find(i=>i.session===id);
+          if(existing){
+            instanceId=existing.id;
+            try{hubStore.activate(instanceId);}catch(error){hubError=error.message;}
+          }else{
+            try{instanceId=hubStore.newInstance().id;}catch(error){instanceId=null;hubError=error.message;}
+          }
+        }
+        const recorded=hubStore?.read().instances.find(i=>i.id===instanceId);
+        if(recorded?.timeline.length){const restored=hubStore.restore(instanceId,result);messages=restored.messages;guide=restored.instance.guide||null;}
+        else messages=turns;
+        session=id; notes=Array.isArray(result.notes)?result.notes:[];
         draw(); status('Chat resumed with an intact transcript chain. Earlier answers are historical, not newly verified.');
       });
     }
-    picker.addEventListener('change',()=>{guide=null;const id=picker.value; if(id)loadSession(id);else {session=null;messages=[];notes=[];draw();}});
+    picker.addEventListener('change',()=>{guide=null;const id=picker.value; if(id)loadSession(id);else {if(!newHubInstance())return;session=null;messages=[];notes=[];draw();}});
     updatePicker();
-    const previous=pool()[0];
-    if (previous && previous.id) loadSession(previous.id);
+    const recorded=hubStore?.read().instances.find(i=>i.id===instanceId);
+    if(recorded?.session)loadSession(recorded.session);
+    else if(recorded?.timeline.length){
+      try{const restored=hubStore.restore(instanceId,null);messages=restored.messages;guide=restored.instance.guide||null;draw();status('Hub activity resumed. Workspace records are unverified.');}catch(error){status('Hub resume blocked: '+error.message);draw();}
+    }else if(!opts.instanceId && !recorded?.parent && pool()[0]?.id)loadSession(pool()[0].id);
     else draw();
-    return Object.freeze({destroy() {alive=false;generation++;token.value='';}, send, getSession:()=>session});
+    return Object.freeze({destroy() {alive=false;generation++;token.value='';}, send, getSession:()=>session, getInstance:()=>instanceId});
   }
   return Object.freeze({mount, displayLabel});
 });
@@ -1710,11 +1993,12 @@ startBrowserRuntime();
   };
   let api, screen = 'home', corpus = '', corpora = [], busy = false;
   let question = '', latestAnswer = null, pageCache = null, pageError = '';
-  let chatController = null, chatDraft = '';
+  let chatController = null, chatDraft = '', chatInstance = null;
   let preferences = null, themeMedia = null;
   const views = [
     ['home', 'Overview', 'layout-dashboard'],
     ['chat', 'Chat', 'messages-square'],
+    ['hub', 'Hub', 'notebook'],
     ['learn', 'Learn OneOwner', 'graduation-cap'],
     ['ask', 'Ask · cited answers', 'message-square-text'],
     ['library', 'Explore pages', 'files'],
@@ -1787,6 +2071,9 @@ startBrowserRuntime();
     if (prefer && corpora.some(x => x.key === prefer)) corpus = prefer;
     else if (!corpora.some(x => x.key === corpus)) corpus = corpora[0] ? corpora[0].key : '';
     navRender();
+  }
+  function openHubChat(instanceId, draft='') {
+    chatInstance=instanceId;chatDraft=draft;switchTo('chat');
   }
   function openChatWithPrompt(prompt) {
     chatDraft = typeof prompt === 'string' ? prompt : '';
@@ -1907,9 +2194,10 @@ startBrowserRuntime();
     if (screen === 'home') renderHome(parent);
     if (screen === 'chat') {
       if (!window.OneOwnerChat) throw Error('The OneOwner chat interface is missing; no fallback chat is permitted.');
-      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), draft:chatDraft, navigate:switchTo, helperName:preferences.helperName, helperEnabled:preferences.helperEnabled, reasonMode:preferences.reasonMode, refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
-      chatDraft = '';
+      chatController = window.OneOwnerChat.mount(parent, {api, corpus:selected(), draft:chatDraft, instanceId:chatInstance, navigate:switchTo, helperName:preferences.helperName, helperEnabled:preferences.helperEnabled, reasonMode:preferences.reasonMode, refreshCollections:async prefer => {await refreshCollections(prefer); render();}});
+      chatDraft = '';chatInstance=null;
     }
+    if (screen === 'hub')window.OneOwnerHubView.mount(parent,{store:window.OneOwnerHub.create(storage(),selected()),openChat:openHubChat});
     if (screen === 'learn') {
       if (!window.OneOwnerLearn) throw Error('The OneOwner learning guide is missing.');
       window.OneOwnerLearn.mount(parent, {openChat:openChatWithPrompt, navigate:switchTo});
