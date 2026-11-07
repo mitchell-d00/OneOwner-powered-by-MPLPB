@@ -42,3 +42,19 @@ retained. Product guidance and AI activity are explicitly outside the native
 transcript chain. Drafts use separate collection-scoped browser keys, not engine
 storage. Full URL-free sealed browser authoring remains deferred; draft storage
 does not pretend to implement that absent engine API.
+
+## Hub workflow storage
+
+`hub.js` stores collection-local instance records, explicit parent handoffs,
+literal user excerpts and editable notes/tasks/decisions. Native replies are stored
+as references, then reconstructed from verified native history. Product replies
+are sanitized on save and restore with `answer_supported:false` and no source or
+tool authority. A native save followed by a failed hub write is recovered from
+the verified native suffix; missing referenced turns block resume. The hub never
+hashes or seals evidence pages, chooses owners or invents source URLs.
+
+`hub-view.js` provides in-app navigation, automation switches, note editing,
+resume/fork, and explicit exports. Forking never clones a native session or grants
+permissions. Context supplied through a handoff is marked as an excerpt, not a full
+state reconstruction. See [HUB](HUB.md) for boundaries and the counted 2,000-message
+synthetic evaluation.

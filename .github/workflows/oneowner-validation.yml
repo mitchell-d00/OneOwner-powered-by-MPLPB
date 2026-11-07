@@ -26,6 +26,8 @@ jobs:
         run: |
           node --check oneowner/adapter.js
           node --check oneowner/chat.js
+          node --check oneowner/hub.js
+          node --check oneowner/hub-view.js
           node --check oneowner/discovery.js
           node --check oneowner/learn.js
           node --check oneowner/settings.js
@@ -166,6 +168,12 @@ jobs:
           --browser-executable "$(command -v google-chrome)"
           --output "$RUNNER_TEMP/oneowner-discovery/report.json"
           --screenshots "$RUNNER_TEMP/oneowner-discovery/screenshots"
+      - name: Hub storage failures, handoff boundaries and native recovery in WASM
+        run: >-
+          python product/tests/browser_hub_negative.py
+          --html extracted/OneOwner.html
+          --browser-executable "$(command -v google-chrome)"
+          --output "$RUNNER_TEMP/oneowner-hub-negative/report.json"
       - name: Preserve ZIP and candidate evidence (not deployed-site evidence)
         if: always()
         uses: actions/upload-artifact@v4
@@ -181,5 +189,51 @@ jobs:
             ${{ runner.temp }}/oneowner-learn/
             ${{ runner.temp }}/oneowner-settings/
             ${{ runner.temp }}/oneowner-discovery/
+            ${{ runner.temp }}/oneowner-hub-negative/
+          if-no-files-found: warn
+          retention-days: 30
+
+
+  hub-synthetic-2000:
+    needs: archive-first
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download this workflow's exact tested product archive
+        uses: actions/download-artifact@v4
+        with:
+          name: oneowner-candidate-${{ github.run_id }}
+          path: candidate
+      - name: Extract and verify every product archive file
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib,zipfile
+          archive=next(pathlib.Path('candidate').rglob('OneOwner.zip'))
+          root=pathlib.Path('hub-extracted')
+          with zipfile.ZipFile(archive) as bundle: bundle.extractall(root)
+          manifest=json.loads((root/'ONEOWNER-MANIFEST.json').read_text())
+          for name,digest in manifest['files'].items():
+              assert hashlib.sha256((root/name).read_bytes()).hexdigest()==digest,name
+          print('Exact archive files verified:',len(manifest['files']))
+          PY
+      - name: Install pinned Chromium automation
+        run: python -m pip install 'playwright==1.58.0'
+      - name: Execute 2000 unique visible user messages across 20 synthetic personas
+        run: >-
+          python tests/run_hub_2000.py
+          --html hub-extracted/desktop/index.html
+          --desktop hub-extracted/desktop
+          --browser-executable "$(command -v google-chrome)"
+          --output "$RUNNER_TEMP/oneowner-hub-2000"
+      - name: Retain all events, uniqueness evidence and failure reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oneowner-hub-2000-${{ github.run_id }}
+          path: ${{ runner.temp }}/oneowner-hub-2000/
           if-no-files-found: warn
           retention-days: 30

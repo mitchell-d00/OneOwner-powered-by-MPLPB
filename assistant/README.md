@@ -48,9 +48,9 @@ pinned Wikipedia capture and do not need this server.
 Missing provider configuration returns an unavailable error. AI and search are
 separately configurable. No live-provider success is claimed by fixture tests.
 
-AI and product discovery exchanges are session-only; native MPLPB conversations
-retain their normal verified persistence. Export workspace ideas or explicitly
-save a draft before navigating away. Drafts are collection-scoped browser records,
+AI and product discovery exchanges are retained locally by the OneOwner Hub as
+unverified working activity. Native MPLPB conversations retain their verified
+persistence, and hub resume resolves native replies from verified native history. Drafts are collection-scoped browser records,
 not ledger pages; they can be exported, reused in a message, or deleted. They are
 not included in the native transcript hash chain. Their storage never creates a
 URL, evidence hash, eligibility decision, or sealed source.

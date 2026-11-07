@@ -441,3 +441,10 @@ body { background:#f5f7fb !important; color:#182b3b !important; font:15px/1.55 s
   #oneowner-app .oo-chat-bubble{max-width:100%}
   #oneowner-app .oo-chat-composer{position:sticky;bottom:0;z-index:2}
 }
+
+/* Local hub workflow and lineage. */
+#oneowner-app .oo-hub-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;margin-top:18px;align-items:start}
+#oneowner-app #oo-hub-note-form{display:grid;gap:10px}
+#oneowner-app .oo-hub-grid .oo-actions .oo-btn{font-size:12px}
+#oneowner-app .oo-chat-hub-line{padding:10px 18px;border-bottom:1px solid var(--oo-border);font-size:12px;color:var(--oo-secondary-text)}
+@media(max-width:980px){#oneowner-app .oo-hub-grid{grid-template-columns:minmax(0,1fr)}}
