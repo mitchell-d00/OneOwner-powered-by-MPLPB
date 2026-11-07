@@ -27,7 +27,7 @@
         row.append(make('h3','',instance.title),make('p','oo-mono',instance.id),make('p','',instance.nativeTurnCount+' native turns · '+instance.timeline.filter(t=>t.type==='product').length+' workspace messages'));
         if(instance.parent)row.appendChild(make('p','oo-footnote','Fork of '+instance.parent.id+(instance.context.parentLoaded?'. A parent handoff excerpt was supplied; the full parent state was not restored.':'. Parent handoff is recorded, not loaded into the new native session.')));
         const controls=make('div','oo-actions');
-        controls.append(button('Resume',()=>run(()=>{store.activate(instance.id);openChat(instance.id);})),
+        controls.append(button('Resume',()=>run(()=>openChat(instance.id))),
           button('Fork with handoff',()=>run(()=>{const child=store.newInstance(instance.id);openChat(child.id);})),
           button('Refresh handoff',()=>run(()=>{store.makeHandoff(instance.id);render();status.textContent='Working handoff refreshed.';})),
           button('Export handoff',()=>run(()=>download('oneowner-handoff.json',store.makeHandoff(instance.id)))),

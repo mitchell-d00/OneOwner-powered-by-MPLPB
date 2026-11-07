@@ -531,7 +531,12 @@
         }
         if(hubStore){
           const existing=hubStore.read().instances.find(i=>i.session===id);
-          instanceId=existing?existing.id:hubStore.newInstance().id;hubStore.activate(instanceId);
+          if(existing){
+            instanceId=existing.id;
+            try{hubStore.activate(instanceId);}catch(error){hubError=error.message;}
+          }else{
+            try{instanceId=hubStore.newInstance().id;}catch(error){instanceId=null;hubError=error.message;}
+          }
         }
         const recorded=hubStore?.read().instances.find(i=>i.id===instanceId);
         if(recorded?.timeline.length){const restored=hubStore.restore(instanceId,result);messages=restored.messages;guide=restored.instance.guide||null;}
